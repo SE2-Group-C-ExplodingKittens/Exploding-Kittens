@@ -57,6 +57,8 @@ sonarqube {
         property "sonar.projectKey", "SE2-Group-C-ExplodingKittens_Exploding-Kittens"
         property "sonar.organization", "se2-group-c-explodingkittens"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.projectDir}/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
     }
 }
 
