@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    id 'jacoco'
+    id "org.sonarqube" version "3.5.0.2730"
 }
 
 android {
@@ -25,6 +27,37 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+            finalizedBy jacocoTestReport
+        }
+    }
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
+
+    reports {
+        xml.enabled true
+        xml.destination file("${project.projectDir}/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.from = files([mainSrc])
+    classDirectories.from = files([debugTree])
+    executionData.from = files("${buildDir}/jacoco/testDebugUnitTest.exec")
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "SE2-Group-C-ExplodingKittens_Exploding-Kittens"
+        property "sonar.organization", "se2-group-c-explodingkittens"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 dependencies {
@@ -32,7 +65,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
     testImplementation 'junit:junit:4.13.2'
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
