@@ -1,8 +1,8 @@
 package com.example.se2_exploding_kittens;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
