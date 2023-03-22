@@ -1,7 +1,8 @@
 package com.example.se2_exploding_kittens;
 
 import static org.junit.Assert.*;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 
 /**
