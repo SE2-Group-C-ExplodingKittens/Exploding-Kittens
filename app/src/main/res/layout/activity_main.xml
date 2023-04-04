@@ -15,4 +15,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/buttonJoinGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join Game"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="543dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
