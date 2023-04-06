@@ -16,11 +16,6 @@ public class ClientTCP implements Runnable{
     private Socket clientSocket = null;
     private ConnectionState connState = ConnectionState.IDLE;
 
-//    public ClientTCP(String serverAddress, int serverPort) {
-//        this.serverAddress = serverAddress;
-//        this.serverPort = serverPort;
-//    }
-
     public ClientTCP(String serverAddress, int serverPort, MessageCallback defaultCallback) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -38,12 +33,9 @@ public class ClientTCP implements Runnable{
     }
 
     private boolean checkResponseMatch(String res, Message m){
-        String [] sp = res.split("###");
-        if(sp.length == 3){
-            if(sp[0] == "R"){
-                if(sp[1].equals(m.getMessageType()+"")){
-                    return true;
-                }
+        if(Message.parseAndExtractMessageID(res) == m.getMessageID()){
+            if(Message.parseAndExtractMessageType(res) == MessageType.REPLY){
+                return true;
             }
         }
         return false;
@@ -111,7 +103,7 @@ public class ClientTCP implements Runnable{
                         messages.remove(0);
                         break;
                     }else{
-                        out.writeBytes(messages.get(0).getPayload() + "\n");
+                        out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
                         receiveReply(in);
                         messages.remove(0);
                     }
