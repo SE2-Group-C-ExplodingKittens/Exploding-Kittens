@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MessageCallback{
         Thread listener = new Thread(ll);
         listener.start();
         setContentView(R.layout.activity_main);
-        buttonJoinGame = (Button)findViewById(R.id.buttonJoinGame);
+        buttonJoinGame = (Button)findViewById(R.id.buttonJoinGameSingle);
         addEvtHandler(buttonJoinGame, new View.OnClickListener() {
             @Override
             public void onClick(View v) {

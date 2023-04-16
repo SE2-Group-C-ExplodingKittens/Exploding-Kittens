@@ -4,9 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="horizontal"
+    android:background="@drawable/background"
+    >
+
+    <ImageView
+        android:layout_width="606px"
+        android:layout_height="766px"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/logo_start_screen"
+        android:layout_marginRight="300dp"  />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
@@ -16,11 +30,39 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/buttonJoinGame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Join Game"
-        tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="543dp" />
+        android:id="@+id/buttonJoinGameSingle"
+        android:layout_width="278dp"
+        android:layout_height="61dp"
+        android:background="@drawable/button_single"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.858"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.302" />
+
+    <Button
+        android:id="@+id/buttonJoinGameMulti"
+        android:layout_width="287dp"
+        android:layout_height="61dp"
+        android:background="@drawable/button_multiplayer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.876"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonJoinGameSingle"
+        app:layout_constraintVertical_bias="0.12" />
+
+    <Button
+        android:id="@+id/buttonTutorial"
+        android:layout_width="195dp"
+        android:layout_height="61dp"
+        android:background="@drawable/button_tutorial"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.755"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonJoinGameMulti"
+        app:layout_constraintVertical_bias="0.21" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
