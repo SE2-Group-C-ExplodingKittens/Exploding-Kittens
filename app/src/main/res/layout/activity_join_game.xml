@@ -4,7 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".JoinGameActivity">
+    tools:context=".JoinGameActivity"
+    android:orientation="horizontal"
+    android:background="@drawable/background">
+    
+    <ImageView
+        android:layout_width="606px"
+        android:layout_height="766px"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/Logo_start_screen"
+        android:layout_marginRight="300dp"  />
+
 
     <EditText
         android:id="@+id/textGameCode"
