@@ -6,9 +6,9 @@
 
     <Button
         android:id="@+id/btn_game_deck"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="50dp"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="20dp"
         android:text=""
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,14 +17,26 @@
 
     <Button
         android:id="@+id/btn_game_discard_pile"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:layout_marginEnd="50dp"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="20dp"
         android:text=""
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_game_game_stack"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:text=""
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_game_deck"
+        app:layout_constraintEnd_toStartOf="@id/btn_game_discard_pile"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/tv_game_hand"

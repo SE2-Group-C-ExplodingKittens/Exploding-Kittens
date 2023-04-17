@@ -2,9 +2,9 @@ package com.example.se2_exploding_kittens.GameBoard;
 
 import java.util.ArrayList;
 
-public class Player extends AbstractDeck {
+public class GameStack extends AbstractDeck {
 
-    Player() {
+    GameStack() {
         deck = new ArrayList<>();
     }
 }
