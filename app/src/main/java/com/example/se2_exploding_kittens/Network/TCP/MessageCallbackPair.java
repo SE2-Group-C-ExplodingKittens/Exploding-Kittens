@@ -1,4 +1,6 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Network.TCP;
+
+import com.example.se2_exploding_kittens.Network.MessageCallback;
 
 import java.util.ArrayList;
 

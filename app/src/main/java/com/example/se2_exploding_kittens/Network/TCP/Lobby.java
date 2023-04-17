@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Network.TCP;
 
 public class Lobby {
     private String name;

@@ -1,9 +1,10 @@
 package com.example.se2_exploding_kittens.Network.TCP;
 
-import com.example.se2_exploding_kittens.ConnectionState;
-import com.example.se2_exploding_kittens.Message;
-import com.example.se2_exploding_kittens.MessageCallback;
-import com.example.se2_exploding_kittens.MessageType;
+import com.example.se2_exploding_kittens.Network.ConnectionState;
+import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
+import com.example.se2_exploding_kittens.Network.Message;
+import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.MessageType;
 
 import java.io.*;
 import java.net.*;
@@ -15,8 +16,9 @@ public class ClientTCP implements Runnable, TCP{
     private String serverAddress;
     private int serverPort;
     private ArrayList <Message> messages = new ArrayList<Message>();
-    //private Message message;
+
     private MessageCallback defaultCallback = null;
+    private DisconnectedCallback disconnectedCallback = null;
     private String response = null;
     private Socket clientSocket = null;
     private ConnectionState connState = ConnectionState.IDLE;
@@ -36,6 +38,9 @@ public class ClientTCP implements Runnable, TCP{
         this.defaultCallback = defaultCallback;
     }
 
+    public void setDisconnectCallback(DisconnectedCallback disconnectedCallback){
+        this.disconnectedCallback = disconnectedCallback;
+    }
 
 
     public boolean addMessage(Message message) {
@@ -45,17 +50,8 @@ public class ClientTCP implements Runnable, TCP{
         }else {
             return false;
         }
-
     }
 
-    private boolean checkResponseMatch(String res, Message m){
-        if(Message.parseAndExtractMessageID(res) == m.getMessageID()){
-            if(Message.parseAndExtractMessageType(res) == MessageType.REPLY){
-                return true;
-            }
-        }
-        return false;
-    }
 
     private boolean connect(){
         try {
@@ -68,29 +64,19 @@ public class ClientTCP implements Runnable, TCP{
         }
     }
 
-//    private void receiveReply(BufferedReader in) throws IOException {
-//
-//        while(messages.get(0).isReplyExpected()){
-//            response = in.readLine();
-//            if(checkResponseMatch(response,messages.get(0))){
-//                if(messages.get(0).getCallback() != null) {
-//                    messages.get(0).getCallback().responseReceived(response);
-//                }else{
-//                    defaultCallback.responseReceived(response);
-//                }
-//                break;
-//            }else {
-//                //keep listening until reply is received
-//                defaultCallback.responseReceived(response);
-//            }
-//        }
-//    }
+    private boolean checkConnectionDisconnected(Socket connection){
+        if (connection.isClosed()) {
+            connState = ConnectionState.DISCONNECTING;
+            return true;
+        }
+        return false;
+    }
 
     private void listenForMessages(BufferedReader in) throws IOException {
         if (in.ready()) {
             response = in.readLine();
             if (defaultCallback != null) {
-                defaultCallback.responseReceived(response);
+                defaultCallback.responseReceived(response, this);
             }
         }
     }
@@ -111,6 +97,8 @@ public class ClientTCP implements Runnable, TCP{
                     while (messages.size() == 0) {
                         //poll for messages every 5ms
                         listenForMessages(in);
+                        if(checkConnectionDisconnected(clientSocket))
+                            break;
                         Thread.sleep(20);
                     }
 
@@ -125,6 +113,8 @@ public class ClientTCP implements Runnable, TCP{
 //                        receiveReply(in);
                         messages.remove(0);
                     }
+                    if(checkConnectionDisconnected(clientSocket))
+                        break;
                 }
 
                 if(connState == ConnectionState.DISCONNECTING){
@@ -132,6 +122,8 @@ public class ClientTCP implements Runnable, TCP{
                     out.close();
                     in.close();
                     clientSocket.close();
+                    if(disconnectedCallback != null)
+                        disconnectedCallback.connectionDisconnected(this);
                 }
 
             } catch (IOException e) {
@@ -139,7 +131,6 @@ public class ClientTCP implements Runnable, TCP{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 

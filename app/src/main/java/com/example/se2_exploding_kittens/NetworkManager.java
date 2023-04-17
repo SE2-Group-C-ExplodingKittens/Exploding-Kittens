@@ -1,15 +1,20 @@
 package com.example.se2_exploding_kittens;
 
+import com.example.se2_exploding_kittens.Network.ClientConnectedCallback;
+import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
+import com.example.se2_exploding_kittens.Network.Message;
+import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
+import com.example.se2_exploding_kittens.Network.TCP.MessageCallbackPair;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TCP.TCP;
 
 import java.util.ArrayList;
 
-public class NetworkManager implements MessageCallback{
+public class NetworkManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback {
 
     private TCP connection = null;
-    private ArrayList <ServerTCPSocket> serverToClientConnections = null;
+    private ArrayList <ServerTCPSocket> serverToClientConnections = new ArrayList<ServerTCPSocket>();
     private ArrayList <MessageCallbackPair> subscribedCallbacks = new ArrayList<MessageCallbackPair>();
 
     private void sendMessageFromTheClient(Message message) throws IllegalAccessException{
@@ -45,13 +50,17 @@ public class NetworkManager implements MessageCallback{
         if(connection instanceof ClientTCP){
             this.connection = connection;
         }else if(connection instanceof ServerTCPSocket){
-
+            serverToClientConnections.add((ServerTCPSocket) connection);
         }
 
     }
 
     public void addServerToClientConnection(ServerTCPSocket connection){
         serverToClientConnections.add(connection);
+    }
+
+    public ArrayList <ServerTCPSocket> getServerConnections(){
+        return serverToClientConnections;
     }
 
     public void subscribeCallbackToMessageID(MessageCallback callback, int messageID){
@@ -67,9 +76,39 @@ public class NetworkManager implements MessageCallback{
         }
     }
 
-    @Override
-    public void responseReceived(String text) {
-        int messageID = Message.parseAndExtractMessageID(text);
+    public void unsubscribeCallbackFromMessageID(MessageCallback callback, int messageID){
+        for (MessageCallbackPair mcp : subscribedCallbacks){
+            if (mcp.getMessageID() == messageID){
+                mcp.removeCallback(callback);
+            }
+        }
+    }
 
+    @Override
+    public void responseReceived(String text, Object sender) {
+        if(sender instanceof ClientTCP){
+            int messageID = Message.parseAndExtractMessageID(text);
+            for (MessageCallbackPair mcb:subscribedCallbacks) {
+                if(messageID == mcb.getMessageID()){
+                    for (MessageCallback cb:mcb.getCallbacks()) {
+                        cb.responseReceived(text,sender);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void clientConnected(ServerTCPSocket connection) {
+        serverToClientConnections.add(connection);
+    }
+
+    @Override
+    public void connectionDisconnected(Object connection) {
+        if(connection instanceof ServerTCPSocket){
+            serverToClientConnections.remove(connection);
+        }else if(connection instanceof ClientTCP){
+            connection = null;
+        }
     }
 }

@@ -10,8 +10,12 @@ import android.widget.Button;
 
 import com.example.se2_exploding_kittens.Network.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.Network.LobbyListener;
+import com.example.se2_exploding_kittens.Network.MessageCallback;
 
-public class MainActivity extends AppCompatActivity implements MessageCallback{
+import java.net.DatagramSocket;
+import java.net.Socket;
+
+public class MainActivity extends AppCompatActivity implements MessageCallback {
 
     private Button buttonJoinGame;
     private LobbyBroadcaster lb;
@@ -52,7 +56,10 @@ public class MainActivity extends AppCompatActivity implements MessageCallback{
     }
 
     @Override
-    public void responseReceived(String text) {
-        lobbyFound(text);
+    public void responseReceived(String text, Object sender) {
+        if(sender instanceof LobbyListener){
+            lobbyFound(text);
+        }
+
     }
 }

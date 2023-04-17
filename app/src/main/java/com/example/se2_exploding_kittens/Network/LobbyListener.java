@@ -1,12 +1,11 @@
 package com.example.se2_exploding_kittens.Network;
 
-import com.example.se2_exploding_kittens.Lobby;
-import com.example.se2_exploding_kittens.MessageCallback;
+import com.example.se2_exploding_kittens.Network.TCP.Lobby;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class LobbyListener implements Runnable {
@@ -42,7 +41,8 @@ public class LobbyListener implements Runnable {
                 String[] split = packetData.split("#");
                 if(split.length == 2){
                     int lobbyPort = Integer.parseInt(split[1]);
-                    Lobby lobby = new Lobby(packetSrcAddr, split[0],lobbyPort);
+                    String name = split[0];
+                    Lobby lobby = new Lobby(name, packetSrcAddr, lobbyPort);
                     boolean lobbyExists = false;
                     for (Lobby l:lobbies) {
                         if(l.getName().equals(lobby.getName()) && l.getAddress().equals(lobby.getAddress())){
@@ -52,7 +52,7 @@ public class LobbyListener implements Runnable {
                     }
                     if(!lobbyExists){
                         lobbies.add(lobby);
-                        packetReceivedCallback.responseReceived(lobbies.indexOf(lobby)+"");
+                        packetReceivedCallback.responseReceived(lobbies.indexOf(lobby)+"", this);
                     }
                 }
             }

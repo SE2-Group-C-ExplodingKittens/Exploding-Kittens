@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Network;
 
 public enum MessageType {
     MESSAGE("M"),
