@@ -8,5 +8,4 @@ public class DiscardPile extends AbstractDeck {
         deck = new ArrayList<>();
     }
 
-
 }

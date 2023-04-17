@@ -50,8 +50,9 @@ public class AbstractDeck {
         return getDeckSize()<=0;
     }
 
+    //provisional
     public String printDeck(){
-        StringBuilder str = new StringBuilder("");
+        StringBuilder str = new StringBuilder();
         for (int i = 0; i < deck.size(); i++){
             str.append(deck.get(i).number).append(" ");
         }

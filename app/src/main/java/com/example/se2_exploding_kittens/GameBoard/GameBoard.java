@@ -1,10 +1,6 @@
 package com.example.se2_exploding_kittens.GameBoard;
 
-import android.util.Log;
-
 public class GameBoard {
-
-    //only public to display number of cards which are in the deck, discard pile and hand
     public Deck deck;
     public Player player;
     public DiscardPile discardPile;
