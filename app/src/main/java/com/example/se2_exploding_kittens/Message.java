@@ -1,10 +1,8 @@
 package com.example.se2_exploding_kittens;
 
 public class Message {
-    private boolean replyExpected;
     private MessageType messageType;
     private String payload;
-    private MessageCallback callback;
     private int messageID;
 
     public static String parseAndExtractPayload(String res){
@@ -41,10 +39,9 @@ public class Message {
         return MessageType.UNKNOWN;
     }
 
-    public Message(boolean replyExpected, MessageType messageType, int messageID, String payload, MessageCallback callback) {
-        this.replyExpected = replyExpected;
+    public Message(MessageType messageType, int messageID, String payload) {
         this.payload = payload;
-        this.callback = callback;
+
         this.messageType = messageType;
         this.messageID = messageID;
     }
@@ -61,14 +58,6 @@ public class Message {
                 return MessageType.UNKNOWN.value + "###"+ messageID +"###"+payload;
         }
 
-    }
-
-    public boolean isReplyExpected() {
-        return replyExpected;
-    }
-
-    public MessageCallback getCallback() {
-        return callback;
     }
 
     public int getMessageID() {
