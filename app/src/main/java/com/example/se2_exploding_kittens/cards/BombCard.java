@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.cards;
 
 public class BombCard extends Cards{
     @Override
