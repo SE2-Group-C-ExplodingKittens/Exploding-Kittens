@@ -75,17 +75,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     testImplementation "org.mockito:mockito-all:1.9.5"
 
-    // Required -- JUnit 4 framework
-    testImplementation "junit:junit:$jUnitVersion"
-    // Optional -- Robolectric environment
-    testImplementation "androidx.test:core:$androidXTestVersion"
-    // Optional -- Mockito framework
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
-    // Optional -- mockito-kotlin
-    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
-    // Optional -- Mockk framework
-    testImplementation "io.mockk:mockk:$mockkVersion"
-
     // testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

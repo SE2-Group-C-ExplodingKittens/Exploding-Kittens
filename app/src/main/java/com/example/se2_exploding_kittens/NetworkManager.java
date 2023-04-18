@@ -8,16 +8,19 @@ import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.Network.TCP.MessageCallbackPair;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TCP.TCP;
+import com.example.se2_exploding_kittens.Network.TCP.TCPServer;
 
 import java.util.ArrayList;
 
 public class NetworkManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback {
 
     private TCP connection = null;
+    private TCPServer server = null;
+    //Contains client connections
     private ArrayList <ServerTCPSocket> serverToClientConnections = new ArrayList<ServerTCPSocket>();
     private ArrayList <MessageCallbackPair> subscribedCallbacks = new ArrayList<MessageCallbackPair>();
 
-    private void sendMessageFromTheClient(Message message) throws IllegalAccessException{
+    public void sendMessageFromTheClient(Message message) throws IllegalAccessException{
         if(connection instanceof ClientTCP && connection != null){
             connection.addMessage(message);
         }else {
@@ -25,7 +28,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         }
     }
 
-    private void sendMessageFromTheSever(Message message, ServerTCPSocket connection) throws IllegalAccessException{
+    public void sendMessageFromTheSever(Message message, ServerTCPSocket connection) throws IllegalAccessException{
         if(serverToClientConnections != null && serverToClientConnections.contains(connection)){
             connection.addMessage(message);
         } else {
@@ -33,7 +36,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         }
     }
 
-    private void sendMessageBroadcast(Message message) throws IllegalAccessException{
+    public void sendMessageBroadcast(Message message) throws IllegalAccessException{
         if(connection instanceof ClientTCP){
             connection.addMessage(message);
         }else if(serverToClientConnections != null && serverToClientConnections.size() > 0){
@@ -54,6 +57,23 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         }
 
     }
+
+    public NetworkManager() {
+
+    }
+
+    void runAsServer(int port){
+        server = new TCPServer(port,this);
+        Thread thread = new Thread(server);
+        thread.start();
+    }
+
+    void runAsClient(String serverAddress, int port){
+        connection = new ClientTCP(serverAddress, port,this);
+        Thread thread = new Thread((ClientTCP) connection);
+        thread.start();
+    }
+
 
     public void addServerToClientConnection(ServerTCPSocket connection){
         serverToClientConnections.add(connection);
@@ -100,6 +120,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     @Override
     public void clientConnected(ServerTCPSocket connection) {
+        connection.setDefaultCallback(this);
         serverToClientConnections.add(connection);
     }
 

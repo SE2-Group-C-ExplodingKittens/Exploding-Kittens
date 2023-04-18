@@ -10,7 +10,9 @@ import android.widget.Button;
 
 import com.example.se2_exploding_kittens.Network.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.Network.LobbyListener;
+import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.MessageType;
 
 import java.net.DatagramSocket;
 import java.net.Socket;
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
     private Button buttonJoinGame;
     private LobbyBroadcaster lb;
     private LobbyListener ll;
+
+    NetworkManager client ;
+    NetworkManager server ;
 
     private void addEvtHandler(Button btn, View.OnClickListener listener){
         btn.setOnClickListener(listener);
@@ -53,6 +58,37 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
                 openJoinGameActivity();
             }
         });
+        NetworkManager client = new NetworkManager();
+        NetworkManager server = new NetworkManager();
+        server.runAsServer(45000);
+        //try {
+            //server.sendMessageFromTheSever(new Message(MessageType.MESSAGE,200,"200"),server.getServerConnections().get(0));
+        //} catch (IllegalAccessException e) {
+            //wird geworfen wann als client aufgreufen
+            //throw new RuntimeException(e);
+        //}
+
+        while (true){
+            if(ll.getLobbies().size() > 0){
+                client.runAsClient(ll.getLobbies().get(0).getAddress(),ll.getLobbies().get(0).getPort());
+                client.subscribeCallbackToMessageID(this,200);
+                try {
+                    Thread.sleep(250);
+                    client.sendMessageFromTheClient(new Message(MessageType.MESSAGE,200,"200"));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            }
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override

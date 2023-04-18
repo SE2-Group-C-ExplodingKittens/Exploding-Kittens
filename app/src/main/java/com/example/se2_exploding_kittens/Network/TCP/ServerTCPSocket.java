@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+
 public class ServerTCPSocket implements Runnable, TCP{
 
     //The server just listens to the socket for a connection request (Socket clientSocketConnection = serverSocket.accept();)

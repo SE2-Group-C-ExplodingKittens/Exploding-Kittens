@@ -37,7 +37,7 @@ public class LobbyListener implements Runnable {
 
                 String packetData = new String(packet.getData(), 0, packet.getLength());
                 String packetSrcAddr = packet.getAddress().toString();
-
+                packetSrcAddr = packetSrcAddr.replaceAll("/","");
                 String[] split = packetData.split("#");
                 if(split.length == 2){
                     int lobbyPort = Integer.parseInt(split[1]);
