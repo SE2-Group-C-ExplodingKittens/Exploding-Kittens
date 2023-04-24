@@ -1,6 +1,8 @@
 package com.example.se2_exploding_kittens;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +22,8 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
     private LobbyListener ll;
     private NetworkManager client ;
 
+    private RecyclerView lobbyView;
+
     private ArrayList<Lobby> lobbies;
 
     private void addEvtHandler(Button btn, View.OnClickListener listener){
@@ -35,10 +39,16 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
+
+        lobbyView = findViewById(R.id.lobbyView);
         ll = new LobbyListener(this);
         Thread listener = new Thread(ll);
         listener.start();
+        lobbies = ll.getLobbies();
 
+        Lobby_RecyclerViewAdapter lobby_recyclerViewAdapter = new Lobby_RecyclerViewAdapter(this, lobbies);
+        lobbyView.setAdapter(lobby_recyclerViewAdapter);
+        lobbyView.setLayoutManager(new LinearLayoutManager(this));
         client = new NetworkManager();
         while (true){
             if(ll.getLobbies().size() > 0){
@@ -69,6 +79,7 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
 
     private void lobbyFound(String text) {
         lobbies = ll.getLobbies();
+        lobbyView.getAdapter().notifyDataSetChanged();
         //view update
     }
 

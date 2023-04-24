@@ -16,25 +16,16 @@
         android:text="Join"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lobbyView" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lobbyView"
-        android:layout_width="405dp"
-        android:layout_height="522dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="100dp"
+        android:layout_width="411dp"
+        android:layout_height="516dp"
+        android:layout_marginBottom="106dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonJoin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
     }
 
     public void openJoinGameActivity(){
-        lb.terminateBroadcasting();
+        //lb.terminateBroadcasting();
         //ll.terminateListening();
         Intent intent = new Intent(this, JoinGameActivity.class);
         startActivity(intent);
