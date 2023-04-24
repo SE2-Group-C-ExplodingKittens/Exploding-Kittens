@@ -13,6 +13,7 @@ import com.example.se2_exploding_kittens.Network.LobbyListener;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
+import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 
 import java.net.DatagramSocket;
 import java.net.Socket;
@@ -21,10 +22,10 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
 
     private Button buttonJoinGame;
     private LobbyBroadcaster lb;
-    private LobbyListener ll;
+    //private LobbyListener ll;
 
-    NetworkManager client ;
-    NetworkManager server ;
+    //private NetworkManager client ;
+    private NetworkManager server ;
 
     private void addEvtHandler(Button btn, View.OnClickListener listener){
         btn.setOnClickListener(listener);
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
 
     public void openJoinGameActivity(){
         lb.terminateBroadcasting();
-        ll.terminateListening();
+        //ll.terminateListening();
         Intent intent = new Intent(this, JoinGameActivity.class);
         startActivity(intent);
     }
@@ -45,11 +46,11 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lb = new LobbyBroadcaster("L1", 45000);
-        ll = new LobbyListener(this);
+        //ll = new LobbyListener(this);
         Thread broadcast = new Thread(lb);
         broadcast.start();
-        Thread listener = new Thread(ll);
-        listener.start();
+        //Thread listener = new Thread(ll);
+        //listener.start();
         setContentView(R.layout.activity_main);
         buttonJoinGame = (Button)findViewById(R.id.buttonJoinGame);
         addEvtHandler(buttonJoinGame, new View.OnClickListener() {
@@ -58,9 +59,10 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
                 openJoinGameActivity();
             }
         });
-        NetworkManager client = new NetworkManager();
-        NetworkManager server = new NetworkManager();
+        //client = new NetworkManager();
+        server = new NetworkManager();
         server.runAsServer(45000);
+        server.subscribeCallbackToMessageID(this,200);
         //try {
             //server.sendMessageFromTheSever(new Message(MessageType.MESSAGE,200,"200"),server.getServerConnections().get(0));
         //} catch (IllegalAccessException e) {
@@ -68,27 +70,6 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
             //throw new RuntimeException(e);
         //}
 
-        while (true){
-            if(ll.getLobbies().size() > 0){
-                client.runAsClient(ll.getLobbies().get(0).getAddress(),ll.getLobbies().get(0).getPort());
-                client.subscribeCallbackToMessageID(this,200);
-                try {
-                    Thread.sleep(250);
-                    client.sendMessageFromTheClient(new Message(MessageType.MESSAGE,200,"200"));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            }
-
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     @Override
@@ -96,6 +77,13 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
         if(sender instanceof LobbyListener){
             lobbyFound(text);
         }
-
+        if(sender instanceof ServerTCPSocket){
+            Log.v("Message", "Echo MSG:"+text);
+            try {
+                server.sendMessageFromTheSever(new Message(MessageType.REPLY,200,Message.parseAndExtractPayload(text)), (ServerTCPSocket) sender);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

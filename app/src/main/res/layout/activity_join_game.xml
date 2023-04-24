@@ -6,38 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".JoinGameActivity">
 
-    <EditText
-        android:id="@+id/textGameCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:text=""
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="102dp" />
-
-    <TextView
-        android:id="@+id/textViewEnterCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter Game Code"
-        tools:layout_editor_absoluteX="151dp"
-        tools:layout_editor_absoluteY="62dp" />
-
     <Button
         android:id="@+id/buttonJoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="161dp"
+        android:layout_marginEnd="162dp"
+        android:layout_marginBottom="61dp"
         android:text="Join"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="341dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lobbyView" />
 
-    <TextView
-        android:id="@+id/textErrorMessages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        tools:layout_editor_absoluteX="205dp"
-        tools:layout_editor_absoluteY="189dp" />
+    <ScrollView
+        android:id="@+id/lobbyView"
+        android:layout_width="405dp"
+        android:layout_height="522dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonJoin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
