@@ -52,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         cardList.add(new SkipCard(R.drawable.skipcard));
         cardList.add(new AttackCard(R.drawable.attackcard));
         cardList.add(new FavorCard(R.drawable.favorcard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
+        cardList.add(new AttackCard(R.drawable.attackcard));
+        cardList.add(new FavorCard(R.drawable.favorcard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
+        cardList.add(new AttackCard(R.drawable.attackcard));
         // Add more cards as needed
 
 
