@@ -3,6 +3,7 @@ package com.example.se2_exploding_kittens.cards;
 public class BombCard extends Cards{
     public BombCard(int imageResource) {
         super(imageResource);
+        this.imageResource = imageResource;
     }
     int imageResource;
     @Override

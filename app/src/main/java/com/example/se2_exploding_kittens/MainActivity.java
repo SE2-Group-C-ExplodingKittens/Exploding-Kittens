@@ -9,13 +9,14 @@ import android.os.Bundle;
 
 import com.example.se2_exploding_kittens.cards.Cards;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
+import com.example.se2_exploding_kittens.cards.NopeCard;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
-    private List<Cards> cardList;
+    private ArrayList<Cards> cardList;
     private CardAdapter adapter;
 
     @SuppressLint("MissingInflatedId")
@@ -26,14 +27,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the RecyclerView and layout manager
         recyclerView = findViewById(R.id.recyclerVw);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         // Initialize the list of cards and the adapter
         cardList = new ArrayList<Cards>();
         cardList.add(new DefuseCard(R.drawable.defusecard));
-        System.out.println(R.drawable.defusecard);
-
+        cardList.add(new NopeCard(R.drawable.nopecard));
         // Add more cards as needed
+
 
         adapter = new CardAdapter(cardList);
 

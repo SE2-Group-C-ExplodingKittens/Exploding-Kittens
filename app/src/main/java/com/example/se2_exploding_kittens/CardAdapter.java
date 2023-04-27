@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se2_exploding_kittens.cards.Cards;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
-        private List<Cards> cards; // List of cards to display
+        private ArrayList<Cards> cards; // List of cards to display
 
-        public CardAdapter(List<Cards> cards) {
+        public CardAdapter(ArrayList<Cards> cards) {
             this.cards = cards;
         }
 
