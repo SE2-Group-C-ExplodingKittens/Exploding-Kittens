@@ -1,10 +1,14 @@
 package com.example.se2_exploding_kittens.cards;
 
 public class DefuseCard extends Cards {
-    public DefuseCard(int imageResource) {
-        super(imageResource);
-    }
+
     int imageResource;
+    public DefuseCard(int imageResource) {
+
+        super(imageResource);
+        this.imageResource = imageResource;
+    }
+
     @Override
     public int getImageResource() {
         return imageResource;

@@ -5,9 +5,11 @@ public class CatCard extends Cards {
     @Override
     public int getImageResource() {
         return imageResource;
+
     }
     public CatCard(int imageResource) {
         super(imageResource);
+        this.imageResource = imageResource;
     }
 
     @Override

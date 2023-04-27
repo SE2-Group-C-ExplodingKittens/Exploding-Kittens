@@ -3,6 +3,7 @@ package com.example.se2_exploding_kittens.cards;
 public class FavorCard extends Cards {
     public FavorCard(int imageResource) {
         super(imageResource);
+        this.imageResource = imageResource;
     }
 
     int imageResource;

@@ -2,7 +2,9 @@ package com.example.se2_exploding_kittens.cards;
 
 public class NopeCard extends Cards{
     public NopeCard(int imageResource) {
+
         super(imageResource);
+        this.imageResource = imageResource;
     }
 
     int imageResource;

@@ -4,6 +4,7 @@ public class AttackCard extends Cards {
 
     public AttackCard(int imageResource) {
         super(imageResource);
+        this.imageResource = imageResource;
     }
     int imageResource;
     @Override
