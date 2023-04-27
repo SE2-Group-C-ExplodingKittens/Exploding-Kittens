@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.example.se2_exploding_kittens.cards.Cards;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
 import com.example.se2_exploding_kittens.cards.NopeCard;
+import com.example.se2_exploding_kittens.cards.SkipCard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
         cardList = new ArrayList<Cards>();
         cardList.add(new DefuseCard(R.drawable.defusecard));
         cardList.add(new NopeCard(R.drawable.nopecard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
+        cardList.add(new SkipCard(R.drawable.skipcard));
         // Add more cards as needed
 
 
