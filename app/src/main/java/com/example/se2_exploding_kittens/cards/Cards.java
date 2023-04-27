@@ -25,9 +25,7 @@ public abstract class Cards {
         this.imageResource = imageResource;
     }
 
-    public int getImageResource() {
-        return imageResource;
-    }
+    public abstract int getImageResource();
 }
 
 
