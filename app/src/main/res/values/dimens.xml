@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <dimen name="card_horizontal_overlap">16dp</dimen>
+    <dimen name="card_start_margin">0dp</dimen>
+    <dimen name="card_vertical_offset">10dp</dimen>
+</resources>
