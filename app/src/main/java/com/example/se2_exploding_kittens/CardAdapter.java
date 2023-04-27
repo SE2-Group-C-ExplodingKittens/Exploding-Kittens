@@ -52,7 +52,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                cardImage = itemView.findViewById(R.id.defuseCard);
+                cardImage = itemView.findViewById(R.id.playingCard);
             }
         }
     }

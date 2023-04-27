@@ -5,6 +5,12 @@ public class FavorCard extends Cards {
         super(imageResource);
     }
 
+    int imageResource;
+    @Override
+    public int getImageResource() {
+        return imageResource;
+    }
+
     @Override
     public void cardAction(Player p1, Player p2) {
 

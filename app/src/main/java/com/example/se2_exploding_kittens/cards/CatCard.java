@@ -1,6 +1,11 @@
 package com.example.se2_exploding_kittens.cards;
 
 public class CatCard extends Cards {
+    int imageResource;
+    @Override
+    public int getImageResource() {
+        return imageResource;
+    }
     public CatCard(int imageResource) {
         super(imageResource);
     }

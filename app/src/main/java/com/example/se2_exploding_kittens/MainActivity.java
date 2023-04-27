@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the list of cards and the adapter
         cardList = new ArrayList<Cards>();
         cardList.add(new DefuseCard(R.drawable.defusecard));
+        System.out.println(R.drawable.defusecard);
 
         // Add more cards as needed
 
