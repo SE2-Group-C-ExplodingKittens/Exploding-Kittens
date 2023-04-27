@@ -17,5 +17,6 @@
         app:srcCompat="@drawable/defusecard"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="29dp"
-        android:layout_marginStart="-25dp"/>
+        android:layout_marginStart="-25dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
