@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
@@ -30,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        lb = new LobbyBroadcaster("L1", 45000);
+        //ll = new LobbyListener(this);
+        Thread broadcast = new Thread(lb);
+        broadcast.start();
+        //Thread listener = new Thread(ll);
+        //listener.start();
         setContentView(R.layout.activity_main);
 
         // Initialize the RecyclerView and layout manager
