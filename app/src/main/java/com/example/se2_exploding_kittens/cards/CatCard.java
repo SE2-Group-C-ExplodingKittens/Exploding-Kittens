@@ -1,15 +1,16 @@
 package com.example.se2_exploding_kittens.cards;
 
+import com.example.se2_exploding_kittens.R;
+
 public class CatCard extends Cards {
-    int imageResource;
+    private static int imageResource = R.drawable.uglykittencard;
     @Override
     public int getImageResource() {
         return imageResource;
 
     }
-    public CatCard(int imageResource) {
-        super(imageResource);
-        this.imageResource = imageResource;
+    public CatCard() {
+
     }
 
     @Override

@@ -19,10 +19,10 @@ public abstract class Cards {
 
     public abstract void cardAction(Player p1, Player p2);
 
-    private int imageResource;
+    protected int imageResource;
 
-    public Cards(int imageResource) {
-        this.imageResource = imageResource;
+    public Cards() {
+
     }
 
     public abstract int getImageResource();

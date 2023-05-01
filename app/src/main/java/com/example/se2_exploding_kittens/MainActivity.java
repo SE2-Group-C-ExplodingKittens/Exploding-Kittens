@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
+import com.example.se2_exploding_kittens.cards.Deck;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
 import com.example.se2_exploding_kittens.cards.FavorCard;
 import com.example.se2_exploding_kittens.cards.NopeCard;
@@ -51,19 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the list of cards and the adapter
         cardList = new ArrayList<Cards>();
-        cardList.add(new DefuseCard(R.drawable.defusecard));
-        cardList.add(new NopeCard(R.drawable.nopecard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
-        cardList.add(new FavorCard(R.drawable.favorcard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
-        cardList.add(new FavorCard(R.drawable.favorcard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
-        cardList.add(new FavorCard(R.drawable.favorcard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
+        cardList.add(new AttackCard());
+
         // Add more cards as needed
 
 
@@ -71,5 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
+
+
     }
 }

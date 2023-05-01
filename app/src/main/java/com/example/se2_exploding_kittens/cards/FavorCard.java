@@ -1,12 +1,13 @@
 package com.example.se2_exploding_kittens.cards;
 
+import com.example.se2_exploding_kittens.R;
+
 public class FavorCard extends Cards {
-    public FavorCard(int imageResource) {
-        super(imageResource);
-        this.imageResource = imageResource;
+    public FavorCard() {
+
     }
 
-    int imageResource;
+    private static int imageResource = R.drawable.favorcard;
     @Override
     public int getImageResource() {
         return imageResource;
