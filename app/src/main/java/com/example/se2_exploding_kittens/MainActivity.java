@@ -1,25 +1,19 @@
 package com.example.se2_exploding_kittens;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.annotation.SuppressLint;
-import android.os.Bundle;
-
+import com.example.se2_exploding_kittens.Network.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
-import com.example.se2_exploding_kittens.cards.Deck;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
-import com.example.se2_exploding_kittens.cards.FavorCard;
 import com.example.se2_exploding_kittens.cards.NopeCard;
-import com.example.se2_exploding_kittens.cards.SkipCard;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.FactoryConfigurationError;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -32,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        lb = new LobbyBroadcaster("L1", 45000);
+        LobbyBroadcaster lb = new LobbyBroadcaster("L1", 45000);
         //ll = new LobbyListener(this);
         Thread broadcast = new Thread(lb);
         broadcast.start();
@@ -53,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the list of cards and the adapter
         cardList = new ArrayList<Cards>();
         cardList.add(new AttackCard());
+        cardList.add(new DefuseCard());
+        cardList.add(new NopeCard());
+
 
         // Add more cards as needed
 
