@@ -1,0 +1,39 @@
+Index: app/src/main/res/layout/activity_join_game.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".JoinGameActivity\"\n\n    android:orientation=\"horizontal\"\n    android:background=\"@drawable/background\">\n    \n    <ImageView\n        android:layout_width=\"606px\"\n        android:layout_height=\"766px\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintLeft_toLeftOf=\"parent\"\n        app:layout_constraintRight_toRightOf=\"parent\"\n        android:src=\"@drawable/logo_start_screen\"\n        android:layout_marginRight=\"300dp\"  />\n\n\n    <EditText\n        android:id=\"@+id/textGameCode\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:ems=\"10\"\n        android:inputType=\"text\"\n        android:text=\"\"\n        tools:layout_editor_absoluteX=\"100dp\"\n        tools:layout_editor_absoluteY=\"102dp\" />\n\n    <TextView\n        android:id=\"@+id/textViewEnterCode\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"Enter Game Code\"\n        tools:layout_editor_absoluteX=\"151dp\"\n        tools:layout_editor_absoluteY=\"62dp\" />\n\n    <Button\n        android:id=\"@+id/buttonJoin\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"Join\"\n        tools:layout_editor_absoluteX=\"161dp\"\n        tools:layout_editor_absoluteY=\"341dp\" />\n\n    <TextView\n        android:id=\"@+id/textErrorMessages\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"\"\n        tools:layout_editor_absoluteX=\"205dp\"\n        tools:layout_editor_absoluteY=\"189dp\" />\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+===================================================================
+diff --git a/app/src/main/res/layout/activity_join_game.xml b/app/src/main/res/layout/activity_join_game.xml
+--- a/app/src/main/res/layout/activity_join_game.xml	
++++ b/app/src/main/res/layout/activity_join_game.xml	
+@@ -27,24 +27,24 @@
+         android:ems="10"
+         android:inputType="text"
+         android:text=""
+-        tools:layout_editor_absoluteX="100dp"
+-        tools:layout_editor_absoluteY="102dp" />
++        tools:layout_editor_absoluteX="403dp"
++        tools:layout_editor_absoluteY="127dp" />
+ 
+     <TextView
+         android:id="@+id/textViewEnterCode"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Enter Game Code"
+-        tools:layout_editor_absoluteX="151dp"
+-        tools:layout_editor_absoluteY="62dp" />
++        tools:layout_editor_absoluteX="456dp"
++        tools:layout_editor_absoluteY="82dp" />
+ 
+     <Button
+         android:id="@+id/buttonJoin"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Join"
+-        tools:layout_editor_absoluteX="161dp"
+-        tools:layout_editor_absoluteY="341dp" />
++        tools:layout_editor_absoluteX="456dp"
++        tools:layout_editor_absoluteY="208dp" />
+ 
+     <TextView
+         android:id="@+id/textErrorMessages"
