@@ -10,10 +10,12 @@ import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TCP.TCP;
 import com.example.se2_exploding_kittens.Network.TCP.TCPServer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class NetworkManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback {
+public class NetworkManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback, Serializable {
 
+    public static final int TEST_MESSAGE_ID = 9999;
     private TCP connection = null;
     private TCPServer server = null;
     //Contains client connections
@@ -106,7 +108,6 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     @Override
     public void responseReceived(String text, Object sender) {
-        if(sender instanceof ClientTCP){
             int messageID = Message.parseAndExtractMessageID(text);
             for (MessageCallbackPair mcb:subscribedCallbacks) {
                 if(messageID == mcb.getMessageID()){
@@ -115,7 +116,6 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
                     }
                 }
             }
-        }
     }
 
     @Override

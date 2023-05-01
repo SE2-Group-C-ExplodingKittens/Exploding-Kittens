@@ -4,12 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.se2_exploding_kittens.Network.TCP.Lobby;
+import com.example.se2_exploding_kittens.Network.LobbyLogic.JoinLobbyCallback;
+import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
 
 import java.util.ArrayList;
 
@@ -17,10 +19,12 @@ public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_Recycl
 
     private ArrayList<Lobby> lobbyList;
     private Context context;
+    private JoinLobbyCallback joinLobbyCallback;
 
-    public Lobby_RecyclerViewAdapter(Context context, ArrayList<Lobby> lobbyList){
+    public Lobby_RecyclerViewAdapter(Context context, ArrayList<Lobby> lobbyList, JoinLobbyCallback joinLobbyCallback){
         this.context = context;
         this.lobbyList = lobbyList;
+        this.joinLobbyCallback = joinLobbyCallback;
     }
 
     @NonNull
@@ -35,6 +39,17 @@ public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_Recycl
     public void onBindViewHolder(@NonNull Lobby_RecyclerViewAdapter.MyViewHolder holder, int position) {
         holder.textViewName.setText(lobbyList.get(position).getName());
         holder.textViewAddress.setText(lobbyList.get(position).getAddress());
+        holder.buttonJoinLobby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    joinLobbyCallback.JoinLobby(lobbyList.get(holder.getAdapterPosition()));
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                    holder.buttonJoinLobby.setEnabled(false);
+                }
+            }
+        });
     }
 
     @Override
@@ -46,12 +61,14 @@ public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_Recycl
 
         TextView textViewAddress;
         TextView textViewName;
+        Button buttonJoinLobby;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             textViewAddress = itemView.findViewById(R.id.textViewAddress);
             textViewName = itemView.findViewById(R.id.textViewName);
+            buttonJoinLobby = itemView.findViewById(R.id.buttonJoinLobby);
         }
     }
 }

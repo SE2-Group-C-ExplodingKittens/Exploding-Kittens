@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens.Network;
+package com.example.se2_exploding_kittens.Network.LobbyLogic;
 
 
 import com.example.se2_exploding_kittens.Network.IPUtil;

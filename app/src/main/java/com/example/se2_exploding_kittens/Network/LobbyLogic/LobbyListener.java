@@ -1,11 +1,10 @@
-package com.example.se2_exploding_kittens.Network;
+package com.example.se2_exploding_kittens.Network.LobbyLogic;
 
-import com.example.se2_exploding_kittens.Network.TCP.Lobby;
+import com.example.se2_exploding_kittens.Network.MessageCallback;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class LobbyListener implements Runnable {

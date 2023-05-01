@@ -1,6 +1,8 @@
-package com.example.se2_exploding_kittens.Network.TCP;
+package com.example.se2_exploding_kittens.Network.LobbyLogic;
 
-public class Lobby {
+import java.io.Serializable;
+
+public class Lobby implements Serializable {
     private String name;
     private String address;
     private int port;

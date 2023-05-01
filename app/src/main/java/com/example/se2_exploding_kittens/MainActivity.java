@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens;
 
+import static com.example.se2_exploding_kittens.NetworkManager.TEST_MESSAGE_ID;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,7 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyBroadcaster;
+import com.example.se2_exploding_kittens.Network.Message;
+import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.MessageType;
+import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
@@ -20,10 +28,13 @@ import java.util.List;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MessageCallback {
     private RecyclerView recyclerView;
     private ArrayList<Cards> cardList;
     private CardAdapter adapter;
+    private LobbyBroadcaster lb;
+    private NetworkManager server;
+    int count = 10;
 
 
 
@@ -32,12 +43,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lb = new LobbyBroadcaster("L1", 45000);
+        server = new NetworkManager();
+        server.runAsServer(45000);
+        server.subscribeCallbackToMessageID(this,TEST_MESSAGE_ID);
+        //listener.start();
         //ll = new LobbyListener(this);
         Thread broadcast = new Thread(lb);
         broadcast.start();
         //Thread listener = new Thread(ll);
         //listener.start();
         setContentView(R.layout.activity_main);
+        Intent intent = new Intent(this, JoinGameActivity.class);
+        startActivity(intent);
+
+
+
+
 
         // Initialize the RecyclerView and layout manager
         recyclerView = findViewById(R.id.recyclerVw);
@@ -71,5 +92,28 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
+
+    }
+
+    @Override
+    public void responseReceived(String text, Object sender) {
+        count--;
+        Log.v("MainActivity", text);
+        if(sender instanceof ServerTCPSocket){
+            Log.v("MainActivity", "srv");
+            try{
+                server.sendMessageFromTheSever(new Message(MessageType.MESSAGE,TEST_MESSAGE_ID,"Pong"),(ServerTCPSocket)sender);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                try {
+                    server.sendMessageBroadcast(new Message(MessageType.ERROR,TEST_MESSAGE_ID,"Pong Failed"));
+                } catch (IllegalAccessException ex) {
+                    ex.printStackTrace();
+                    Log.e("MainActivity", "is not server");
+                }
+
+            }
+        }
+
     }
 }
