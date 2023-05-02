@@ -22,6 +22,10 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     private ArrayList <ServerTCPSocket> serverToClientConnections = new ArrayList<ServerTCPSocket>();
     private ArrayList <MessageCallbackPair> subscribedCallbacks = new ArrayList<MessageCallbackPair>();
 
+    private ArrayList <ClientConnectedCallback> connectedCallbacks = new ArrayList<ClientConnectedCallback>();
+
+    private ArrayList <DisconnectedCallback> disconnectedCallback = new ArrayList<DisconnectedCallback>();
+
     public void sendMessageFromTheClient(Message message) throws IllegalAccessException{
         if(connection instanceof ClientTCP && connection != null){
             connection.addMessage(message);
@@ -98,6 +102,26 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         }
     }
 
+    public void subscribeToClientConnectedCallback(ClientConnectedCallback callback){
+        if(callback != null)
+            connectedCallbacks.add(callback);
+    }
+
+    public void unsubscribeToClientConnectedCallback(ClientConnectedCallback callback){
+        if(callback != null)
+            connectedCallbacks.remove(callback);
+    }
+
+    public void subscribeToDisconnectedCallback(DisconnectedCallback callback){
+        if(callback != null)
+            disconnectedCallback.add(callback);
+    }
+
+    public void unsubscribeToDisconnectedCallback(DisconnectedCallback callback){
+        if(callback != null)
+            disconnectedCallback.remove(callback);
+    }
+
     public void unsubscribeCallbackFromMessageID(MessageCallback callback, int messageID){
         for (MessageCallbackPair mcp : subscribedCallbacks){
             if (mcp.getMessageID() == messageID){
@@ -122,6 +146,9 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     public void clientConnected(ServerTCPSocket connection) {
         connection.setDefaultCallback(this);
         serverToClientConnections.add(connection);
+        for(ClientConnectedCallback cb:connectedCallbacks){
+            cb.clientConnected(connection);
+        }
     }
 
     @Override
@@ -130,6 +157,9 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             serverToClientConnections.remove(connection);
         }else if(connection instanceof ClientTCP){
             connection = null;
+        }
+        for(DisconnectedCallback cb:disconnectedCallback){
+            cb.connectionDisconnected(connection);
         }
     }
 }
