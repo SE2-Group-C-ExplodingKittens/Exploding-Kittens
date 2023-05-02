@@ -1,7 +1,11 @@
-package com.example.se2_exploding_kittens.cards;
+package com.example.se2_exploding_kittens.cards.Deck;
+
+import com.example.se2_exploding_kittens.cards.CardFactory;
+import com.example.se2_exploding_kittens.cards.Cards;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Deck {
     ArrayList<Cards> deck = new ArrayList<>();
@@ -61,6 +65,14 @@ public class Deck {
         for (int i = 0; i < 4; i++) {
             deck.add(factory.getCard("SKIPCARD"));
         }
+    }
+
+    public ArrayList<String> getCardName(){
+        ArrayList<String> cardNames = new ArrayList<String>();
+        for (Cards card : deck) {
+            cardNames.add(card.getCardName());
+        }
+        return cardNames;
     }
 
     public void test() {

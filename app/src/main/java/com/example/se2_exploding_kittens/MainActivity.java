@@ -6,19 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
-import com.example.se2_exploding_kittens.cards.Deck;
-import com.example.se2_exploding_kittens.cards.DefuseCard;
-import com.example.se2_exploding_kittens.cards.FavorCard;
-import com.example.se2_exploding_kittens.cards.NopeCard;
-import com.example.se2_exploding_kittens.cards.SkipCard;
+import com.example.se2_exploding_kittens.cards.Deck.Deck;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.FactoryConfigurationError;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -26,12 +21,12 @@ public class MainActivity extends AppCompatActivity {
     private CardAdapter adapter;
 
 
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Initialize the RecyclerView and layout manager
         recyclerView = findViewById(R.id.recyclerVw);

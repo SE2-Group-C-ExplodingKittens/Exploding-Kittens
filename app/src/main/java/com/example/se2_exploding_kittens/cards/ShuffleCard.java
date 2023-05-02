@@ -7,9 +7,14 @@ public class ShuffleCard extends Cards {
 
     }
     private static int imageResource = R.drawable.shufflecard;
+    private static String cardName = "ShuffleCard";
     @Override
     public int getImageResource() {
+
         return imageResource;
+    }
+    public static String getCardName() {
+        return cardName;
     }
 
 
