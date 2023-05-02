@@ -3,11 +3,9 @@ package com.example.se2_exploding_kittens;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
-import com.example.se2_exploding_kittens.Network.Player;
+import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-
-import java.util.ArrayList;
 
 public class TurnManager implements MessageCallback {
     public static final int TURN_MANAGER_MESSAGE_ID = 300;
@@ -15,12 +13,9 @@ public class TurnManager implements MessageCallback {
     private PlayerManager playerManager;
     private int currentPlayerIndex;
 
-    public TurnManager(ArrayList<ServerTCPSocket> players, NetworkManager networkManager) {
+    public TurnManager(NetworkManager networkManager) {
         networkManager.subscribeCallbackToMessageID(this, TURN_MANAGER_MESSAGE_ID);
-        this.playerManager = new PlayerManager(networkManager);
-        for (ServerTCPSocket player : players) {
-            playerManager.assignPlayerID(player);
-        }
+        this.playerManager = PlayerManager.getInstance();
         this.networkManager = networkManager;
         this.currentPlayerIndex = 0;
     }
@@ -36,8 +31,9 @@ public class TurnManager implements MessageCallback {
     }
 
     private void sendGameSateToClients() {
-        Player currentPlayer = playerManager.getPlayer(currentPlayerIndex);
-        String gameStateMessage = Integer.toString(currentPlayer.getPlayerID());
+        PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
+        //provisional
+        String gameStateMessage = Integer.toString(currentPlayerConnection.getPlayerID());
 
         try {
             networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage));
@@ -53,6 +49,7 @@ public class TurnManager implements MessageCallback {
 
     public void handlePlayerAction(int playerID) {
         if (currentPlayerIndex != playerID) {
+            //provisional
             sendErrorMessageToPlayer(playerID, "It's not your turn.");
             return;
         }
