@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
     private CardAdapter adapter;
     private LobbyBroadcaster lb;
     private NetworkManager server;
-    int count = 10;
 
 
 
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
 
     @Override
     public void responseReceived(String text, Object sender) {
-        count--;
         Log.v("MainActivity", text);
         if(sender instanceof ServerTCPSocket){
             Log.v("MainActivity", "srv");

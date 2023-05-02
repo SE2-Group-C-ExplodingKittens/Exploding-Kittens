@@ -51,12 +51,12 @@ public class JoiningGameActivity extends AppCompatActivity implements MessageCal
     public void responseReceived(String text, Object sender) {
         Log.v("MainActivity", text);
         count--;
-            try{
-                client.sendMessageFromTheClient(new Message(MessageType.MESSAGE,TEST_MESSAGE_ID,"Pong"));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                Log.e("JoiningGameActivity", "is not a client");
-            }
+            //try{
+                //client.sendMessageFromTheClient(new Message(MessageType.MESSAGE,TEST_MESSAGE_ID,"Ping"));
+            //} catch (IllegalAccessException e) {
+                //e.printStackTrace();
+                //Log.e("JoiningGameActivity", "is not a client");
+            //}
     }
 
 }

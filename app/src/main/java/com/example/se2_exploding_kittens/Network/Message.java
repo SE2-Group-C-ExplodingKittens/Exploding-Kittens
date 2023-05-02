@@ -57,7 +57,6 @@ public class Message {
             default:
                 return MessageType.UNKNOWN.value + "###"+ messageID +"###"+payload;
         }
-
     }
 
     public int getMessageID() {
