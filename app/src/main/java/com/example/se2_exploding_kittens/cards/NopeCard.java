@@ -9,9 +9,14 @@ public class NopeCard extends Cards{
     }
 
     private static int imageResource = R.drawable.nopecard;
+    private static String cardName = "NopeCard";
     @Override
     public int getImageResource() {
         return imageResource;
+    }
+
+    public static String getCardName() {
+        return cardName;
     }
 
     @Override

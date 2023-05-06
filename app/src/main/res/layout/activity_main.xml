@@ -20,8 +20,8 @@
         app:layout_constraintVertical_bias="0.497"
         app:srcCompat="@drawable/deck" />
 
-    <ImageView
-        android:id="@+id/cardDepo"
+    <FrameLayout
+        android:id="@+id/discardPile"
         android:layout_width="137dp"
         android:layout_height="127dp"
         android:alpha="0.5"
@@ -29,8 +29,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/yourcardgoeshere" />
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/discard_pile_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/yourcardgoeshere"/>
+    </FrameLayout>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerVw"

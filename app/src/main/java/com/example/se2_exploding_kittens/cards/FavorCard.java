@@ -8,9 +8,14 @@ public class FavorCard extends Cards {
     }
 
     private static int imageResource = R.drawable.favorcard;
+    private static String cardName = "FavorCard";
     @Override
     public int getImageResource() {
         return imageResource;
+    }
+
+    public static String getCardName() {
+        return cardName;
     }
 
     @Override
