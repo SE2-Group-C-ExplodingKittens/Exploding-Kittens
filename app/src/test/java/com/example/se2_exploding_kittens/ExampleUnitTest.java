@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.jupiter.api.Test;
 
+import java.net.Socket;
+
 
 /**
  * Example local unit test, which will execute on the development machine (host).

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="list_item_height">15</dimen>
+    <dimen name="margin_medium">3</dimen>
 
 
     <dimen name="card_horizontal_overlap">16dp</dimen>

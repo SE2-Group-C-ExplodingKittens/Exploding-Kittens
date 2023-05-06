@@ -1,6 +1,7 @@
 package com.example.se2_exploding_kittens;
 
 import android.annotation.SuppressLint;
+
 import android.content.ClipData;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -9,16 +10,19 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import android.os.Bundle;
+
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.example.se2_exploding_kittens.Network.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
-import com.example.se2_exploding_kittens.cards.FavorCard;
 import com.example.se2_exploding_kittens.cards.NopeCard;
-import com.example.se2_exploding_kittens.cards.SkipCard;
 
 import java.util.ArrayList;
 
@@ -32,6 +36,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LobbyBroadcaster lb = new LobbyBroadcaster("L1", 45000);
+        //ll = new LobbyListener(this);
+        Thread broadcast = new Thread(lb);
+        broadcast.start();
+        //Thread listener = new Thread(ll);
+        //listener.start();
         setContentView(R.layout.activity_main);
 
         // Implement onDragListener for the discard pile view
@@ -80,8 +90,10 @@ public class MainActivity extends AppCompatActivity {
         cardList.add(new AttackCard());
         cardList.add(new DefuseCard());
         cardList.add(new NopeCard());
+
         cardList.add(new FavorCard());
         cardList.add(new SkipCard());
+
 
         // Add more cards as needed
 
