@@ -22,7 +22,9 @@ import com.example.se2_exploding_kittens.Network.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
+import com.example.se2_exploding_kittens.cards.FavorCard;
 import com.example.se2_exploding_kittens.cards.NopeCard;
+import com.example.se2_exploding_kittens.cards.SkipCard;
 
 import java.util.ArrayList;
 
