@@ -1,0 +1,101 @@
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_11__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_11__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_11__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_11__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_24_04_2023,_21_11_[Changes]" date="1682363469684" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_11_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 24/04/2023, 21:11 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_11_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_11_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_11_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_11_[Changes]/shelved.patch	
++++ /dev/null	
+@@ -1,32 +0,0 @@
+-Index: app/src/main/AndroidManifest.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    package=\"com.example.se2_exploding_kittens\">\n\n    <application\n        android:allowBackup=\"true\"\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\n        android:fullBackupContent=\"@xml/backup_rules\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\n        android:supportsRtl=\"true\"\n        android:theme=\"@style/Theme.SE2_ExplodingKittens\"\n        tools:targetApi=\"31\">\n        <activity\n            android:name=\".activities.MainActivity\"\n            android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n        <activity\n            android:name=\".activities.GameActivity\"\n            android:exported=\"false\">\n            <meta-data\n                android:name=\"android.app.lib_name\"\n                android:value=\"\" />\n        </activity>\n    </application>\n\n</manifest>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+---- a/app/src/main/AndroidManifest.xml	(revision 8384ef40854d62050bffb6dfa2d2425c07f884be)
+-+++ b/app/src/main/AndroidManifest.xml	(date 1682363458092)
+-@@ -15,7 +15,9 @@
+-         tools:targetApi="31">
+-         <activity
+-             android:name=".activities.MainActivity"
+--            android:exported="true">
+-+            android:exported="true"
+-+            android:configChanges="orientation"
+-+            android:screenOrientation="landscape">
+-             <intent-filter>
+-                 <action android:name="android.intent.action.MAIN" />
+- 
+-@@ -24,7 +26,9 @@
+-         </activity>
+-         <activity
+-             android:name=".activities.GameActivity"
+--            android:exported="false">
+-+            android:exported="false"
+-+            android:configChanges="orientation"
+-+            android:screenOrientation="landscape">
+-             <meta-data
+-                 android:name="android.app.lib_name"
+-                 android:value="" />
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_[Changes]/shelved.patch	
++++ /dev/null	
+@@ -1,31 +0,0 @@
+-Index: app/src/main/AndroidManifest.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    package=\"com.example.se2_exploding_kittens\">\n\n    <uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>\n    <uses-permission android:name=\"android.permission.INTERNET\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>\n\n    <application\n        android:allowBackup=\"true\"\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\n        android:fullBackupContent=\"@xml/backup_rules\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\n        android:supportsRtl=\"true\"\n        android:theme=\"@style/Theme.SE2_ExplodingKittens\"\n        tools:targetApi=\"31\">\n        <activity\n            android:name=\".JoinGameActivity\"\n            android:exported=\"false\">\n            <meta-data\n                android:name=\"android.app.lib_name\"\n                android:value=\"\" />\n        </activity>\n        <activity\n            android:name=\".MainActivity\"\n            android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n    </application>\n\n</manifest>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+---- a/app/src/main/AndroidManifest.xml	(revision df756957ce78485474542e0c9a61c3b5644349e2)
+-+++ b/app/src/main/AndroidManifest.xml	(date 1681811297011)
+-@@ -19,14 +19,18 @@
+-         tools:targetApi="31">
+-         <activity
+-             android:name=".JoinGameActivity"
+--            android:exported="false">
+-+            android:exported="false"
+-+            android:configChanges="orientation"
+-+            android:screenOrientation="landscape">
+-             <meta-data
+-                 android:name="android.app.lib_name"
+-                 android:value="" />
+-         </activity>
+-         <activity
+-             android:name=".MainActivity"
+--            android:exported="true">
+-+            android:exported="true"
+-+            android:configChanges="orientation"
+-+            android:screenOrientation="landscape">
+-             <intent-filter>
+-                 <action android:name="android.intent.action.MAIN" />
+- 
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_10__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_10__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_10__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_10__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_[Changes]" date="1682363458117" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 24/04/2023, 21:10 [Changes]" />
+-</changelist>
+\ No newline at end of file

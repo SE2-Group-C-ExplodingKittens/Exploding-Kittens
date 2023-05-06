@@ -1,0 +1,35 @@
+Index: app/src/main/java/com/example/se2_exploding_kittens/cards/Deck/Deck.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.se2_exploding_kittens.cards.Deck;\n\nimport com.example.se2_exploding_kittens.cards.CardFactory;\nimport com.example.se2_exploding_kittens.cards.Cards;\n\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class Deck {\n    ArrayList<Cards> deck = new ArrayList<>();\n    public CardFactory factory;\n    public Deck() {\n        initAttackCard();\n        initBombCard();\n        initCatCard();\n        initDefuseCard();\n        initFavorCard();\n        initNopeCard();\n        initShuffleCard();\n        initSkipCard();\n        Collections.shuffle(deck);\n    }\n\n    public ArrayList<Cards> getDeck() {\n        return deck;\n    }\n\n    public void initAttackCard() {\n        for (int i = 0; i < 4; i++) {\n            deck.add(factory.getCard(\"ATTACKCARD\"));\n        }\n    }\n    public void initBombCard() {\n        for (int i = 0; i < 4; i++) {\n            deck.add(factory.getCard(\"BOMBCARD\"));\n        }\n    }\n    public void initCatCard() {\n        for (int i = 0; i < 4; i++) {\n            deck.add(factory.getCard(\"CATCARD\"));\n        }\n    }\n    public void initDefuseCard() {\n        for (int i = 0; i < 6; i++) {\n            deck.add(factory.getCard(\"DEFUSECARD\"));\n        }\n    }\n    public void initFavorCard() {\n        for (int i = 0; i < 4; i++) {\n            deck.add(factory.getCard(\"FAVORCARD\"));\n        }\n    }\n    public void initNopeCard() {\n        for (int i = 0; i < 5; i++) {\n            deck.add(factory.getCard(\"NOPECARD\"));\n        }\n    }\n    public void initShuffleCard() {\n        for (int i = 0; i < 4; i++) {\n            deck.add(factory.getCard(\"SHUFFLECARD\"));\n        }\n    }\n    public void initSkipCard() {\n        for (int i = 0; i < 4; i++) {\n            deck.add(factory.getCard(\"SKIPCARD\"));\n        }\n    }\n\n    public ArrayList<String> getCardName(){\n        ArrayList<String> cardNames = new ArrayList<String>();\n        for (Cards card : deck) {\n            cardNames.add(card.getCardName());\n        }\n        return cardNames;\n    }\n\n    public void test() {\n        Deck deck = new Deck();\n        for (int i = 0; i < deck.getDeck().size(); i++) {\n            System.out.println(deck.getDeck().indexOf(i));\n        }\n\n    }\n\n}\n
+===================================================================
+diff --git a/app/src/main/java/com/example/se2_exploding_kittens/cards/Deck/Deck.java b/app/src/main/java/com/example/se2_exploding_kittens/cards/Deck/Deck.java
+--- a/app/src/main/java/com/example/se2_exploding_kittens/cards/Deck/Deck.java	
++++ b/app/src/main/java/com/example/se2_exploding_kittens/cards/Deck/Deck.java	
+@@ -9,6 +9,7 @@
+ 
+ public class Deck {
+     ArrayList<Cards> deck = new ArrayList<>();
++    ArrayList<Cards> oldDeck;
+     public CardFactory factory;
+     public Deck() {
+         initAttackCard();
+@@ -20,6 +21,18 @@
+         initShuffleCard();
+         initSkipCard();
+         Collections.shuffle(deck);
++        oldDeck = (ArrayList<Cards>) deck.clone();
++    }
++
++    public void shuffleDeck(){
++        oldDeck = (ArrayList<Cards>) deck.clone();
++        Collections.shuffle(deck);
++    }
++
++    public void reverseShuffle(){
++        ArrayList<Cards> tempDeck = (ArrayList<Cards>) deck.clone();
++        deck = oldDeck;
++        oldDeck = tempDeck;
+     }
+ 
+     public ArrayList<Cards> getDeck() {

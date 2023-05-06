@@ -1,0 +1,17 @@
+Index: app/src/main/java/com/example/se2_exploding_kittens/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.se2_exploding_kittens;\n\nimport android.annotation.SuppressLint;\nimport android.os.Bundle;\n\nimport androidx.appcompat.app.AppCompatActivity;\nimport androidx.recyclerview.widget.LinearLayoutManager;\nimport androidx.recyclerview.widget.RecyclerView;\n\nimport com.example.se2_exploding_kittens.Network.LobbyBroadcaster;\nimport com.example.se2_exploding_kittens.cards.AttackCard;\nimport com.example.se2_exploding_kittens.cards.Cards;\nimport com.example.se2_exploding_kittens.cards.DefuseCard;\nimport com.example.se2_exploding_kittens.cards.NopeCard;\n\nimport java.util.ArrayList;\n\npublic class MainActivity extends AppCompatActivity {\n    private RecyclerView recyclerView;\n    private ArrayList<Cards> cardList;\n    private CardAdapter adapter;\n\n\n\n    @SuppressLint(\"MissingInflatedId\")\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        LobbyBroadcaster lb = new LobbyBroadcaster(\"L1\", 45000);\n        //ll = new LobbyListener(this);\n        Thread broadcast = new Thread(lb);\n        broadcast.start();\n        //Thread listener = new Thread(ll);\n        //listener.start();\n        setContentView(R.layout.activity_main);\n\n        // Initialize the RecyclerView and layout manager\n        recyclerView = findViewById(R.id.recyclerVw);\n        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));\n\n        // This lines of code make sure, that cards are displayed overlapping each other\n        int horizontalOverlapPx = getResources().getDimensionPixelSize(R.dimen.card_horizontal_overlap);\n        int startMarginPx = getResources().getDimensionPixelSize(R.dimen.card_start_margin);\n        int verticalOffset = getResources().getDimensionPixelSize(R.dimen.card_vertical_offset);\n        recyclerView.addItemDecoration(new OverlapDecoration(horizontalOverlapPx, startMarginPx, verticalOffset));\n\n        // Initialize the list of cards and the adapter\n        cardList = new ArrayList<Cards>();\n        cardList.add(new AttackCard());\n        cardList.add(new DefuseCard());\n        cardList.add(new NopeCard());\n\n\n        // Add more cards as needed\n\n\n        adapter = new CardAdapter(cardList);\n\n        // Set the adapter for the RecyclerView\n        recyclerView.setAdapter(adapter);\n\n\n    }\n}\n
+===================================================================
+diff --git a/app/src/main/java/com/example/se2_exploding_kittens/MainActivity.java b/app/src/main/java/com/example/se2_exploding_kittens/MainActivity.java
+--- a/app/src/main/java/com/example/se2_exploding_kittens/MainActivity.java	
++++ b/app/src/main/java/com/example/se2_exploding_kittens/MainActivity.java	
+@@ -49,6 +49,8 @@
+         cardList.add(new AttackCard());
+         cardList.add(new DefuseCard());
+         cardList.add(new NopeCard());
++        cardList.add(new DefuseCard());
++        cardList.add(new NopeCard());
+ 
+ 
+         // Add more cards as needed
