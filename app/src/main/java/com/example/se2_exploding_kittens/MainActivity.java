@@ -1,7 +1,6 @@
 package com.example.se2_exploding_kittens;
 
 import android.annotation.SuppressLint;
-
 import android.content.ClipData;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -10,13 +9,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import android.os.Bundle;
-
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.example.se2_exploding_kittens.Network.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.cards.AttackCard;

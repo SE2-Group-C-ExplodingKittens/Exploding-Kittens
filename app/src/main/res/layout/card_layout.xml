@@ -14,9 +14,7 @@
         android:layout_width="161dp"
         android:layout_height="160dp"
         android:contentDescription="TODO"
-        app:srcCompat="@drawable/defusecard"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="29dp"
-        android:layout_marginStart="-25dp"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/defusecard" />
 </androidx.constraintlayout.widget.ConstraintLayout>
