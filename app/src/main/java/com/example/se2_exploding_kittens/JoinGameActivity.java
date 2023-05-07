@@ -68,9 +68,13 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
         ll.terminateListening();
         //https://www.tutorialspoint.com/how-to-pass-an-object-from-one-activity-to-another-in-android
 
-        //client.runAsClient(lobby.getAddress(),lobby.getPort());
-        Intent intent = new Intent(this, JoiningGameActivity.class);
         client.runAsClient(lobby.getAddress(),lobby.getPort());
-        startActivity(intent);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
