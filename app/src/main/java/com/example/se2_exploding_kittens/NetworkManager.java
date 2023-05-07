@@ -87,6 +87,19 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         thread.start();
     }
 
+    void terminateConnection(){
+        if(connectionRole == TypeOfConnectionRole.SERVER){
+            for ( ServerTCPSocket con: serverToClientConnections) {
+                con.endConnection();
+            }
+            server.terminateServer();
+            connectionRole = TypeOfConnectionRole.IDLE;
+        }
+        if(connectionRole == TypeOfConnectionRole.CLIENT){
+            connection.endConnection();
+        }
+    }
+
 
     public void addServerToClientConnection(ServerTCPSocket connection){
         serverToClientConnections.add(connection);

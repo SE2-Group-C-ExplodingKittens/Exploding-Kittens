@@ -11,6 +11,7 @@ public class TCPServer implements Runnable{
     ServerSocket serverSocket = null;
     ClientConnectedCallback clientConnectedCallback = null;
     int port = -1;
+    boolean running = true;
 
     public TCPServer(int port){
         this.port = port;
@@ -30,13 +31,25 @@ public class TCPServer implements Runnable{
         this.clientConnectedCallback = clientConnectedCallback;
     }
 
+    public void terminateServer(){
+        running = false;
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void run() {
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server listening on port");
+            running = true;
 
-            while (true) {
+            while (running) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
                 ServerTCPSocket serverTCPSocket = new ServerTCPSocket(clientSocket);

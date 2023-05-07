@@ -27,6 +27,11 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
 
     private ArrayList<Lobby> lobbies;
 
+    protected void onDestroy() {
+        super.onDestroy();
+        ll.terminateListening();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +48,6 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
         lobbyView.setAdapter(lobby_recyclerViewAdapter);
         lobbyView.setLayoutManager(new LinearLayoutManager(this));
         client = NetworkManager.getInstance();
-        //
-        //client.subscribeCallbackToMessageID(this,200);
-        //client.sendMessageFromTheClient(new Message(MessageType.MESSAGE,200,"200"));
     }
     @Override
     public void responseReceived(String text, Object sender) {

@@ -47,6 +47,7 @@ public class JoiningGameActivity extends AppCompatActivity implements MessageCal
 
         }
 
+
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("MainActivity", text);

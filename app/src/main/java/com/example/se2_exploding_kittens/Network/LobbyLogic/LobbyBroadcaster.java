@@ -26,6 +26,9 @@ public class LobbyBroadcaster implements Runnable{
 
     public void broadcastLobbyInfo(String lobbyName) {
         try {
+            if (lobbyName.length() > 15) {
+                lobbyName = lobbyName.substring(0, 15);
+            }
             // Create a new DatagramSocket for sending UDP packets
             DatagramSocket socket = new DatagramSocket();
 
