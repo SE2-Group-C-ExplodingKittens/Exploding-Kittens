@@ -1,16 +1,22 @@
 package com.example.se2_exploding_kittens.cards;
 
-public class NopeCard extends Cards{
-    public NopeCard(int imageResource) {
+import com.example.se2_exploding_kittens.R;
 
-        super(imageResource);
-        this.imageResource = imageResource;
+public class NopeCard extends Cards{
+    public NopeCard() {
+
+
     }
 
-    int imageResource;
+    private static int imageResource = R.drawable.nopecard;
+    private static String cardName = "NopeCard";
     @Override
     public int getImageResource() {
         return imageResource;
+    }
+
+    public static String getCardName() {
+        return cardName;
     }
 
     @Override

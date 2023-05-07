@@ -4,6 +4,7 @@ public abstract class Cards {
     int id;
     boolean bomb;
     String cardPath;
+    public static String cardName;
 
     public int getId() {
         return id;
@@ -19,10 +20,14 @@ public abstract class Cards {
 
     public abstract void cardAction(Player p1, Player p2);
 
-    private int imageResource;
+    public static String getCardName() {
+        return cardName;
+    }
 
-    public Cards(int imageResource) {
-        this.imageResource = imageResource;
+    protected int imageResource;
+
+    public Cards() {
+
     }
 
     public abstract int getImageResource();

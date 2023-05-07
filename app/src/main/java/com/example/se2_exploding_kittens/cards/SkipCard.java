@@ -1,18 +1,21 @@
 package com.example.se2_exploding_kittens.cards;
 
+import com.example.se2_exploding_kittens.R;
+
 public class SkipCard extends Cards {
-    public SkipCard(int imageResource) {
-        super(imageResource);
-        this.imageResource = imageResource;
+    public SkipCard() {
     }
 
-    int imageResource;
+    private static int imageResource = R.drawable.skipcard;
+    private static String cardName = "SkipCard";
     @Override
     public int getImageResource() {
         return imageResource;
     }
 
-
+    public static String getCardName() {
+        return cardName;
+    }
 
     @Override
     public void cardAction(Player p1, Player p2) {

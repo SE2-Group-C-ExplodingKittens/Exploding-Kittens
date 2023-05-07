@@ -1,6 +1,13 @@
 package com.example.se2_exploding_kittens;
 
-import static com.example.se2_exploding_kittens.NetworkManager.TEST_MESSAGE_ID;
+import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.os.Bundle;
+import android.view.DragEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
     private NetworkManager connection;
 
 
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,37 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
 
 
 
+        // Implement onDragListener for the discard pile view
+        View discardPileView = findViewById(R.id.discardPile);
+        discardPileView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case DragEvent.ACTION_DROP:
+                        // Get the dragged item from the ClipData object
+                        ClipData.Item item =  event.getClipData().getItemAt(0);
+                        String cardResourceString = String.valueOf(item.getText());
+                        int cardResource =  Integer.parseInt(cardResourceString);
+                        // Add the card to the discard pile
+                        ImageView discardedCard = new ImageView(MainActivity.this);
+                        discardedCard.setImageResource(cardResource);
+
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT
+                        );
+                        discardedCard.setLayoutParams(params);
+                        ((ViewGroup) v).addView(discardedCard);
+                        // Setting image at the beginning to the invisible state
+                        ImageView discardImage = findViewById(R.id.discard_pile_image);
+                        discardImage.setVisibility(View.INVISIBLE);
+
+                }
+                return true;
+            }
+        });
+
         // Initialize the RecyclerView and layout manager
         recyclerView = findViewById(R.id.recyclerVw);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -67,19 +104,14 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
 
         // Initialize the list of cards and the adapter
         cardList = new ArrayList<Cards>();
-        cardList.add(new DefuseCard(R.drawable.defusecard));
-        cardList.add(new NopeCard(R.drawable.nopecard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
-        cardList.add(new FavorCard(R.drawable.favorcard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
-        cardList.add(new FavorCard(R.drawable.favorcard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
-        cardList.add(new FavorCard(R.drawable.favorcard));
-        cardList.add(new SkipCard(R.drawable.skipcard));
-        cardList.add(new AttackCard(R.drawable.attackcard));
+        cardList.add(new AttackCard());
+        cardList.add(new DefuseCard());
+        cardList.add(new NopeCard());
+
+        cardList.add(new FavorCard());
+        cardList.add(new SkipCard());
+
+
         // Add more cards as needed
 
 

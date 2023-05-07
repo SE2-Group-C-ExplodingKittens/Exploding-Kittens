@@ -1,17 +1,21 @@
 package com.example.se2_exploding_kittens.cards;
 
+import com.example.se2_exploding_kittens.R;
+
 public class DefuseCard extends Cards {
 
-    int imageResource;
-    public DefuseCard(int imageResource) {
-
-        super(imageResource);
-        this.imageResource = imageResource;
+    private static int imageResource = R.drawable.defusecard;
+    private static String cardName = "DefuseCard";
+    public DefuseCard() {
     }
 
     @Override
     public int getImageResource() {
         return imageResource;
+    }
+
+    public static String getCardName() {
+        return cardName;
     }
 
     @Override

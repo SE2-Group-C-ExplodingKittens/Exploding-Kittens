@@ -2,7 +2,6 @@ package com.example.se2_exploding_kittens.cards;
 
 public class CardFactory {
 
-    private int imageResource = 2131165410;
     public Cards getCard(String cardType){
         if (cardType == null) {
             return null;
@@ -10,21 +9,21 @@ public class CardFactory {
 
 //        TODO change the arguments in card objects
         if (cardType.equalsIgnoreCase("ATTACKCARD")) {
-            return new AttackCard(imageResource);
+            return new AttackCard();
         } else if (cardType.equalsIgnoreCase("CATCARD")) {
-            return new BombCard(imageResource);
+            return new CatCard();
         } else if (cardType.equalsIgnoreCase("DEFUSECARD")) {
-            return new BombCard(imageResource);
+            return new DefuseCard();
         }else if (cardType.equalsIgnoreCase("FAVORCARD")) {
-            return new BombCard(imageResource);
+            return new FavorCard();
         }else if (cardType.equalsIgnoreCase("NOPECARD")) {
-            return new BombCard(imageResource);
+            return new NopeCard();
         }else if (cardType.equalsIgnoreCase("SHUFFLECARD")) {
-            return new BombCard(imageResource);
+            return new ShuffleCard();
         }else if (cardType.equalsIgnoreCase("SKIPCARD")) {
-            return new BombCard(imageResource);
+            return new SkipCard();
         }else if (cardType.equalsIgnoreCase("BOMBCARD")) {
-            return new BombCard(imageResource);
+            return new BombCard();
         } return null;
     }
 }

@@ -1,14 +1,20 @@
 package com.example.se2_exploding_kittens.cards;
 
+import com.example.se2_exploding_kittens.R;
+
 public class ShuffleCard extends Cards {
-    public ShuffleCard(int imageResource) {
-        super(imageResource);
-        this.imageResource = imageResource;
+    public ShuffleCard() {
+
     }
-    int imageResource;
+    private static int imageResource = R.drawable.shufflecard;
+    private static String cardName = "ShuffleCard";
     @Override
     public int getImageResource() {
+
         return imageResource;
+    }
+    public static String getCardName() {
+        return cardName;
     }
 
 
