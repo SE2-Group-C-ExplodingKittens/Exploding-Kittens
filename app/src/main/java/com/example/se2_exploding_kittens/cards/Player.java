@@ -4,17 +4,18 @@ import java.util.ArrayList;
 
 public class Player {
 
-    int playerTurns;
-    int playerId;
-    boolean playerTurn;
+    private int playerTurns;
+    private int playerId;
+    private boolean playerTurn;
 
     ArrayList<Player> currentPlayersOrder;
 
-    public Player() {
-        playerTurns = 1;
+    public Player(int playerId) {
+        this.playerTurns = 1;
+        this.playerId = playerId;
     }
 
-//    Implement attack card
+    //    Implement attack card
     public void playAttack() {
         // Find the next player in the turn order
         Player nextPlayer = findNextPlayer(currentPlayersOrder);
@@ -22,19 +23,34 @@ public class Player {
         nextPlayer.setPlayerTurns(2);
     }
 
-
     public Player findNextPlayer(ArrayList<Player> players) {
         //  Assuming that the Players will be stored in an ArrayList
-            int currIndex = players.indexOf(this);
-            int nextIndex = (currIndex + 1) % players.size();
-            return players.get(nextIndex);
+        int currIndex = players.indexOf(this);
+        int nextIndex = (currIndex + 1) % players.size();
+        return players.get(nextIndex);
     }
 
     public void setPlayerTurns(int numTurns) {
-            playerTurns = numTurns;
+        playerTurns = numTurns;
     }
 
+    public int getPlayerTurns() {
+        return playerTurns;
+    }
 
+    public boolean isPlayerTurn() {
+        return playerTurn;
+    }
 
+    public void setPlayerTurn(boolean playerTurn) {
+        this.playerTurn = playerTurn;
+    }
 
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
 }

@@ -73,4 +73,8 @@ public class TurnManager implements MessageCallback {
             String message = Message.parseAndExtractPayload(text);
         }
     }
+
+    public int getNumberOfPlayers(){
+        return PlayerManager.getInstance().getPlayerSize();
+    }
 }
