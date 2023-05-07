@@ -54,6 +54,8 @@ public class LobbyBroadcaster implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            //Sonar Cloud: Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.
+            Thread.currentThread().interrupt();
             e.printStackTrace();
         }
     }
