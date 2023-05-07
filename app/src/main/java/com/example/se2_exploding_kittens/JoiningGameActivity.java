@@ -22,7 +22,7 @@ public class JoiningGameActivity extends AppCompatActivity implements MessageCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_joining_game);
 
-        client = new NetworkManager();
+        client = NetworkManager.getInstance();
         lobby = new Lobby((String) getIntent().getSerializableExtra("name"), (String) getIntent().getSerializableExtra("address"), (Integer) getIntent().getSerializableExtra("port"));
         client.runAsClient(lobby.getAddress(),lobby.getPort());
 

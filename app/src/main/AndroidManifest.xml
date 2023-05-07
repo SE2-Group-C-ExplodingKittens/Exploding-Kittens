@@ -18,6 +18,13 @@
         android:theme="@style/Theme.SE2_ExplodingKittens"
         tools:targetApi="31">
         <activity
+            android:name=".HostGameActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".JoiningGameActivity"
             android:exported="false">
             <meta-data

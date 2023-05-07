@@ -24,16 +24,13 @@ import com.example.se2_exploding_kittens.cards.NopeCard;
 import com.example.se2_exploding_kittens.cards.SkipCard;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.FactoryConfigurationError;
 
 public class MainActivity extends AppCompatActivity implements MessageCallback {
     private RecyclerView recyclerView;
     private ArrayList<Cards> cardList;
     private CardAdapter adapter;
     private LobbyBroadcaster lb;
-    private NetworkManager server;
+    private NetworkManager connection;
 
 
 
@@ -42,15 +39,14 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lb = new LobbyBroadcaster("L1", 45000);
-        server = new NetworkManager();
-        server.runAsServer(45000);
-        server.subscribeCallbackToMessageID(this,TEST_MESSAGE_ID);
+        connection = NetworkManager.getInstance();
+        //connection.runAsServer(45000);
+        //connection.subscribeCallbackToMessageID(this,TEST_MESSAGE_ID);
         //listener.start();
         //ll = new LobbyListener(this);
         Thread broadcast = new Thread(lb);
         broadcast.start();
-        //Thread listener = new Thread(ll);
-        //listener.start();
+
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this, JoinGameActivity.class);
         startActivity(intent);
@@ -100,11 +96,11 @@ public class MainActivity extends AppCompatActivity implements MessageCallback {
         if(sender instanceof ServerTCPSocket){
             Log.v("MainActivity", "srv");
             try{
-                server.sendMessageFromTheSever(new Message(MessageType.MESSAGE,TEST_MESSAGE_ID,"Pong"),(ServerTCPSocket)sender);
+                connection.sendMessageFromTheSever(new Message(MessageType.MESSAGE,TEST_MESSAGE_ID,"Pong"),(ServerTCPSocket)sender);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 try {
-                    server.sendMessageBroadcast(new Message(MessageType.ERROR,TEST_MESSAGE_ID,"Pong Failed"));
+                    connection.sendMessageBroadcast(new Message(MessageType.ERROR,TEST_MESSAGE_ID,"Pong Failed"));
                 } catch (IllegalAccessException ex) {
                     ex.printStackTrace();
                     Log.e("MainActivity", "is not server");

@@ -20,20 +20,12 @@ import java.util.ArrayList;
 public class JoinGameActivity extends AppCompatActivity implements MessageCallback, JoinLobbyCallback {
 
     private LobbyListener ll;
-    //private NetworkManager client ;
+
+    private NetworkManager client ;
 
     private RecyclerView lobbyView;
 
     private ArrayList<Lobby> lobbies;
-
-    private void addEvtHandler(Button btn, View.OnClickListener listener){
-        btn.setOnClickListener(listener);
-    }
-
-    public void openJoinGameActivity(){
-        ll.terminateListening();
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +42,8 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
         Lobby_RecyclerViewAdapter lobby_recyclerViewAdapter = new Lobby_RecyclerViewAdapter(this, lobbies, this::JoinLobby);
         lobbyView.setAdapter(lobby_recyclerViewAdapter);
         lobbyView.setLayoutManager(new LinearLayoutManager(this));
-        //client = new NetworkManager();
-        //client.runAsClient(ll.getLobbies().get(0).getAddress(),ll.getLobbies().get(0).getPort());
+        client = NetworkManager.getInstance();
+        //
         //client.subscribeCallbackToMessageID(this,200);
         //client.sendMessageFromTheClient(new Message(MessageType.MESSAGE,200,"200"));
     }
@@ -71,14 +63,12 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
     public void JoinLobby(Lobby lobby) {
         if(lobby == null)
             throw new NullPointerException();
-
+        ll.terminateListening();
         //https://www.tutorialspoint.com/how-to-pass-an-object-from-one-activity-to-another-in-android
 
         //client.runAsClient(lobby.getAddress(),lobby.getPort());
         Intent intent = new Intent(this, JoiningGameActivity.class);
-        intent.putExtra("address", lobby.getAddress());
-        intent.putExtra("port", lobby.getPort());
-        intent.putExtra("name", lobby.getName());
+        client.runAsClient(lobby.getAddress(),lobby.getPort());
         startActivity(intent);
     }
 }
