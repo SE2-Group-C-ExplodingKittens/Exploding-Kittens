@@ -4,6 +4,7 @@ import static com.example.se2_exploding_kittens.NetworkManager.TEST_MESSAGE_ID;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -76,25 +77,29 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         // Implement onDragListener for the discard pile view
         View discardPileView = findViewById(R.id.discardPile);
+
+        Rect dropBounds = new Rect(discardPileView.getLeft(), discardPileView.getTop(),
+                discardPileView.getRight(), discardPileView.getBottom());
+
         discardPileView.setOnDragListener(new View.OnDragListener() {
             @Override
-            public boolean onDrag(View v, DragEvent event) {
+            public boolean onDrag(View view, DragEvent event) {
                 int action = event.getAction();
                 switch (action) {
-//                    case DragEvent.ACTION_DRAG_STARTED:
-//                        // Save the original position of the card
-//                        v.setTag(v.getY());
-//                        break;
-//                    case DragEvent.ACTION_DRAG_ENTERED:
-//                        // Add any visual cues for when the card is over the drop area
-//                        break;
-//                    case DragEvent.ACTION_DRAG_LOCATION:
-//                        // Check if the card is outside the bounds of the drop area
-//                        if (!dropBounds.contains((int) event.getX(), (int) event.getY())) {
-//                            // Move the card back to its original position
-//                            v.setY((Float) v.getTag());
-//                        }
-//                        break;
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // Save the original position of the card
+                        view.setTag(view.getY());
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        // Add any visual cues for when the card is over the drop area
+                        break;
+                    case DragEvent.ACTION_DRAG_LOCATION:
+                        // Check if the card is outside the bounds of the drop area
+                        if (!dropBounds.contains((int) event.getX(), (int) event.getY())) {
+                            // Move the card back to its original position
+                            view.setY((Float) view.getTag());
+                        }
+                        break;
                     case DragEvent.ACTION_DROP:
                         // Get the dragged item from the ClipData object
                         ClipData.Item item = event.getClipData().getItemAt(0);
@@ -106,7 +111,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         discardedCard.setLayoutParams(params);
-                        ((ViewGroup) v).addView(discardedCard);
+                        ((ViewGroup) view).addView(discardedCard);
                         // Setting image at the beginning to the invisible state
                         ImageView discardImage = findViewById(R.id.discard_pile_image);
                         discardImage.setVisibility(View.INVISIBLE);

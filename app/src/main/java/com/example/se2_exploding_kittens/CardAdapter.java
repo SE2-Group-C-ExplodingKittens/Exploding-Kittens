@@ -57,6 +57,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         v.startDragAndDrop(data, shadowBuilder, null, 0);
                     }
+
                     // Remove the item from the dataset
                     removeItem(holder.getAdapterPosition());
                     return true;
