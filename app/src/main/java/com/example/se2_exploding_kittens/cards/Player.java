@@ -8,6 +8,7 @@ public class Player {
     int playerId;
     boolean playerTurn;
 
+
     ArrayList<Player> currentPlayersOrder;
 
     public Player() {

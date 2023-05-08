@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
                 switch (action) {
                     case DragEvent.ACTION_DROP:
                         // Get the dragged item from the ClipData object
-                        ClipData.Item item =  event.getClipData().getItemAt(0);
+                        ClipData.Item item = event.getClipData().getItemAt(0);
                         String cardResourceString = String.valueOf(item.getText());
-                        int cardResource =  Integer.parseInt(cardResourceString);
+                        int cardResource = Integer.parseInt(cardResourceString);
                         // Add the card to the discard pile
                         ImageView discardedCard = new ImageView(MainActivity.this);
                         discardedCard.setImageResource(cardResource);
@@ -99,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
-
-
-
 
 
     }
