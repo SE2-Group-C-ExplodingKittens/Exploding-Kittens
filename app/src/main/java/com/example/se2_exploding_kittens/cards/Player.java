@@ -12,9 +12,16 @@ public class Player {
         this.playerId = playerId;
     }
 
+    public boolean isPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(boolean playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
     ArrayList<Cards> playerHand;
 
-    ArrayList<Player> currentPlayersOrder;
 
     public Player() {
         playerTurns = 1;

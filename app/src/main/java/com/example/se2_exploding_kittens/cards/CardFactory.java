@@ -22,6 +22,8 @@ public class CardFactory {
                 return new ShuffleCard();
             } else if (cardType.equalsIgnoreCase("SKIPCARD")) {
                 return new SkipCard();
+            }else if (cardType.equalsIgnoreCase("SEETHEFUTURECARD")) {
+                return new SeeTheFutureCard();
             } else if (cardType.equalsIgnoreCase("BOMBCARD")) {
                 return new BombCard();
             }

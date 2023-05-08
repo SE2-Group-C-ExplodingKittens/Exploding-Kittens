@@ -40,11 +40,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private CardAdapter adapter;
     private NetworkManager connection;
 
-    private ArrayList<Player> players =  new ArrayList<Player>();
+    private ArrayList<Player> players = new ArrayList<Player>();
 
     private Player p1 = new Player(1);
     private Player p2 = new Player(2);
     private Player p3 = new Player(3);
+    private Player p4 = new Player(4);
+    private Player p5 = new Player(5);
+    private Player p6 = new Player(6);
 
 
     @SuppressLint("MissingInflatedId")
@@ -66,12 +69,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         players.add(p1);
         players.add(p2);
         players.add(p3);
+        players.add(p4);
+        players.add(p5);
+        players.add(p6);
 
         // Deal cards
         deck.dealCards(players);
 
         p1.getPlayerHand();
-
+        deck.getDeck();
 
 
         // Implement onDragListener for the discard pile view
@@ -83,9 +89,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 switch (action) {
                     case DragEvent.ACTION_DROP:
                         // Get the dragged item from the ClipData object
-                        ClipData.Item item =  event.getClipData().getItemAt(0);
+                        ClipData.Item item = event.getClipData().getItemAt(0);
                         String cardResourceString = String.valueOf(item.getText());
-                        int cardResource =  Integer.parseInt(cardResourceString);
+                        int cardResource = Integer.parseInt(cardResourceString);
                         // Add the card to the discard pile
                         ImageView discardedCard = new ImageView(GameActivity.this);
                         discardedCard.setImageResource(cardResource);
@@ -116,13 +122,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         recyclerView.addItemDecoration(new OverlapDecoration(horizontalOverlapPx, startMarginPx, verticalOffset));
 
         // Initialize the list of cards and the adapter
-        cardList = new ArrayList<Cards>();
-        cardList.add(new AttackCard());
-        cardList.add(new DefuseCard());
-        cardList.add(new NopeCard());
-
-        cardList.add(new FavorCard());
-        cardList.add(new SkipCard());
+//        cardList = new ArrayList<Cards>();
+//        cardList.add(new AttackCard());
+//        cardList.add(new DefuseCard());
+//        cardList.add(new NopeCard());
+//
+//        cardList.add(new FavorCard());
+//        cardList.add(new SkipCard());
 
 
         // Add more cards as needed
@@ -138,14 +144,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
-        if(sender instanceof ServerTCPSocket){
+        if (sender instanceof ServerTCPSocket) {
             Log.v("GameActivity", "srv");
-            try{
-                connection.sendMessageFromTheSever(new Message(MessageType.MESSAGE,TEST_MESSAGE_ID,"Pong"),(ServerTCPSocket)sender);
+            try {
+                connection.sendMessageFromTheSever(new Message(MessageType.MESSAGE, TEST_MESSAGE_ID, "Pong"), (ServerTCPSocket) sender);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 try {
-                    connection.sendMessageBroadcast(new Message(MessageType.ERROR,TEST_MESSAGE_ID,"Pong Failed"));
+                    connection.sendMessageBroadcast(new Message(MessageType.ERROR, TEST_MESSAGE_ID, "Pong Failed"));
                 } catch (IllegalAccessException ex) {
                     ex.printStackTrace();
                     Log.e("GameActivity", "is not server");
