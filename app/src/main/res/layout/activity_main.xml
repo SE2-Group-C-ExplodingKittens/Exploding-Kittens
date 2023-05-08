@@ -4,41 +4,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/background">
 
 
-    <Button
-        android:id="@+id/join_game_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Join Game"
-        app:layout_constraintEnd_toEndOf="parent"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="241dp"
+        android:layout_height="274dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
 
-    <Button
-        android:id="@+id/host_game_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Host Game"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/join_game_button" />
-
-    <Button
-        android:id="@+id/gameActivityTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GameTest"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="301dp"
+        android:layout_height="270dp"
+        android:layout_marginEnd="52dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/host_game_button"
-        app:layout_constraintVertical_bias="0.061" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.497">
+
+        <Button
+            android:id="@+id/join_game_button"
+            android:layout_width="276dp"
+            android:layout_height="62dp"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/buttonjointhegame"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.864"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/host_game_button"
+            android:layout_width="279dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/buttonhostthegame"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/join_game_button"
+            app:layout_constraintTop_toBottomOf="@+id/join_game_button" />
+
+        <Button
+            android:id="@+id/gameActivityTest"
+            android:layout_width="262dp"
+            android:layout_height="62dp"
+            android:background="@drawable/button_singleplayer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/host_game_button"
+            app:layout_constraintVertical_bias="0.23" />
+
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

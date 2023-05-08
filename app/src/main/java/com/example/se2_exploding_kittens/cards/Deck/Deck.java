@@ -126,6 +126,15 @@ public class Deck {
 
     }
 
+    // TODO write the exception for this method
+    public Cards getNextCard() {
+        if (deck.size() > 0) {
+            Cards card = deck.remove(0);
+            return card;
+        }
+        throw new IndexOutOfBoundsException("The deck is empty!");
+    }
+
 
     public ArrayList<String> getCardName() {
         ArrayList<String> cardNames = new ArrayList<String>();
