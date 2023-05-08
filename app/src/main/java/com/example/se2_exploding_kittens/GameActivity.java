@@ -25,9 +25,11 @@ import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.cards.AttackCard;
 import com.example.se2_exploding_kittens.cards.Cards;
+import com.example.se2_exploding_kittens.cards.Deck.Deck;
 import com.example.se2_exploding_kittens.cards.DefuseCard;
 import com.example.se2_exploding_kittens.cards.FavorCard;
 import com.example.se2_exploding_kittens.cards.NopeCard;
+import com.example.se2_exploding_kittens.cards.Player;
 import com.example.se2_exploding_kittens.cards.SkipCard;
 
 import java.util.ArrayList;
@@ -38,6 +40,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private CardAdapter adapter;
     private NetworkManager connection;
 
+    private ArrayList<Player> players =  new ArrayList<Player>();
+
+    private Player p1 = new Player(1);
+    private Player p2 = new Player(2);
+    private Player p3 = new Player(3);
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -45,6 +53,26 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         connection = NetworkManager.getInstance();
+
+        // TEST Initialize a deck object to see if the first hand works
+
+        Deck deck = new Deck();
+
+        deck.shuffleDeck(deck.getDeck());
+
+        deck.getDeck();
+
+        //Test if the firsthand functions as supposed
+        players.add(p1);
+        players.add(p2);
+        players.add(p3);
+
+        // Deal cards
+        deck.dealCards(players);
+
+        p1.getPlayerHand();
+
+
 
         // Implement onDragListener for the discard pile view
         View discardPileView = findViewById(R.id.discardPile);
@@ -100,7 +128,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         // Add more cards as needed
 
 
-        adapter = new CardAdapter(cardList);
+        adapter = new CardAdapter(p1.getPlayerHand());
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);

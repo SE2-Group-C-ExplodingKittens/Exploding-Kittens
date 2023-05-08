@@ -8,33 +8,29 @@ public class Player {
     int playerId;
     boolean playerTurn;
 
+    public Player(int playerId) {
+        this.playerId = playerId;
+    }
+
+    ArrayList<Cards> playerHand;
+
     ArrayList<Player> currentPlayersOrder;
 
     public Player() {
         playerTurns = 1;
     }
 
-//    Implement attack card
-    public void playAttack() {
-        // Find the next player in the turn order
-        Player nextPlayer = findNextPlayer(currentPlayersOrder);
-        // Increase the number of turns for the next player
-        nextPlayer.setPlayerTurns(2);
+    public ArrayList<Cards> getPlayerHand() {
+        return playerHand;
     }
 
-
-    public Player findNextPlayer(ArrayList<Player> players) {
-        //  Assuming that the Players will be stored in an ArrayList
-            int currIndex = players.indexOf(this);
-            int nextIndex = (currIndex + 1) % players.size();
-            return players.get(nextIndex);
+    public void setPlayerHand(ArrayList<Cards> playerHand) {
+        this.playerHand = playerHand;
     }
 
     public void setPlayerTurns(int numTurns) {
-            playerTurns = numTurns;
+        playerTurns = numTurns;
     }
-
-
 
 
 }
