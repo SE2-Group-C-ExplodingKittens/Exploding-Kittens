@@ -10,12 +10,16 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
     private Button joinGameButton;
     private Button hostGameButton;
+
+    private Button btnTestGame;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         joinGameButton = findViewById(R.id.join_game_button);
         hostGameButton = findViewById(R.id.host_game_button);
+        btnTestGame = findViewById(R.id.gameActivityTest);
 
         joinGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,5 +36,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        btnTestGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //Testing only
+
     }
 }
