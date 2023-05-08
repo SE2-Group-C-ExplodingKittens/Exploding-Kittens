@@ -23,16 +23,16 @@ public class TurnManager implements MessageCallback {
     public void startGame() {
         shuffleOrder();
         currentPlayerIndex = 0;
-        sendGameSateToClients();
+        sendNextGameSateToClients();
     }
 
     private void shuffleOrder() {
         playerManager.shuffle();
     }
 
-    private void sendGameSateToClients() {
+    public void sendNextGameSateToClients() {
         PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
-        //provisional
+        //message will be = playerID:numberOfTurns
         String gameStateMessage = Integer.toString(currentPlayerConnection.getPlayerID());
 
         try {
@@ -44,18 +44,18 @@ public class TurnManager implements MessageCallback {
 
     private void updateGameState() {
         currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
-        sendGameSateToClients();
+        sendNextGameSateToClients();
     }
 
     public void handlePlayerAction(int playerID) {
         if (currentPlayerIndex != playerID) {
-            //provisional
+            //provisional error message
             sendErrorMessageToPlayer(playerID, "It's not your turn.");
             return;
         }
 
         updateGameState();
-        sendGameSateToClients();
+        sendNextGameSateToClients();
     }
 
     private void sendErrorMessageToPlayer(int playerID, String errorMessage) {
@@ -74,7 +74,7 @@ public class TurnManager implements MessageCallback {
         }
     }
 
-    public int getNumberOfPlayers(){
+    public int getNumberOfPlayers() {
         return PlayerManager.getInstance().getPlayerSize();
     }
 }

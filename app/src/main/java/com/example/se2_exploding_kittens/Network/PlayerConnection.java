@@ -19,4 +19,8 @@ public class PlayerConnection {
     public int getPlayerID() {
         return player.getPlayerId();
     }
+
+    public int numberOfTurnsLeft(){
+        return player.getPlayerTurns();
+    }
 }
