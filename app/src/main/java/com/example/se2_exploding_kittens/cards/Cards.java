@@ -4,6 +4,7 @@ public abstract class Cards {
     int id;
     boolean bomb;
     String cardPath;
+    public static String cardName;
 
     public int getId() {
         return id;
@@ -18,6 +19,18 @@ public abstract class Cards {
     }
 
     public abstract void cardAction(Player p1, Player p2);
+
+    public static String getCardName() {
+        return cardName;
+    }
+
+    protected int imageResource;
+
+    public Cards() {
+
+    }
+
+    public abstract int getImageResource();
 }
 
 
