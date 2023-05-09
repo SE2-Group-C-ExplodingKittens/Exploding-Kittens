@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens.cards;
+package com.example.se2_exploding_kittens.gameLogik.cards;
 
 public class CardFactory {
 

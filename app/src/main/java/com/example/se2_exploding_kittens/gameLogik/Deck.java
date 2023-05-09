@@ -1,8 +1,7 @@
-package com.example.se2_exploding_kittens.cards.Deck;
+package com.example.se2_exploding_kittens.gameLogik;
 
-import com.example.se2_exploding_kittens.cards.CardFactory;
-import com.example.se2_exploding_kittens.cards.Cards;
-import com.example.se2_exploding_kittens.cards.Player;
+import com.example.se2_exploding_kittens.gameLogik.cards.CardFactory;
+import com.example.se2_exploding_kittens.gameLogik.cards.Cards;
 
 import java.util.ArrayList;
 import java.util.Collections;

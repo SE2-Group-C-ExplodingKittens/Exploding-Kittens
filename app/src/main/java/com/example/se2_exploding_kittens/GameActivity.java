@@ -22,9 +22,9 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.cards.Cards;
-import com.example.se2_exploding_kittens.cards.Deck.Deck;
-import com.example.se2_exploding_kittens.cards.Player;
+import com.example.se2_exploding_kittens.gameLogik.cards.Cards;
+import com.example.se2_exploding_kittens.gameLogik.Deck;
+import com.example.se2_exploding_kittens.gameLogik.Player;
 
 import java.util.ArrayList;
 

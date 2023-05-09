@@ -1,18 +1,15 @@
 package com.example.se2_exploding_kittens;
 
 import android.content.ClipData;
-import android.content.ClipDescription;
 import android.os.Build;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.se2_exploding_kittens.cards.Cards;
+import com.example.se2_exploding_kittens.gameLogik.cards.Cards;
 
 import java.util.ArrayList;
 

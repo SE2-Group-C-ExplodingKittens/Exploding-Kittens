@@ -1,4 +1,6 @@
-package com.example.se2_exploding_kittens.cards;
+package com.example.se2_exploding_kittens.gameLogik.cards;
+
+import com.example.se2_exploding_kittens.gameLogik.Player;
 
 public abstract class Cards {
     int id;
