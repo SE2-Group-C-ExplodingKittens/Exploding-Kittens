@@ -47,19 +47,18 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             holder.cardImage.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-
                     String imageResource = String.valueOf(card.getImageResource());
+                    int myPosition = holder.getAdapterPosition();
                     ClipData data = ClipData.newPlainText("card", imageResource);
-//                    ClipData.Item item = new ClipData.Item(String.valueOf(card.getImageResource()));
+                    ClipData.Item item = new ClipData.Item(String.valueOf(myPosition));
+                    data.addItem(item);
 
                     // Start the drag operation
                     View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        v.startDragAndDrop(data, shadowBuilder, null, 0);
+                        v.startDragAndDrop(data, shadowBuilder, myPosition, 0);
                     }
 
-                    // Remove the item from the dataset
-                    removeItem(holder.getAdapterPosition());
                     return true;
                 }
             });

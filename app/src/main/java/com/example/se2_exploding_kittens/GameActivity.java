@@ -103,11 +103,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                     case DragEvent.ACTION_DROP:
                         // Get the dragged item from the ClipData object
                         ClipData.Item item = event.getClipData().getItemAt(0);
+                        ClipData.Item mPositionItem = event.getClipData().getItemAt(1);
+                        String mPositionString = String.valueOf(mPositionItem.getText());
                         String cardResourceString = String.valueOf(item.getText());
                         int cardResource = Integer.parseInt(cardResourceString);
+                        int mPosition = Integer.parseInt(mPositionString);
                         // Add the card to the discard pile
                         ImageView discardedCard = new ImageView(GameActivity.this);
                         discardedCard.setImageResource(cardResource);
+                        adapter.removeItem(mPosition);
 
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         discardedCard.setLayoutParams(params);

@@ -24,13 +24,14 @@
         android:id="@+id/discardPile"
         android:layout_width="137dp"
         android:layout_height="127dp"
-        android:alpha="0.5"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <ImageView
+            android:alpha="0.5"
             android:id="@+id/discard_pile_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
