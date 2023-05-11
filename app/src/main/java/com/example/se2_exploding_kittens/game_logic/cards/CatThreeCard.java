@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens.gameLogik.cards;
+package com.example.se2_exploding_kittens.game_logic.cards;
 
 import com.example.se2_exploding_kittens.R;
 
@@ -9,5 +9,6 @@ public class CatThreeCard extends Card {
     }
 
     public CatThreeCard() {
+        //This class in itself is a datatype, so we don't need to initialize anything else here.
     }
 }

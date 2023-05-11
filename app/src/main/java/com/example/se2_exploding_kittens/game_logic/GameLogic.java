@@ -1,18 +1,18 @@
-package com.example.se2_exploding_kittens.gameLogik;
+package com.example.se2_exploding_kittens.game_logic;
 
-import com.example.se2_exploding_kittens.gameLogik.cards.AttackCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.BombCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.Card;
-import com.example.se2_exploding_kittens.gameLogik.cards.CatFiveCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.CatFourCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.CatOneCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.CatThreeCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.CatTwoCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.FavorCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.NopeCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.SeeTheFutureCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.ShuffleCard;
-import com.example.se2_exploding_kittens.gameLogik.cards.SkipCard;
+import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
+import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
+import com.example.se2_exploding_kittens.game_logic.cards.CatFiveCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatFourCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatOneCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatThreeCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatTwoCard;
+import com.example.se2_exploding_kittens.game_logic.cards.FavorCard;
+import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
+import com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard;
+import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
+import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
 
@@ -38,14 +38,14 @@ public class GameLogic {
         Card card = deck.getNextCard();
         if (card instanceof BombCard) {
             if (playerList.get(currentPlayer).getDefuse() != -1) {
-                playerList.get(currentPlayer).hand.remove(playerList.get(currentPlayer).getDefuse());
+                playerList.get(currentPlayer).getHand().remove(playerList.get(currentPlayer).getDefuse());
                 deck.addBombAtRandomIndex();
             } else {
                 playerList.get(currentPlayer).alive = false;
                 checkIfLastSurvivor();
             }
         } else {
-            playerList.get(currentPlayer).hand.add(card);
+            playerList.get(currentPlayer).getHand().add(card);
         }
         nextPlayer();
     }
@@ -89,7 +89,7 @@ public class GameLogic {
     public boolean cheat(int playerID) {
         for (Player player : playerList) {
             if (playerID == player.playerId) {
-                player.hand.add(deck.getNextCard()); //Theoretically this could throw and exception, but practically this must not happen, so I am not catching it.
+                player.getHand().add(deck.getNextCard()); //Theoretically this could throw and exception, but practically this must not happen, so I am not catching it.
                 return true;
             }
         }
@@ -101,7 +101,7 @@ public class GameLogic {
             cardToBePlayed = card;
             cardIsGoingToBeBPlayed = true;
             for (Player player : playerList) {
-                if (player.hand.contains(new NopeCard())) {
+                if (player.getHand().contains(new NopeCard())) {
                     player.canNope = true;
                 }
             }
@@ -123,7 +123,7 @@ public class GameLogic {
     public void playerDoesNope(int playerID) {
         playerList.get(playerID).canNope = false;
         cardIsGoingToBeBPlayed = !cardIsGoingToBeBPlayed;
-        playerList.get(playerID).hand.remove(new NopeCard());
+        playerList.get(playerID).getHand().remove(new NopeCard());
         currentPlayerPlayedCards.add(new NopeCard());
         if (canNobodyNope() && cardIsGoingToBeBPlayed) {
             playCard(cardToBePlayed);
@@ -143,25 +143,25 @@ public class GameLogic {
         if (card instanceof AttackCard) {
             playAttackCard();
         } else if (card instanceof CatOneCard) {
-            CatOneCard();
+            catOneCard();
         } else if (card instanceof CatTwoCard) {
-            CatTwoCard();
+            catTwoCard();
         } else if (card instanceof CatThreeCard) {
-            CatThreeCard();
+            catThreeCard();
         } else if (card instanceof CatFourCard) {
-            CatFourCard();
+            catFourCard();
         } else if (card instanceof CatFiveCard) {
-            CatFiveCard();
+            catFiveCard();
         } else if (card instanceof FavorCard) {
-            FavorCard();
+            favorCard();
         } else if (card instanceof NopeCard) {
-            NopeCard();
+            nopeCard();
         } else if (card instanceof SeeTheFutureCard) {
-            SeeTheFutureCard();
+            seeTheFutureCard();
         } else if (card instanceof ShuffleCard) {
-            ShuffleCard();
+            shuffleCard();
         } else if (card instanceof SkipCard) {
-            SkipCard();
+            skipCard();
         }
     }
 
@@ -170,7 +170,7 @@ public class GameLogic {
         playsTwice = true;
     }
 
-    private void CatOneCard() {
+    private void catOneCard() {
         if (currentPlayerPlayedCards.contains(new CatOneCard())) {
             stealRandomCard();
             currentPlayerPlayedCards.remove(new CatOneCard());
@@ -179,7 +179,7 @@ public class GameLogic {
         }
     }
 
-    private void CatTwoCard() {
+    private void catTwoCard() {
         if (currentPlayerPlayedCards.contains(new CatTwoCard())) {
             stealRandomCard();
             currentPlayerPlayedCards.remove(new CatTwoCard());
@@ -188,7 +188,7 @@ public class GameLogic {
         }
     }
 
-    private void CatThreeCard() {
+    private void catThreeCard() {
         if (currentPlayerPlayedCards.contains(new CatThreeCard())) {
             stealRandomCard();
             currentPlayerPlayedCards.remove(new CatThreeCard());
@@ -197,7 +197,7 @@ public class GameLogic {
         }
     }
 
-    private void CatFourCard() {
+    private void catFourCard() {
         if (currentPlayerPlayedCards.contains(new CatFourCard())) {
             stealRandomCard();
             currentPlayerPlayedCards.remove(new CatFourCard());
@@ -206,7 +206,7 @@ public class GameLogic {
         }
     }
 
-    private void CatFiveCard() {
+    private void catFiveCard() {
         if (currentPlayerPlayedCards.contains(new CatFiveCard())) {
             stealRandomCard();
             currentPlayerPlayedCards.remove(new CatFiveCard());
@@ -215,26 +215,26 @@ public class GameLogic {
         }
     }
 
-    private void FavorCard() {
+    private void favorCard() {
         choosePlayerToGiveCard();
         currentPlayerPlayedCards.add(new FavorCard());
     }
 
-    private void NopeCard() {
+    private void nopeCard() {
         currentPlayerPlayedCards.add(new NopeCard());
     }
 
-    private void SeeTheFutureCard() {
+    private void seeTheFutureCard() {
         currentPlayerPlayedCards.add(new SeeTheFutureCard());
         showTopThreeCards();
     }
 
-    private void SkipCard() {
+    private void skipCard() {
         currentPlayerPlayedCards.add(new SkipCard());
         nextPlayer();
     }
 
-    private void ShuffleCard() {
+    private void shuffleCard() {
         currentPlayerPlayedCards.add(new ShuffleCard());
         deck.shuffleDeck();
     }

@@ -9,14 +9,14 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.se2_exploding_kittens.gameLogik.cards.Card;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.util.ArrayList;
 
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
-        private ArrayList<Card> cards; // List of cards to display
+        private final ArrayList<Card> cards; // List of cards to display
 
         public CardAdapter(ArrayList<Card> cards) {
             this.cards = cards;

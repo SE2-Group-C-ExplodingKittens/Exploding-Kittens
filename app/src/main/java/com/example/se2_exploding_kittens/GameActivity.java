@@ -22,9 +22,9 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.gameLogik.Deck;
-import com.example.se2_exploding_kittens.gameLogik.Player;
-import com.example.se2_exploding_kittens.gameLogik.cards.Card;
+import com.example.se2_exploding_kittens.game_logic.Deck;
+import com.example.se2_exploding_kittens.game_logic.Player;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.util.ArrayList;
 
@@ -130,7 +130,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
         // Initialize the card adapter (for players hand)
-        adapter = new CardAdapter(p1.hand);
+        adapter = new CardAdapter(p1.getHand());
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
@@ -147,7 +147,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                     // TODO implement the logic, to process Bomb card differently
 
                     // Add the next card to the current player's hand
-                    p1.hand.add(nextCard);
+                    p1.getHand().add(nextCard);
 
                     // Notify the adapter that the data has changed
                     adapter.notifyDataSetChanged();

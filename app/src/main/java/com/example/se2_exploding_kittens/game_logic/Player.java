@@ -1,7 +1,7 @@
-package com.example.se2_exploding_kittens.gameLogik;
+package com.example.se2_exploding_kittens.game_logic;
 
-import com.example.se2_exploding_kittens.gameLogik.cards.Card;
-import com.example.se2_exploding_kittens.gameLogik.cards.DefuseCard;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
+import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class Player {
         this.playerId = playerId;
     }
 
-    public ArrayList<Card> hand = new ArrayList<>();
+    private final ArrayList<Card> hand = new ArrayList<>();
 
     public int getDefuse() {
         for (int i = 0; i < hand.size(); i++) {
@@ -24,5 +24,9 @@ public class Player {
             }
         }
         return -1;
+    }
+
+    public ArrayList<Card> getHand(){
+        return hand;
     }
 }
