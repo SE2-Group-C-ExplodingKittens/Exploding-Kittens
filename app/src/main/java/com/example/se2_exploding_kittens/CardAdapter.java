@@ -9,16 +9,16 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.se2_exploding_kittens.gameLogik.cards.Cards;
+import com.example.se2_exploding_kittens.gameLogik.cards.Card;
 
 import java.util.ArrayList;
 
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
-        private ArrayList<Cards> cards; // List of cards to display
+        private ArrayList<Card> cards; // List of cards to display
 
-        public CardAdapter(ArrayList<Cards> cards) {
+        public CardAdapter(ArrayList<Card> cards) {
             this.cards = cards;
         }
 
@@ -35,7 +35,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             // Get the card at the specified position
-            Cards card = cards.get(position);
+            Card card = cards.get(position);
 
             // Set the card image and title
             holder.cardImage.setImageResource(card.getImageResource());

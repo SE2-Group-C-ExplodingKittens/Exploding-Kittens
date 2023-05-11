@@ -2,7 +2,7 @@ package com.example.se2_exploding_kittens.gameLogik.cards;
 
 import com.example.se2_exploding_kittens.R;
 
-public class SeeTheFutureCard extends Cards {
+public class SeeTheFutureCard extends Card {
     public SeeTheFutureCard() {
     }
 
@@ -10,6 +10,4 @@ public class SeeTheFutureCard extends Cards {
     public int getImageResource() {
         return R.drawable.seethefuturecard;
     }
-
-
 }

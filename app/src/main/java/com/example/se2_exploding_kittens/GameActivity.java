@@ -22,7 +22,7 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.gameLogik.cards.Cards;
+import com.example.se2_exploding_kittens.gameLogik.cards.Card;
 import com.example.se2_exploding_kittens.gameLogik.Deck;
 import com.example.se2_exploding_kittens.gameLogik.Player;
 
@@ -55,10 +55,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         Deck deck = new Deck();
 
-        deck.shuffleDeck(deck.getDeck());
-
-        deck.getDeck();
-
         //Add players to the player's list
         players.add(p1);
         players.add(p2);
@@ -69,9 +65,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         // Deal cards
         deck.dealCards(players);
-
-        p1.getPlayerHand();
-        deck.getDeck();
 
         //TEST END
 
@@ -137,7 +130,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
         // Initialize the card adapter (for players hand)
-        adapter = new CardAdapter(p1.getPlayerHand());
+        adapter = new CardAdapter(p1.hand);
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
@@ -149,12 +142,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             public void onClick(View v) {
                 // Get the next card from the deck
                 try {
-                    Cards nextCard = deck.getNextCard();
+                    Card nextCard = deck.getNextCard();
 
                     // TODO implement the logic, to process Bomb card differently
 
                     // Add the next card to the current player's hand
-                    p1.getPlayerHand().add(nextCard);
+                    p1.hand.add(nextCard);
 
                     // Notify the adapter that the data has changed
                     adapter.notifyDataSetChanged();
