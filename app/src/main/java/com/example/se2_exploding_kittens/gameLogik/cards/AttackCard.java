@@ -1,26 +1,16 @@
 package com.example.se2_exploding_kittens.gameLogik.cards;
 
 import com.example.se2_exploding_kittens.R;
-import com.example.se2_exploding_kittens.gameLogik.Player;
 
 public class AttackCard extends Cards {
 
     public AttackCard() {
 
     }
-    private static int imageResource = R.drawable.attackcard;
-    private static String cardName = "AttackCard";
+
     @Override
     public int getImageResource() {
-        return imageResource;
+        return R.drawable.attackcard;
     }
 
-    public static String getCardName() {
-        return cardName;
-    }
-
-    @Override
-    public void cardAction(Player p1, Player p2) {
-
-    }
 }

@@ -1,14 +1,22 @@
 package com.example.se2_exploding_kittens.gameLogik;
 
-import com.example.se2_exploding_kittens.gameLogik.cards.CardFactory;
+import com.example.se2_exploding_kittens.gameLogik.cards.AttackCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.BombCard;
 import com.example.se2_exploding_kittens.gameLogik.cards.Cards;
+import com.example.se2_exploding_kittens.gameLogik.cards.CatCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.DefuseCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.FavorCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.FunnyPingoCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.NopeCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.SeeTheFutureCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.ShuffleCard;
+import com.example.se2_exploding_kittens.gameLogik.cards.SkipCard;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Deck {
     ArrayList<Cards> deck = new ArrayList<>();
-    public CardFactory factory = new CardFactory();
 
     public Deck() {
         initAttackCard();
@@ -29,61 +37,61 @@ public class Deck {
 
     public void initAttackCard() {
         for (int i = 0; i < 4; i++) {
-            deck.add(factory.getCard("ATTACKCARD"));
+            deck.add(new AttackCard());
         }
     }
 
     public void initBombCard() {
         for (int i = 0; i < 4; i++) {
-            deck.add(factory.getCard("BOMBCARD"));
+            deck.add(new BombCard());
         }
     }
 
     public void initCatCard() {
         for (int i = 0; i < 10; i++) {
-            deck.add(factory.getCard("CATCARD"));
+            deck.add(new CatCard());
         }
     }
 
     public void initFunnyPingoCard() {
         for (int i = 0; i < 10; i++) {
-            deck.add(factory.getCard("FUNNYPINGO"));
+            deck.add(new FunnyPingoCard());
         }
     }
 
     public void initDefuseCard(int nrOfCards) {
         for (int i = 0; i < nrOfCards; i++) {
-            deck.add(factory.getCard("DEFUSECARD"));
+            deck.add(new DefuseCard());
         }
     }
 
     public void initFavorCard() {
         for (int i = 0; i < 4; i++) {
-            deck.add(factory.getCard("FAVORCARD"));
+            deck.add(new FavorCard());
         }
     }
 
     public void initNopeCard() {
         for (int i = 0; i < 5; i++) {
-            deck.add(factory.getCard("NOPECARD"));
+            deck.add(new NopeCard());
         }
     }
 
     public void initShuffleCard() {
         for (int i = 0; i < 4; i++) {
-            deck.add(factory.getCard("SHUFFLECARD"));
+            deck.add(new ShuffleCard());
         }
     }
 
     public void initSkipCard() {
         for (int i = 0; i < 4; i++) {
-            deck.add(factory.getCard("SKIPCARD"));
+            deck.add(new SkipCard());
         }
     }
 
     public void initSeeTheFutureCard() {
         for (int i = 0; i < 5; i++) {
-            deck.add(factory.getCard("SEETHEFUTURECARD"));
+            deck.add(new SeeTheFutureCard());
         }
     }
 
@@ -105,7 +113,7 @@ public class Deck {
         for (Player player : players) {
             ArrayList<Cards> playerHand = new ArrayList<Cards>(deck.subList(0, numCardsPerPlayer));
             //Adding defuse card to each players deck
-            playerHand.add(factory.getCard("DEFUSECARD"));
+            playerHand.add(new DefuseCard());
             player.setPlayerHand(playerHand);
             dealtCards.addAll(playerHand);
             deck.subList(0, numCardsPerPlayer).clear();
@@ -132,15 +140,6 @@ public class Deck {
             return card;
         }
         throw new IndexOutOfBoundsException("The deck is empty!");
-    }
-
-
-    public ArrayList<String> getCardName() {
-        ArrayList<String> cardNames = new ArrayList<String>();
-        for (Cards card : deck) {
-            cardNames.add(card.getCardName());
-        }
-        return cardNames;
     }
 
     public void test() {
