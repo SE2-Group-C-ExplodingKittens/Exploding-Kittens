@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 public class GameLogic {
 
+    private boolean playsTwice = false;
+    private final ArrayList<Card> currentPlayerPlayedCards = new ArrayList<>();
     ArrayList<Player> playerList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
@@ -30,7 +32,7 @@ public class GameLogic {
         deck.dealCards(playerList);
     }
 
-    public void nextPlayer() {
+    public void endTurn() {
         Card card = deck.getNextCard();
         if (card instanceof BombCard) {
             if (playerList.get(currentPlayer).getDefuse() != -1) {
@@ -43,12 +45,21 @@ public class GameLogic {
         } else {
             playerList.get(currentPlayer).hand.add(card);
         }
-        do {
-            currentPlayer++;
-            if (currentPlayer >= playerList.size()) {
-                currentPlayer = 0;
-            }
-        } while (!playerList.get(currentPlayer).alive);
+        nextPlayer();
+    }
+
+    public void nextPlayer() {
+        if (playsTwice) {
+            playsTwice = false;
+        } else {
+            do {
+                currentPlayer++;
+                if (currentPlayer >= playerList.size()) {
+                    currentPlayer = 0;
+                }
+            } while (!playerList.get(currentPlayer).alive);
+        }
+        currentPlayerPlayedCards.clear();
     }
 
     private void checkIfLastSurvivor() {
@@ -110,48 +121,89 @@ public class GameLogic {
     }
 
     private void playAttackCard() {
-
+        nextPlayer();
+        playsTwice = true;
     }
 
     private void CatOneCard() {
-
+        if (currentPlayerPlayedCards.contains(new CatOneCard())) {
+            stealRandomCard();
+            currentPlayerPlayedCards.remove(new CatOneCard());
+        } else {
+            currentPlayerPlayedCards.add(new CatOneCard());
+        }
     }
 
     private void CatTwoCard() {
-
+        if (currentPlayerPlayedCards.contains(new CatTwoCard())) {
+            stealRandomCard();
+            currentPlayerPlayedCards.remove(new CatTwoCard());
+        } else {
+            currentPlayerPlayedCards.add(new CatTwoCard());
+        }
     }
 
     private void CatThreeCard() {
-
+        if (currentPlayerPlayedCards.contains(new CatThreeCard())) {
+            stealRandomCard();
+            currentPlayerPlayedCards.remove(new CatThreeCard());
+        } else {
+            currentPlayerPlayedCards.add(new CatThreeCard());
+        }
     }
 
     private void CatFourCard() {
-
+        if (currentPlayerPlayedCards.contains(new CatFourCard())) {
+            stealRandomCard();
+            currentPlayerPlayedCards.remove(new CatFourCard());
+        } else {
+            currentPlayerPlayedCards.add(new CatFourCard());
+        }
     }
 
     private void CatFiveCard() {
-
+        if (currentPlayerPlayedCards.contains(new CatFiveCard())) {
+            stealRandomCard();
+            currentPlayerPlayedCards.remove(new CatFiveCard());
+        } else {
+            currentPlayerPlayedCards.add(new CatFiveCard());
+        }
     }
 
     private void FavorCard() {
-
+        choosePlayerToGiveCard();
+        currentPlayerPlayedCards.add(new FavorCard());
     }
 
     private void NopeCard() {
-
+        //TODO
     }
 
     private void SeeTheFutureCard() {
-
+        currentPlayerPlayedCards.add(new SeeTheFutureCard());
+        showTopThreeCards();
     }
 
     private void SkipCard() {
-
+        currentPlayerPlayedCards.add(new SkipCard());
+        nextPlayer();
     }
 
     private void ShuffleCard() {
-
+        currentPlayerPlayedCards.add(new ShuffleCard());
+        deck.shuffleDeck();
     }
 
+    private void stealRandomCard() {
+        //TODO
+    }
+
+    private void choosePlayerToGiveCard() {
+        //TODO
+    }
+
+    private void showTopThreeCards() {
+        //TODO
+    }
 
 }
