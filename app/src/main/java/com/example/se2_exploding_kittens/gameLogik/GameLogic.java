@@ -19,6 +19,8 @@ import java.util.ArrayList;
 public class GameLogic {
 
     private boolean playsTwice = false;
+    Card cardToBePlayed;
+    boolean cardIsGoingToBeBPlayed;
     private final ArrayList<Card> currentPlayerPlayedCards = new ArrayList<>();
     ArrayList<Player> playerList = new ArrayList<>();
     int idOfLocalPlayer;
@@ -94,7 +96,50 @@ public class GameLogic {
         return false;
     }
 
-    public void playCard(Card card) {
+    public boolean initializingPlay(Card card, int playerID) {
+        if (currentPlayer == playerID && canNobodyNope()) {
+            cardToBePlayed = card;
+            cardIsGoingToBeBPlayed = true;
+            for (Player player : playerList) {
+                if (player.hand.contains(new NopeCard())) {
+                    player.canNope = true;
+                }
+            }
+            if (canNobodyNope() && cardIsGoingToBeBPlayed) {
+                playCard(cardToBePlayed);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void playerDoesNotNope(int playerID) {
+        playerList.get(playerID).canNope = false;
+        if (canNobodyNope() && cardIsGoingToBeBPlayed) {
+            playCard(cardToBePlayed);
+        }
+    }
+
+    public void playerDoesNope(int playerID) {
+        playerList.get(playerID).canNope = false;
+        cardIsGoingToBeBPlayed = !cardIsGoingToBeBPlayed;
+        playerList.get(playerID).hand.remove(new NopeCard());
+        currentPlayerPlayedCards.add(new NopeCard());
+        if (canNobodyNope() && cardIsGoingToBeBPlayed) {
+            playCard(cardToBePlayed);
+        }
+    }
+
+    private boolean canNobodyNope() {
+        for (Player player : playerList) {
+            if (player.canNope) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void playCard(Card card) {
         if (card instanceof AttackCard) {
             playAttackCard();
         } else if (card instanceof CatOneCard) {
@@ -176,7 +221,7 @@ public class GameLogic {
     }
 
     private void NopeCard() {
-        //TODO
+        currentPlayerPlayedCards.add(new NopeCard());
     }
 
     private void SeeTheFutureCard() {
@@ -205,5 +250,4 @@ public class GameLogic {
     private void showTopThreeCards() {
         //TODO
     }
-
 }

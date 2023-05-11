@@ -9,6 +9,8 @@ public class Player {
     int playerId;
     boolean alive = true;
 
+    boolean canNope = false;
+
     public Player(int playerId) {
         this.playerId = playerId;
     }
