@@ -22,9 +22,9 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.gameLogik.cards.Card;
 import com.example.se2_exploding_kittens.gameLogik.Deck;
 import com.example.se2_exploding_kittens.gameLogik.Player;
+import com.example.se2_exploding_kittens.gameLogik.cards.Card;
 
 import java.util.ArrayList;
 
@@ -53,7 +53,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         // TEST START
         // Initialize a deck object to see if the first hand works
 
-        Deck deck = new Deck();
+        Deck deck = new Deck(1);
 
         //Add players to the player's list
         players.add(p1);

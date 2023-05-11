@@ -16,12 +16,13 @@ import com.example.se2_exploding_kittens.gameLogik.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.gameLogik.cards.SkipCard;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Random;
 
 public class Deck {
     ArrayList<Card> deck = new ArrayList<>();
+    Random random;
 
-    public Deck() {
+    public Deck(int seed) {
         initAttackCard();
         initCatCards();
         initFavorCard();
@@ -29,11 +30,16 @@ public class Deck {
         initShuffleCard();
         initSkipCard();
         initSeeTheFutureCard();
+        this.random = new Random(seed);
         shuffleDeck();
     }
 
     public void shuffleDeck() {
-        Collections.shuffle(deck);
+        ArrayList<Card> tempDeck = new ArrayList<>();
+        while (!deck.isEmpty()) {
+            tempDeck.add(deck.remove(random.nextInt(deck.size() + 1)));
+        }
+        deck = tempDeck;
     }
 
     private void initAttackCard() {
@@ -112,5 +118,9 @@ public class Deck {
             return deck.remove(0);
         }
         throw new IndexOutOfBoundsException("The deck is empty!");
+    }
+
+    public void addBombAtRandomIndex(){
+        deck.add(random.nextInt(deck.size()+1), new BombCard());
     }
 }
