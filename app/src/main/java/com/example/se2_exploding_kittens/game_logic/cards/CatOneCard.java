@@ -2,7 +2,7 @@ package com.example.se2_exploding_kittens.game_logic.cards;
 
 import com.example.se2_exploding_kittens.R;
 
-public class CatOneCard extends Card {
+public class CatOneCard implements Card {
     @Override
     public int getImageResource() {
         return R.drawable.uglykittencard;
