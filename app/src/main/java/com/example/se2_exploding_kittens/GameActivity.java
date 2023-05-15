@@ -22,9 +22,9 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.cards.Cards;
-import com.example.se2_exploding_kittens.cards.Deck.Deck;
-import com.example.se2_exploding_kittens.cards.Player;
+import com.example.se2_exploding_kittens.game_logic.Deck;
+import com.example.se2_exploding_kittens.game_logic.Player;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.util.ArrayList;
 
@@ -53,11 +53,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         // TEST START
         // Initialize a deck object to see if the first hand works
 
-        Deck deck = new Deck();
-
-        deck.shuffleDeck(deck.getDeck());
-
-        deck.getDeck();
+        Deck deck = new Deck(1);
 
         //Add players to the player's list
         players.add(p1);
@@ -69,9 +65,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         // Deal cards
         deck.dealCards(players);
-
-        p1.getPlayerHand();
-        deck.getDeck();
 
         //TEST END
 
@@ -137,7 +130,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
         // Initialize the card adapter (for players hand)
-        adapter = new CardAdapter(p1.getPlayerHand());
+        adapter = new CardAdapter(p1.getHand());
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
@@ -149,12 +142,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             public void onClick(View v) {
                 // Get the next card from the deck
                 try {
-                    Cards nextCard = deck.getNextCard();
+                    Card nextCard = deck.getNextCard();
 
                     // TODO implement the logic, to process Bomb card differently
 
                     // Add the next card to the current player's hand
-                    p1.getPlayerHand().add(nextCard);
+                    p1.getHand().add(nextCard);
 
                     // Notify the adapter that the data has changed
                     adapter.notifyDataSetChanged();
