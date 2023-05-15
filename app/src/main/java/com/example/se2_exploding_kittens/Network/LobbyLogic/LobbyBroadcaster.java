@@ -10,14 +10,14 @@ import java.net.InetAddress;
 
 public class LobbyBroadcaster implements Runnable{
 
-    private String lobbyName;
-    private int port;
+    private final String lobbyName;
+    private final int hostingPort;
     private boolean terminateBroadcasting = false;
 
     public LobbyBroadcaster(String lobbyName, int port){
         lobbyName=lobbyName.replaceAll("#","");
         this.lobbyName = lobbyName;
-        this.port = port;
+        this.hostingPort = port;
     }
 
     public void terminateBroadcasting(){
@@ -25,19 +25,20 @@ public class LobbyBroadcaster implements Runnable{
     }
 
     public void broadcastLobbyInfo(String lobbyName) {
+        DatagramSocket socket = null;
         try {
             if (lobbyName.length() > 15) {
                 lobbyName = lobbyName.substring(0, 15);
             }
             // Create a new DatagramSocket for sending UDP packets
-            DatagramSocket socket = new DatagramSocket();
+            socket = new DatagramSocket();
 
             // Define the broadcast address and port number for the UDP packets
             InetAddress broadcastAddress = IPUtil.getLocalBroadcastAddress();
             int port = 51600;
 
             // Create a byte array to hold the lobby information data
-            byte[] lobbyData = ((lobbyName+"#"+this.port)).getBytes();
+            byte[] lobbyData = (lobbyName+"#"+this.hostingPort).getBytes();
 
             // Create a new DatagramPacket with the lobby information data, broadcast address, and port number
             DatagramPacket packet = new DatagramPacket(lobbyData, lobbyData.length, broadcastAddress, port);
@@ -49,14 +50,18 @@ public class LobbyBroadcaster implements Runnable{
             }while (!terminateBroadcasting);
 
 
-            // Close the socket when we're done sending packets
-            socket.close();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             //Sonar Cloud: Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.
             Thread.currentThread().interrupt();
             e.printStackTrace();
+        }finally {
+            // Close the socket when we're done sending packets
+            if(socket != null)
+                socket.close();
         }
     }
 

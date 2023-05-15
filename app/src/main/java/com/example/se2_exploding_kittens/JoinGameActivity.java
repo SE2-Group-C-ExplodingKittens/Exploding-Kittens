@@ -27,9 +27,11 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
 
     private ArrayList<Lobby> lobbies;
 
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        ll.terminateListening();
+        if(ll != null)
+            ll.terminateListening();
     }
 
     @Override
@@ -52,11 +54,11 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
     @Override
     public void responseReceived(String text, Object sender) {
         if(sender instanceof LobbyListener){
-            lobbyFound(text);
+            lobbyFound();
         }
     }
 
-    private void lobbyFound(String text) {
+    private void lobbyFound(){
         lobbies = ll.getLobbies();
         runOnUiThread(() -> lobbyView.getAdapter().notifyDataSetChanged());
     }

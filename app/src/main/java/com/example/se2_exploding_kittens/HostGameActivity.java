@@ -15,15 +15,17 @@ public class HostGameActivity extends AppCompatActivity {
 
     private LobbyBroadcaster lb;
     private NetworkManager connection;
-    private Button buttonStartHosting;
-    private Button buttonStartGame;
-    private EditText editTextLobbyName;
 
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        lb.terminateBroadcasting();
-        if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE)
-            connection.terminateConnection();
+        if(lb != null)
+            lb.terminateBroadcasting();
+        if(connection != null){
+            if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE)
+                connection.terminateConnection();
+        }
     }
 
     private void hostLobby(String name){
@@ -37,6 +39,9 @@ public class HostGameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Button buttonStartHosting;
+        Button buttonStartGame;
+        EditText editTextLobbyName;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_game);
 
@@ -45,26 +50,21 @@ public class HostGameActivity extends AppCompatActivity {
         buttonStartGame.setEnabled(false);
         editTextLobbyName = findViewById(R.id.editTextLobbyName);
 
-        buttonStartHosting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String lobbyName = editTextLobbyName.getText().toString().trim();
-                if (!lobbyName.isEmpty()) {
-                    hostLobby(lobbyName);
-                }else{
-                    hostLobby("Lobby");
-                }
-                buttonStartHosting.setEnabled(false);
-                buttonStartGame.setEnabled(true);
+        buttonStartHosting.setOnClickListener(v -> {
+            String lobbyName = editTextLobbyName.getText().toString().trim();
+            if (!lobbyName.isEmpty()) {
+                hostLobby(lobbyName);
+            }else{
+                hostLobby("Lobby");
             }
+            buttonStartHosting.setEnabled(false);
+            buttonStartGame.setEnabled(true);
         });
 
-        buttonStartGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HostGameActivity.this, GameActivity.class);
-                startActivity(intent);
-            }
+        buttonStartGame.setOnClickListener(v -> {
+            lb.terminateBroadcasting();
+            Intent intent = new Intent(HostGameActivity.this, GameActivity.class);
+            startActivity(intent);
         });
     }
 }
