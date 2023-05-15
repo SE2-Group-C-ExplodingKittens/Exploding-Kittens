@@ -36,6 +36,7 @@ android {
         }
     }
     buildToolsVersion '30.0.3'
+    namespace 'com.example.se2_exploding_kittens'
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
