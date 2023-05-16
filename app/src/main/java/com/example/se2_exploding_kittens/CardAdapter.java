@@ -43,7 +43,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             // Set the card image and title
             holder.cardImage.setImageResource(card.getImageResource());
 
-//            TODO Trying to implement the drag and drop function
             holder.cardImage.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {

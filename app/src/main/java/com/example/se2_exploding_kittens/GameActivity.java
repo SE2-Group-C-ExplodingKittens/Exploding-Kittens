@@ -27,6 +27,7 @@ import com.example.se2_exploding_kittens.cards.Deck.Deck;
 import com.example.se2_exploding_kittens.cards.Player;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
     private RecyclerView recyclerView;
@@ -78,6 +79,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         // Implement onDragListener for the discard pile view
         View discardPileView = findViewById(R.id.discardPile);
 
+        // Defining the area where the card can be dropped
         Rect dropBounds = new Rect(discardPileView.getLeft(), discardPileView.getTop(),
                 discardPileView.getRight(), discardPileView.getBottom());
 
@@ -101,11 +103,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         }
                         break;
                     case DragEvent.ACTION_DROP:
-                        // Get the dragged item from the ClipData object
+                        // Get the dragged item from the ClipData object the name and the image resource
                         ClipData.Item item = event.getClipData().getItemAt(0);
                         ClipData.Item mPositionItem = event.getClipData().getItemAt(1);
+                        //Converting the retrieved cli[data to strings for further processing
                         String mPositionString = String.valueOf(mPositionItem.getText());
                         String cardResourceString = String.valueOf(item.getText());
+                        // Converting strings to integers
                         int cardResource = Integer.parseInt(cardResourceString);
                         int mPosition = Integer.parseInt(mPositionString);
                         // Add the card to the discard pile
@@ -116,7 +120,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         discardedCard.setLayoutParams(params);
                         ((ViewGroup) view).addView(discardedCard);
-                        // Setting image at the beginning to the invisible state
+
+                        // Setting the random value for rotation of the discarded card, giving the impression of the real discard pile
+                        float min = -10.0f;
+                        float max = 10.0f;
+                        float random = min + new Random().nextFloat() * (max - min);
+                        // Setting the discarded card rotation
+                        discardedCard.setRotation(random);
+                        // Setting image at the beginning to the invisible state, so it disappears from screen
                         ImageView discardImage = findViewById(R.id.discard_pile_image);
                         discardImage.setVisibility(View.INVISIBLE);
 
