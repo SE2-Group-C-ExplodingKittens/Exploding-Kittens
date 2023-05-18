@@ -15,6 +15,7 @@ public class HostGameActivity extends AppCompatActivity {
 
     private LobbyBroadcaster lb;
     private NetworkManager connection;
+    private
 
 
     @Override

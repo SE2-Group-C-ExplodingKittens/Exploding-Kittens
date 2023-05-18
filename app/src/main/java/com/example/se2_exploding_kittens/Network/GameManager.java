@@ -1,7 +1,6 @@
 package com.example.se2_exploding_kittens.Network;
 
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.Network.TCP.TCP;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
@@ -39,7 +38,7 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    private void sendCards(int playerID, ArrayList<Card> firstHand, boolean isInitialHand) {
+    private void sendHand(int playerID, ArrayList<Card> firstHand, boolean isInitialHand) {
         for (Card card : firstHand) {
             sendCard(playerID, card.toString(), isInitialHand);
         }
