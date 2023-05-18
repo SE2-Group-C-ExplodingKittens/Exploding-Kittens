@@ -1,7 +1,6 @@
 package com.example.se2_exploding_kittens.Network;
 
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.Network.TCP.TCP;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.cards.Cards;
@@ -49,6 +48,5 @@ public class GameManager implements MessageCallback {
         if(sender instanceof ServerTCPSocket){
             int playerID = playerManager.getPlayerIDByConnection((ServerTCPSocket) sender);
         }
-        //parseMessage
     }
 }
