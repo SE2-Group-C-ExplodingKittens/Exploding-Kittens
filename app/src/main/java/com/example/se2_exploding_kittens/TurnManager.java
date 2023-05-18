@@ -9,6 +9,12 @@ import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 
 public class TurnManager implements MessageCallback {
     public static final int TURN_MANAGER_MESSAGE_ID = 300;
+
+    public static final int TURN_MANAGER_CARD_PULLED = 1;
+    public static final int TURN_MANAGER_ACTION_CARD_PLAYED = 2;
+    public static final int TURN_MANAGER_NOPE_PLAYED = 3;
+    public static final int TURN_MANAGER_ASSIGN_TURNS = 4;
+
     private NetworkManager networkManager;
     private PlayerManager playerManager;
     private int currentPlayerIndex;

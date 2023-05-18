@@ -73,21 +73,21 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         connectionRole = TypeOfConnectionRole.IDLE;
     }
 
-    void runAsServer(int port){
+    public void runAsServer(int port){
         connectionRole = TypeOfConnectionRole.SERVER;
         server = new TCPServer(port,this);
         Thread thread = new Thread(server);
         thread.start();
     }
 
-    void runAsClient(String serverAddress, int port){
+    public void runAsClient(String serverAddress, int port){
         connectionRole = TypeOfConnectionRole.CLIENT;
         connection = new ClientTCP(serverAddress, port,this);
         Thread thread = new Thread((ClientTCP) connection);
         thread.start();
     }
 
-    void terminateConnection(){
+    public void terminateConnection(){
         if(connectionRole == TypeOfConnectionRole.SERVER){
             for ( ServerTCPSocket con: serverToClientConnections) {
                 con.endConnection();

@@ -1,7 +1,7 @@
 package com.example.se2_exploding_kittens.Network;
 
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.cards.Player;
+import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class PlayerConnection {
     private ServerTCPSocket connection;
@@ -18,6 +18,10 @@ public class PlayerConnection {
 
     public int getPlayerID() {
         return player.getPlayerId();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public int numberOfTurnsLeft(){

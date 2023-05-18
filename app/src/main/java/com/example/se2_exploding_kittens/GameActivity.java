@@ -22,6 +22,7 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
+import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
@@ -35,39 +36,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     private ArrayList<Player> players = new ArrayList<Player>();
 
-    private Player p1 = new Player(1);
-    private Player p2 = new Player(2);
-    private Player p3 = new Player(3);
-    private Player p4 = new Player(4);
-    private Player p5 = new Player(5);
-    private Player p6 = new Player(6);
+    private Deck deck;
 
-
-    @SuppressLint("MissingInflatedId")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-        connection = NetworkManager.getInstance();
-
-        // TEST START
-        // Initialize a deck object to see if the first hand works
-
-        Deck deck = new Deck(1);
-
-        //Add players to the player's list
-        players.add(p1);
-        players.add(p2);
-        players.add(p3);
-        players.add(p4);
-        players.add(p5);
-        players.add(p6);
-
-        // Deal cards
-        deck.dealCards(players);
-
-        //TEST END
-
+    //hand over the player that plays over on the device
+    private void guiInit(Player currentPlayer){
         // Implement onDragListener for the discard pile view
         View discardPileView = findViewById(R.id.discardPile);
 
@@ -130,7 +102,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
         // Initialize the card adapter (for players hand)
-        adapter = new CardAdapter(p1.getHand());
+        adapter = new CardAdapter(currentPlayer.getHand());
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
@@ -147,7 +119,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                     // TODO implement the logic, to process Bomb card differently
 
                     // Add the next card to the current player's hand
-                    p1.getHand().add(nextCard);
+                    currentPlayer.getHand().add(nextCard);
 
                     // Notify the adapter that the data has changed
                     adapter.notifyDataSetChanged();
@@ -158,6 +130,48 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
             }
         });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
+        connection = NetworkManager.getInstance();
+        long seed = System.currentTimeMillis();
+
+        if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+            deck = new Deck(seed);
+            Player localClientPlayer = new Player(1);
+
+        }else if(connection.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+            Player localClientPlayer = new Player(1);
+            guiInit(localClientPlayer);
+        }else if(connection.getConnectionRole() == TypeOfConnectionRole.IDLE){
+            //this case just for local testing presumably no connection has ever been established
+            //Add players to the player's list
+            Player p1 = new Player(1);
+            Player p2 = new Player(2);
+            Player p3 = new Player(3);
+            Player p4 = new Player(4);
+            Player p5 = new Player(5);
+            Player p6 = new Player(6);
+            players.add(p1);
+            players.add(p2);
+            players.add(p3);
+            players.add(p4);
+            players.add(p5);
+            players.add(p6);
+
+            // Deal cards
+            deck.dealCards(players);
+
+            guiInit(p1);
+        }
+
+
+
+
+
 
     }
 

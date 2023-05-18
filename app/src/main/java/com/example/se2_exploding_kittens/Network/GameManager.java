@@ -4,8 +4,8 @@ import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TCP.TCP;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
-import com.example.se2_exploding_kittens.cards.Cards;
-import com.example.se2_exploding_kittens.cards.Deck.Deck;
+import com.example.se2_exploding_kittens.game_logic.Deck;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,8 @@ public class GameManager implements MessageCallback {
     public GameManager(NetworkManager networkManager) {
         this.networkManager = networkManager;
         this.turnManager = new TurnManager(networkManager);
-        this.deck = new Deck();
+        long seed = System.currentTimeMillis();
+        this.deck = new Deck(seed);
         this.playerManager = PlayerManager.getInstance();
         this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
@@ -38,8 +39,8 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    private void sendCards(int playerID, ArrayList<Cards> firstHand, boolean isInitialHand) {
-        for (Cards card : firstHand) {
+    private void sendCards(int playerID, ArrayList<Card> firstHand, boolean isInitialHand) {
+        for (Card card : firstHand) {
             sendCard(playerID, card.toString(), isInitialHand);
         }
     }

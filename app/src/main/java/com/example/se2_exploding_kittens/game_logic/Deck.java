@@ -22,7 +22,7 @@ public class Deck {
     ArrayList<Card> cardDeck = new ArrayList<>();
     Random random;
 
-    public Deck(int seed) {
+    public Deck(long seed) {
         initAttackCard();
         initCatCards();
         initFavorCard();
@@ -121,6 +121,6 @@ public class Deck {
     }
 
     public void addBombAtRandomIndex(){
-        cardDeck.add(random.nextInt(cardDeck.size()+1), new BombCard());
+        cardDeck.add(random.nextInt(cardDeck.size()-1), new BombCard());
     }
 }
