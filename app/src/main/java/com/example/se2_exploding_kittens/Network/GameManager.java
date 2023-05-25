@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.Network;
 
+import android.widget.Toast;
+
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
@@ -48,6 +50,7 @@ public class GameManager implements MessageCallback {
     public void responseReceived(String text, Object sender) {
         if(sender instanceof ServerTCPSocket){
             int playerID = playerManager.getPlayerIDByConnection((ServerTCPSocket) sender);
+
         }
     }
 }

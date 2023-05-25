@@ -178,7 +178,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
                         break;
                 }
             }
-
         }
     }
 }

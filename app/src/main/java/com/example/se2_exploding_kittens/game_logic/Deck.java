@@ -108,7 +108,12 @@ public class Deck {
     public void shuffleDeck() {
         ArrayList<Card> tempDeck = new ArrayList<>();
         while (!cardDeck.isEmpty()) {
-            tempDeck.add(cardDeck.remove(random.nextInt(cardDeck.size() + 1)));
+            if(cardDeck.size() > 1){
+                tempDeck.add(cardDeck.remove(random.nextInt(cardDeck.size() - 1)));
+            }else {
+                tempDeck.add(cardDeck.remove(0));
+            }
+
         }
         cardDeck = tempDeck;
     }

@@ -84,6 +84,7 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+.idea/sonarlint
 .idea/shelf/Uncommitted_changes_before_Checkout_at_17_04_2023__19_53__Changes_.xml
 .idea/shelf/Uncommitted_changes_before_Checkout_at_17_04_2023__19_53__Changes_.xml
 .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023,_21_10_\[Changes\]/shelved.patch
@@ -92,3 +93,20 @@ lint/tmp/
 .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_10__Changes_.xml
 .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_11__Changes_.xml
 .idea/shelf/Uncommitted_changes_before_Checkout_at_24_04_2023__21_12__Changes_.xml
+.idea/sonarlint/issuestore/index.pb
+.idea/shelf/Uncommitted_changes_before_Checkout_at_17_04_2023__19_53__Changes_.xml
+.idea/shelf/Uncommitted_changes_before_Checkout_at_18_04_2023__11_13__Changes_.xml
+.idea/sonarlint/issuestore/0/3/03f690c8cdb9fc7932c5dd9edbbbe90b9ba0501c
+.idea/sonarlint/issuestore/c/b/cbf8e43c8b5e09b870947f278a79c4e3b9d83a3f
+.idea/sonarlint/issuestore/f/0/f07866736216be0ee2aba49e392191aeae700a35
+.idea/sonarlint/issuestore/f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
+*.pb
+.idea/sonarlint/securityhotspotstore/0/3/03f690c8cdb9fc7932c5dd9edbbbe90b9ba0501c
+.idea/sonarlint/securityhotspotstore/f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
+.idea/sonarlint/securityhotspotstore/f/0/f07866736216be0ee2aba49e392191aeae700a35
+.idea/sonarlint/securityhotspotstore/c/b/cbf8e43c8b5e09b870947f278a79c4e3b9d83a3f
+.idea/sonarlint/securityhotspotstore/8/2/8269b7ec7b994c86b18d4e245e8f15626b380ffd
+.idea/sonarlint/securityhotspotstore/4/d/4d91d2ad0dc513ca56542b9a434794c77ef39f32
+.idea/sonarlint/securityhotspotstore/0/3/03f690c8cdb9fc7932c5dd9edbbbe90b9ba0501c
+.idea/sonarlint/issuestore/index.pb
+.idea/sonarlint/securityhotspotstore/index.pb

@@ -4,18 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.se2_exploding_kittens.Network.IPUtil;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
+
+import java.net.InetAddress;
 
 public class HostGameActivity extends AppCompatActivity {
 
     private LobbyBroadcaster lb;
     private NetworkManager connection;
-    private
 
 
     @Override
@@ -53,13 +57,21 @@ public class HostGameActivity extends AppCompatActivity {
 
         buttonStartHosting.setOnClickListener(v -> {
             String lobbyName = editTextLobbyName.getText().toString().trim();
-            if (!lobbyName.isEmpty()) {
-                hostLobby(lobbyName);
+            if(IPUtil.getLocalBroadcastAddress() == null){
+                Toast toast = Toast.makeText(this, "Connect to the local wifi!", Toast.LENGTH_LONG);
+                toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
+                toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
+                toast.show();
             }else{
-                hostLobby("Lobby");
+                if (!lobbyName.isEmpty()) {
+                    hostLobby(lobbyName);
+                }else{
+                    hostLobby("Lobby");
+                }
+                buttonStartHosting.setEnabled(false);
+                buttonStartGame.setEnabled(true);
             }
-            buttonStartHosting.setEnabled(false);
-            buttonStartGame.setEnabled(true);
+
         });
 
         buttonStartGame.setOnClickListener(v -> {

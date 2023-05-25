@@ -41,7 +41,7 @@ public class GameLogic {
                 playerList.get(currentPlayer).getHand().remove(playerList.get(currentPlayer).getDefuse());
                 deck.addBombAtRandomIndex();
             } else {
-                playerList.get(currentPlayer).alive = false;
+                playerList.get(currentPlayer).setAlive(false);
                 checkIfLastSurvivor();
             }
         } else {
@@ -59,7 +59,7 @@ public class GameLogic {
                 if (currentPlayer >= playerList.size()) {
                     currentPlayer = 0;
                 }
-            } while (!playerList.get(currentPlayer).alive);
+            } while (!playerList.get(currentPlayer).isAlive());
         }
         currentPlayerPlayedCards.clear();
     }
@@ -67,7 +67,7 @@ public class GameLogic {
     private void checkIfLastSurvivor() {
         int counter = 0;
         for (Player player : playerList) {
-            if (player.alive) {
+            if (player.isAlive()) {
                 counter++;
             }
         }
@@ -88,7 +88,7 @@ public class GameLogic {
 
     public boolean cheat(int playerID) {
         for (Player player : playerList) {
-            if (playerID == player.playerId) {
+            if (playerID == player.getPlayerId()) {
                 player.getHand().add(deck.getNextCard()); //Theoretically this could throw and exception, but practically this must not happen, so I am not catching it.
                 return true;
             }
@@ -102,7 +102,7 @@ public class GameLogic {
             cardIsGoingToBeBPlayed = true;
             for (Player player : playerList) {
                 if (player.getHand().contains(new NopeCard())) {
-                    player.canNope = true;
+                    player.setCanNope(true);
                 }
             }
             if (canNobodyNope() && cardIsGoingToBeBPlayed) {
@@ -114,14 +114,14 @@ public class GameLogic {
     }
 
     public void playerDoesNotNope(int playerID) {
-        playerList.get(playerID).canNope = false;
+        playerList.get(playerID).setCanNope(false);
         if (canNobodyNope() && cardIsGoingToBeBPlayed) {
             playCard(cardToBePlayed);
         }
     }
 
     public void playerDoesNope(int playerID) {
-        playerList.get(playerID).canNope = false;
+        playerList.get(playerID).setCanNope(false);
         cardIsGoingToBeBPlayed = !cardIsGoingToBeBPlayed;
         playerList.get(playerID).getHand().remove(new NopeCard());
         currentPlayerPlayedCards.add(new NopeCard());
@@ -132,7 +132,7 @@ public class GameLogic {
 
     private boolean canNobodyNope() {
         for (Player player : playerList) {
-            if (player.canNope) {
+            if (player.isCanNope()) {
                 return false;
             }
         }
