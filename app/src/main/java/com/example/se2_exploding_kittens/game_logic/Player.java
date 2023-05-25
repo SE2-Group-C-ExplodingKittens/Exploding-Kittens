@@ -12,26 +12,29 @@ public class Player {
     boolean canNope = false;
     private int playerTurns;
     private boolean playerTurn;
-    ArrayList<Player> currentPlayersOrder;
+
+    boolean alive = true;
+
+    boolean canNope = false;
 
     // if the client initalizes a player object, ID may NOT be known yet thus getter and setter may be needed
     public Player(int playerId) {
         this.playerId = playerId;
     }
 
-    //    Implement attack card
-    public void playAttack() {
-        // Find the next player in the turn order
-        Player nextPlayer = findNextPlayer(currentPlayersOrder);
-        // Increase the number of turns for the next player
-        nextPlayer.setPlayerTurns(2);
+    private final ArrayList<Cards> hand = new ArrayList<>();
+
+    public int getDefuse() {
+        for (int i = 0; i < hand.size(); i++) {
+            if (hand.get(i) instanceof DefuseCard) {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    public Player findNextPlayer(ArrayList<Player> players) {
-        //  Assuming that the Players will be stored in an ArrayList
-        int currIndex = players.indexOf(this);
-        int nextIndex = (currIndex + 1) % players.size();
-        return players.get(nextIndex);
+    public ArrayList<Cards> getHand() {
+        return hand;
     }
 
     private final ArrayList<Card> hand = new ArrayList<>();
@@ -67,9 +70,5 @@ public class Player {
 
     public int getPlayerId() {
         return playerId;
-    }
-
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
     }
 }

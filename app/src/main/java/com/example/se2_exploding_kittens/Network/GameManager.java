@@ -49,6 +49,5 @@ public class GameManager implements MessageCallback {
         if(sender instanceof ServerTCPSocket){
             int playerID = playerManager.getPlayerIDByConnection((ServerTCPSocket) sender);
         }
-        //parseMessage
     }
 }
