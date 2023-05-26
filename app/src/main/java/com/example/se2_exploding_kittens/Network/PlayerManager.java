@@ -56,6 +56,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
             playerClient = player;
             this.networkManager = networkManager;
+            this.networkManager.subscribeToClientConnectedCallback(this);
+            this.networkManager.subscribeToDisconnectedCallback(this);
             this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
         }
     }
@@ -137,7 +139,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
                         e.printStackTrace();
                     }
                 }
-
             }
         }
     }

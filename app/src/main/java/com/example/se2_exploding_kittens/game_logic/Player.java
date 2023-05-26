@@ -1,5 +1,8 @@
 package com.example.se2_exploding_kittens.game_logic;
 
+import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID;
+import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID;
+import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.AttackCard.ATTACK_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.BombCard.BOMB_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.CatFiveCard.CAT_FIVE_CARD_ID;
@@ -14,6 +17,12 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
+import android.util.Log;
+
+import com.example.se2_exploding_kittens.Network.Message;
+import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
+import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
@@ -28,16 +37,20 @@ import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard;
 import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
+import com.example.se2_exploding_kittens.game_logic.PlayerMessageID;
 
 import java.util.ArrayList;
 
-public class Player {
+public class Player implements MessageCallback {
 
     private int playerId;
     private boolean alive = true;
     private boolean canNope = false;
     private int playerTurns;
     private boolean playerTurn;
+    private static String DEBUG_TAG = "Player";
+
+
     ArrayList<Player> currentPlayersOrder;
 
 
@@ -94,12 +107,23 @@ public class Player {
         }
         return export;
     }
+
     public void setHandFromString(String exportString) {
         if(exportString != null){
             hand = new ArrayList<>();
             String[] arr = exportString.split("-");
             for(String s: arr){
                 addCardToHand(s);
+            }
+        }
+    }
+
+    public void subscribePlayerToCardEvents(NetworkManager connection){
+        if(connection != null){
+            if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE){
+                connection.subscribeCallbackToMessageID(this, PLAYER_HAND_MESSAGE_ID.id);
+                connection.subscribeCallbackToMessageID(this, PLAYER_CARD_ADDED_MESSAGE_ID.id);
+                connection.subscribeCallbackToMessageID(this, PLAYER_CARD_REMOVED_MESSAGE_ID.id);
             }
         }
     }
@@ -279,5 +303,43 @@ public class Player {
 
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+
+    private int getAddressedPlayerFromPayload(String payload){
+        String[] splitInput = payload.split(":");
+        if (splitInput.length > 0) {
+            try {
+                return Integer.parseInt(splitInput[0]);
+            } catch (NumberFormatException e) {
+                Log.e(DEBUG_TAG, "Could not parse");
+            }
+        }
+        return -1;  // -1 means invalid
+    }
+
+
+    private String parseDataFromPayload(String input) {
+        String[] splitInput = input.split(":");
+        if (splitInput.length > 1) {
+            return splitInput[1];
+        }
+        return "";  // null means invalid
+    }
+
+    @Override
+    public void responseReceived(String text, Object sender) {
+        if(text != null){
+            int messageID = Message.parseAndExtractMessageID(text);
+            String payload = Message.parseAndExtractPayload(text);
+            if(playerId == getAddressedPlayerFromPayload(payload)){
+                if(messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id){
+                    addCardToHand(parseDataFromPayload(payload));
+                }else if(messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id){
+                    removeCardFromHand(parseDataFromPayload(payload));
+                }else if(messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id){
+                    setHandFromString(parseDataFromPayload(payload));
+                }
+            }
+        }
     }
 }

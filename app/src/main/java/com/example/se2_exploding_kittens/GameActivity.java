@@ -1,6 +1,7 @@
 package com.example.se2_exploding_kittens;
 
 import static com.example.se2_exploding_kittens.NetworkManager.TEST_MESSAGE_ID;
+import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -145,7 +146,19 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private void distributeDeck(Deck deck) {
         try {
             if(deck != null){
-                connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.toString()));
+                connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+    private void distributePlayerHands() {
+        try {
+            if(players != null){
+                for (Player p: players) {
+                    connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_HAND_MESSAGE_ID.id, p.getPlayerId()+":"+p.handToString()));
+                }
+
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -168,6 +181,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         connection = NetworkManager.getInstance();
+        connection.subscribeCallbackToMessageID(this,GAME_ACTIVITY_DECK_MESSAGE_ID);
         long seed = System.currentTimeMillis();
 
         if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
@@ -175,14 +189,16 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             playerManager.initializeAsHost(connection.getServerConnections(),connection);
             for (PlayerConnection pc: playerManager.getPlayers()) {
                 players.add(pc.getPlayer());
+                pc.getPlayer().subscribePlayerToCardEvents(connection);
             }
             deck.dealCards(players);
             distributeDeck(deck);
-
-
-
+            distributePlayerHands();
+            // player id 0 is always the host
+            guiInit(playerManager.getPlayer(0).getPlayer());
         }else if(connection.getConnectionRole() == TypeOfConnectionRole.CLIENT){
             Player localClientPlayer = new Player();
+            localClientPlayer.subscribePlayerToCardEvents(connection);
             playerManager.initializeAsClient(localClientPlayer,connection);
             while (localClientPlayer.getPlayerId() == -1){
                 try {
