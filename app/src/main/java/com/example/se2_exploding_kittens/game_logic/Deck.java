@@ -42,6 +42,8 @@ public class Deck {
         cardDeck = tempDeck;
     }
 
+    // FIXME extract magic constants (to describe meaning of 4)
+    // FIXME method names plural
     private void initAttackCard() {
         for (int i = 0; i < 4; i++) {
             cardDeck.add(new AttackCard());

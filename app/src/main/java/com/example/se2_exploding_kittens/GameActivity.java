@@ -43,6 +43,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private Player p6 = new Player(6);
 
 
+    // FIXME too long method
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +165,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     @Override
     public void responseReceived(String text, Object sender) {
+        // FIXME reduce nested depth
         Log.v("GameActivity", text);
         if (sender instanceof ServerTCPSocket) {
             Log.v("GameActivity", "srv");
