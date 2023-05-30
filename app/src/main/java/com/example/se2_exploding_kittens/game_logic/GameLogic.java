@@ -16,6 +16,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
 
+// FIXME extract the card logic into cards (no instanceof)
 public class GameLogic {
 
     private boolean playsTwice = false;
