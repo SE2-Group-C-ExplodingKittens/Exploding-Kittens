@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
+public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> implements PropertyChangeListener {
 
         private final ArrayList<Card> cards; // List of cards to display
 
@@ -69,7 +71,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             return cards.size();
         }
 
-        // Provide a reference to the views for each card item
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("hand")) {
+            notifyDataSetChanged();
+        }
+    }
+
+    // Provide a reference to the views for each card item
         public static class ViewHolder extends RecyclerView.ViewHolder {
             public ImageView cardImage;
 

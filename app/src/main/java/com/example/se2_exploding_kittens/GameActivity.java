@@ -100,7 +100,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 return true;
             }
         });
+        playerHandInit(currentPlayer);
+    }
 
+    private void playerHandInit(Player currentPlayer){
         // Initialize the RecyclerView and layout manager
         recyclerView = findViewById(R.id.recyclerVw);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -114,6 +117,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         // Initialize the card adapter (for players hand)
         adapter = new CardAdapter(currentPlayer.getHand());
+        currentPlayer.addPropertyChangeListener(adapter);
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
@@ -154,9 +158,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     }
     private void distributePlayerHands() {
         try {
-            if(players != null){
-                for (Player p: players) {
-                    connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_HAND_MESSAGE_ID.id, p.getPlayerId()+":"+p.handToString()));
+            if(playerManager != null){
+                for (PlayerConnection p: playerManager.getPlayers()) {
+                    if(p.getConnection() != null){
+                        connection.sendMessageFromTheSever(new Message(MessageType.MESSAGE, PLAYER_HAND_MESSAGE_ID.id, p.getPlayer().getPlayerId()+":"+p.getPlayer().handToString()),p.getConnection());
+                    }
                 }
 
             }
@@ -212,8 +218,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
-
             guiInit(localClientPlayer);
+
+
         }else if(connection.getConnectionRole() == TypeOfConnectionRole.IDLE){
             //this case just for local testing presumably no connection has ever been established
             //Add players to the player's list
@@ -233,9 +240,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
             // Deal cards
             deck.dealCards(players);
-
-
-
 
             guiInit(p1);
         }

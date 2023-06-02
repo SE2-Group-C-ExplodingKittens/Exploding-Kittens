@@ -17,6 +17,7 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
+import android.database.Observable;
 import android.util.Log;
 
 import com.example.se2_exploding_kittens.Network.Message;
@@ -39,9 +40,11 @@ import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 import com.example.se2_exploding_kittens.game_logic.PlayerMessageID;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
-public class Player implements MessageCallback {
+public class Player extends Observable implements MessageCallback {
 
     private int playerId;
     private boolean alive = true;
@@ -50,9 +53,7 @@ public class Player implements MessageCallback {
     private boolean playerTurn;
     private static String DEBUG_TAG = "Player";
 
-
-    ArrayList<Player> currentPlayersOrder;
-
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     // if the client initalizes a player object, ID may NOT be known yet thus getter and setter may be needed
     public Player(int playerId) {
@@ -61,6 +62,14 @@ public class Player implements MessageCallback {
 
     public Player(){
         playerId = -1;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     private ArrayList<Card> hand = new ArrayList<>();
@@ -100,11 +109,14 @@ public class Player implements MessageCallback {
 
     public String handToString(){
         String export = "";
+        StringBuilder bld = new StringBuilder();
         if(hand .size() > 0){
             for (Card c: hand) {
-                export = export+c.getCardID()+"-";
+                bld.append(c.getCardID());
+                bld.append("-");
             }
         }
+        export= bld.toString();
         return export;
     }
 
@@ -119,12 +131,11 @@ public class Player implements MessageCallback {
     }
 
     public void subscribePlayerToCardEvents(NetworkManager connection){
-        if(connection != null){
-            if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE){
+        if(connection != null && (connection.getConnectionRole() != TypeOfConnectionRole.IDLE)){
                 connection.subscribeCallbackToMessageID(this, PLAYER_HAND_MESSAGE_ID.id);
                 connection.subscribeCallbackToMessageID(this, PLAYER_CARD_ADDED_MESSAGE_ID.id);
                 connection.subscribeCallbackToMessageID(this, PLAYER_CARD_REMOVED_MESSAGE_ID.id);
-            }
+
         }
     }
 
@@ -169,6 +180,8 @@ public class Player implements MessageCallback {
                     break;
                 case SKIP_CARD_ID:
                     hand.add(new SkipCard());
+                    break;
+                default:
                     break;
             }
         }
@@ -281,6 +294,8 @@ public class Player implements MessageCallback {
                         }
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -332,12 +347,16 @@ public class Player implements MessageCallback {
             int messageID = Message.parseAndExtractMessageID(text);
             String payload = Message.parseAndExtractPayload(text);
             if(playerId == getAddressedPlayerFromPayload(payload)){
+                ArrayList<Card> oldHand = new ArrayList<>(hand);
                 if(messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id){
                     addCardToHand(parseDataFromPayload(payload));
                 }else if(messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id){
                     removeCardFromHand(parseDataFromPayload(payload));
                 }else if(messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id){
                     setHandFromString(parseDataFromPayload(payload));
+                }
+                if(hand.equals(oldHand)){
+                    propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
                 }
             }
         }

@@ -18,7 +18,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     private Player playerClient;
     private static PlayerManager instance = null;
     private static final int PLAYER_MANAGER_MESSAGE_ID = 400;
-    private final ArrayList<PlayerConnection> playerConnections;
+    private ArrayList<PlayerConnection> playerConnections;
     private int nextPlayerID;
     private NetworkManager networkManager;
 
@@ -41,6 +41,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     //Initalize as host, as the host assigns player numbers
     public void initializeAsHost(ArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+            nextPlayerID = 0;
+            this.playerConnections = new ArrayList<>();
             // selfassign
             assignPlayerID(null);
             this.networkManager = networkManager;
