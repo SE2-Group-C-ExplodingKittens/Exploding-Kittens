@@ -1,9 +1,5 @@
 package com.example.se2_exploding_kittens;
 
-import static com.example.se2_exploding_kittens.NetworkManager.TEST_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
-
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -12,6 +8,7 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -20,16 +17,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
-import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.game_logic.Deck;
+import com.example.se2_exploding_kittens.game_logic.DiscardPile;
+import com.example.se2_exploding_kittens.game_logic.GameClient;
+import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
+import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.util.ArrayList;
@@ -41,13 +42,18 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
     private RecyclerView recyclerView;
+    private ImageView discardedCard = new ImageView(GameActivity.this);
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
 
-    private ArrayList<Player> players = new ArrayList<Player>();
+    private ImageView deckImage;
+
+    private GameManager gameManager;
 
     private Deck deck;
+    private DiscardPile discardPile;
+    private GameClient gameClient;
 
     //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer){
@@ -85,17 +91,22 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         int cardResource = Integer.parseInt(cardResourceString);
                         int mPosition = Integer.parseInt(mPositionString);
                         // Add the card to the discard pile
-                        ImageView discardedCard = new ImageView(GameActivity.this);
+
                         discardedCard.setImageResource(cardResource);
-                        adapter.removeItem(mPosition);
+                        Card selectedCard = adapter.getSelectedCard(mPosition);
+                        if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
+                            adapter.removeCard(mPosition);
+                            discardPile.putCard(selectedCard);
 
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        discardedCard.setLayoutParams(params);
-                        ((ViewGroup) view).addView(discardedCard);
-                        // Setting image at the beginning to the invisible state
-                        ImageView discardImage = findViewById(R.id.discard_pile_image);
-                        discardImage.setVisibility(View.INVISIBLE);
+                            GameManager.sendCardPlayed(currentPlayer.getPlayerId(), selectedCard, connection);
 
+                            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            discardedCard.setLayoutParams(params);
+                            ((ViewGroup) view).addView(discardedCard);
+                            // Setting image at the beginning to the invisible state
+                            ImageView discardImage = findViewById(R.id.discard_pile_image);
+                            discardImage.setVisibility(View.INVISIBLE);
+                        }
                 }
                 return true;
             }
@@ -118,31 +129,41 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         // Initialize the card adapter (for players hand)
         adapter = new CardAdapter(currentPlayer.getHand());
         currentPlayer.addPropertyChangeListener(adapter);
+        //currentPlayer-dataSet may change async before addPropertyChangeListener is registered
+        adapter.notifyDataSetChanged();
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
 
         //Adding the functionality for user to draw a card
-        ImageView deckImage = findViewById(R.id.playingDeck);
+        deckImage = findViewById(R.id.playingDeck);
         deckImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Get the next card from the deck
                 try {
-                    Card nextCard = deck.getNextCard();
 
-                    // TODO implement the logic, to process Bomb card differently
+                    if(GameLogic.canCardBePulled(currentPlayer)){
+                        Card nextCard = deck.getNextCard();
 
-                    // Add the next card to the current player's hand
-                    currentPlayer.getHand().add(nextCard);
+                        GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile);
+                        if(nextCard instanceof BombCard){
 
-                    // Notify the adapter that the data has changed
-                    adapter.notifyDataSetChanged();
+                        }else {
+
+                        }
+                        // TODO implement the logic, to process Bomb card differently
+
+                        // Add the next card to the current player's hand
+                        currentPlayer.getHand().add(nextCard);
+
+                        // Notify the adapter that the data has changed
+                        adapter.notifyDataSetChanged();
+                    }
+
                 } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
                     Toast.makeText(GameActivity.this, "The deck is empty!", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
     }
@@ -156,20 +177,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             e.printStackTrace();
         }
     }
-    private void distributePlayerHands() {
-        try {
-            if(playerManager != null){
-                for (PlayerConnection p: playerManager.getPlayers()) {
-                    if(p.getConnection() != null){
-                        connection.sendMessageFromTheSever(new Message(MessageType.MESSAGE, PLAYER_HAND_MESSAGE_ID.id, p.getPlayer().getPlayerId()+":"+p.getPlayer().handToString()),p.getConnection());
-                    }
-                }
 
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onDestroy() {
@@ -179,6 +187,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             if (connection.getConnectionRole() != TypeOfConnectionRole.IDLE) {
                 connection.terminateConnection();
             }
+            connection = null;
+        }
+        if(playerManager != null){
+            playerManager.reset();
+            playerManager = null;
         }
     }
 
@@ -189,41 +202,52 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this,GAME_ACTIVITY_DECK_MESSAGE_ID);
         long seed = System.currentTimeMillis();
+        discardPile = new DiscardPile();
 
         if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
             deck = new Deck(seed);
             playerManager.initializeAsHost(connection.getServerConnections(),connection);
+            ArrayList<Player> players = new ArrayList<Player>();
             for (PlayerConnection pc: playerManager.getPlayers()) {
                 players.add(pc.getPlayer());
                 pc.getPlayer().subscribePlayerToCardEvents(connection);
             }
             deck.dealCards(players);
+            gameManager = new GameManager(connection,deck,discardPile);
             distributeDeck(deck);
-            distributePlayerHands();
+
+            gameManager.distributePlayerHands();
             // player id 0 is always the host
-            guiInit(playerManager.getPlayer(0).getPlayer());
+            guiInit(playerManager.getLocalSelf());
+            gameManager.startGame();
         }else if(connection.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+            deck = null;
             Player localClientPlayer = new Player();
             localClientPlayer.subscribePlayerToCardEvents(connection);
-            playerManager.initializeAsClient(localClientPlayer,connection);
-            while (localClientPlayer.getPlayerId() == -1){
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Thread.currentThread().interrupt();
-                }
-            }
-            Toast toast = Toast.makeText(this, "You're Player"+localClientPlayer.getPlayerId(), Toast.LENGTH_LONG);
+            //playerManager.initializeAsClient(localClientPlayer,connection);
+            //gameManager = new GameManager(connection, null,discardPile);
+            gameClient = new GameClient(localClientPlayer,deck,discardPile,connection);
+
+            Toast toast = Toast.makeText(this, "Waitning for host to start", Toast.LENGTH_SHORT);
+            toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
+            toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
+            toast.show();
+
+            gameClient.blockUntilReady();
+
+
+            toast = Toast.makeText(this, "You're Player"+localClientPlayer.getPlayerId(), Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
             guiInit(localClientPlayer);
 
 
+
         }else if(connection.getConnectionRole() == TypeOfConnectionRole.IDLE){
             //this case just for local testing presumably no connection has ever been established
             //Add players to the player's list
+            ArrayList<Player> players = new ArrayList<Player>();
             deck = new Deck(seed);
             Player p1 = new Player(1);
             Player p2 = new Player(2);
@@ -243,41 +267,21 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
             guiInit(p1);
         }
-
-
-
-
-
-
     }
 
 
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
-        if (sender instanceof ServerTCPSocket) {
-            Log.v("GameActivity", "srv");
-            try {
-                connection.sendMessageFromTheSever(new Message(MessageType.MESSAGE, TEST_MESSAGE_ID, "Pong"), (ServerTCPSocket) sender);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                try {
-                    connection.sendMessageBroadcast(new Message(MessageType.ERROR, TEST_MESSAGE_ID, "Pong Failed"));
-                } catch (IllegalAccessException ex) {
-                    ex.printStackTrace();
-                    Log.e("GameActivity", "is not server");
-                }
-
-            }
-        }
-
         if(sender instanceof ClientTCP){
             switch (Message.parseAndExtractMessageID(text)){
                 case GAME_ACTIVITY_DECK_MESSAGE_ID:
                     deck = new Deck(Message.parseAndExtractPayload(text));
+                    if(connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null){
+                        gameClient.setDeckDeck(deck);
+                    }
                     break;
             }
         }
-
     }
 }

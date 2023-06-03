@@ -5,6 +5,7 @@ import com.example.se2_exploding_kittens.Network.MessageCallback;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 public class LobbyListener implements Runnable {
@@ -26,13 +27,21 @@ public class LobbyListener implements Runnable {
         try {
             DatagramSocket socket = new DatagramSocket(51600);
 
+            int timeoutMillis = 1000;  // wait for 1 sec
+            socket.setSoTimeout(timeoutMillis);
+
             byte[] buffer = new byte[1024];
 
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
             while (!terminateListening) {
                 // wait for UDP packet
-                socket.receive(packet);
+                try {
+                    socket.receive(packet);
+                } catch (SocketTimeoutException e) {
+                    // timeout, no data received
+                    continue;
+                }
 
                 String packetData = new String(packet.getData(), 0, packet.getLength());
                 String packetSrcAddr = packet.getAddress().toString();

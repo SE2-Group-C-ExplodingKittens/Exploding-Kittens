@@ -48,9 +48,9 @@ public class Player extends Observable implements MessageCallback {
 
     private int playerId;
     private boolean alive = true;
+    private boolean hasBomb = true;
     private boolean canNope = false;
     private int playerTurns;
-    private boolean playerTurn;
     private static String DEBUG_TAG = "Player";
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -93,14 +93,6 @@ public class Player extends Observable implements MessageCallback {
 
     public int getPlayerTurns() {
         return playerTurns;
-    }
-
-    public boolean isPlayerTurn() {
-        return playerTurn;
-    }
-
-    public void setPlayerTurn(boolean playerTurn) {
-        this.playerTurn = playerTurn;
     }
 
     public int getPlayerId() {
@@ -350,15 +342,23 @@ public class Player extends Observable implements MessageCallback {
                 ArrayList<Card> oldHand = new ArrayList<>(hand);
                 if(messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id){
                     addCardToHand(parseDataFromPayload(payload));
+                    propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
                 }else if(messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id){
                     removeCardFromHand(parseDataFromPayload(payload));
+                    propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
                 }else if(messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id){
                     setHandFromString(parseDataFromPayload(payload));
-                }
-                if(hand.equals(oldHand)){
                     propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
                 }
             }
         }
+    }
+
+    public boolean isHasBomb() {
+        return hasBomb;
+    }
+
+    public void setHasBomb(boolean hasBomb) {
+        this.hasBomb = hasBomb;
     }
 }

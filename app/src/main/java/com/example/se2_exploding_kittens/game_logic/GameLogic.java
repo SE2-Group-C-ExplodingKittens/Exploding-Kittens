@@ -1,5 +1,8 @@
 package com.example.se2_exploding_kittens.game_logic;
 
+import com.example.se2_exploding_kittens.Network.GameManager;
+import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
@@ -34,7 +37,7 @@ public class GameLogic {
         deck.dealCards(playerList);
     }
 
-    public void endTurn() {
+    public void endTurnByPullingCard() {
         Card card = deck.getNextCard();
         if (card instanceof BombCard) {
             if (playerList.get(currentPlayer).getDefuse() != -1) {
@@ -100,11 +103,11 @@ public class GameLogic {
         if (currentPlayer == playerID && canNobodyNope()) {
             cardToBePlayed = card;
             cardIsGoingToBeBPlayed = true;
-            for (Player player : playerList) {
+            /*for (Player player : playerList) {
                 if (player.getHand().contains(new NopeCard())) {
                     player.setCanNope(true);
                 }
-            }
+            }*/
             if (canNobodyNope() && cardIsGoingToBeBPlayed) {
                 playCard(cardToBePlayed);
             }
@@ -113,15 +116,54 @@ public class GameLogic {
         return false;
     }
 
+    public static boolean canCardBePlayed(Player player, Card card){
+        if(player.getPlayerTurns() > 0 || player.isCanNope() && card instanceof NopeCard){
+            if(player.getPlayerTurns() > 0){
+                //TODO some cards cant be played, like defuse if no bomb has been pulled
+            }
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public static boolean canCardBePulled(Player player){
+        if(player.getPlayerTurns() > 0){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile){
+        player.setPlayerTurns(player.getPlayerTurns()-1);
+        if(card instanceof BombCard){
+            player.setHasBomb(true);
+            GameManager.sendBombPulled(player.getPlayerId(), card, networkManager);
+            discardPile.putCard(card);
+
+        }else {
+            player.getHand().add(card);
+            GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);
+            if(player.getPlayerTurns() == 0){
+                TurnManager.broadcastTurnFinished(player,networkManager);
+            }
+        }
+    }
+
     public void playerDoesNotNope(int playerID) {
+/*
         playerList.get(playerID).setCanNope(false);
+*/
         if (canNobodyNope() && cardIsGoingToBeBPlayed) {
             playCard(cardToBePlayed);
         }
     }
 
     public void playerDoesNope(int playerID) {
+/*
         playerList.get(playerID).setCanNope(false);
+*/
         cardIsGoingToBeBPlayed = !cardIsGoingToBeBPlayed;
         playerList.get(playerID).getHand().remove(new NopeCard());
         currentPlayerPlayedCards.add(new NopeCard());
@@ -132,9 +174,9 @@ public class GameLogic {
 
     private boolean canNobodyNope() {
         for (Player player : playerList) {
-            if (player.isCanNope()) {
+/*            if (player.isCanNope()) {
                 return false;
-            }
+            }*/
         }
         return true;
     }

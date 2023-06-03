@@ -15,15 +15,15 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     //payload has the pattern TYPE:DATA
 
     private static String DEBUG_TAG = "PlayerManager";
-    private Player playerClient;
+    //private Player playerClient;
     private static PlayerManager instance = null;
-    private static final int PLAYER_MANAGER_MESSAGE_ID = 400;
     private ArrayList<PlayerConnection> playerConnections;
     private int nextPlayerID;
     private NetworkManager networkManager;
 
-    private static final int PLAYER_MANAGER_ID_ASSIGNED = 1;
-    private static final int PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
+    public static final int PLAYER_MANAGER_MESSAGE_ID = 400;
+    public static final int PLAYER_MANAGER_ID_ASSIGNED = 1;
+    public static final int PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
 
 
     public static PlayerManager getInstance() {
@@ -50,11 +50,25 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             for (ServerTCPSocket player : connections) {
                 assignPlayerID(player);
             }
+            this.networkManager.subscribeToDisconnectedCallback(this);
         }
     }
 
+    public void reset(){
+        if(networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE){
+            this.networkManager.unsubscribeCallbackFromMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
+            this.networkManager.unsubscribeToDisconnectedCallback(this);
+            if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+                this.networkManager.unsubscribeToClientConnectedCallback(this);
+
+            }
+        }
+        nextPlayerID = 0;
+        this.playerConnections = new ArrayList<>();
+    }
+
     //Initalize as client, to listen for player numbers
-    public void initializeAsClient(Player player, NetworkManager networkManager){
+/*    public void initializeAsClient(Player player, NetworkManager networkManager){
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
             playerClient = player;
             this.networkManager = networkManager;
@@ -62,9 +76,9 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             this.networkManager.subscribeToDisconnectedCallback(this);
             this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
         }
-    }
+    }*/
 
-    private int parseTypeFromPayload(String input) {
+    public static int parseTypeFromPayload(String input) {
         String[] splitInput = input.split(":");
         if (splitInput.length > 0) {
             try {
@@ -76,7 +90,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         return -1;  // -1 means invalid
     }
 
-    private String parseDataFromPayload(String input) {
+    public static String parseDataFromPayload(String input) {
         String[] splitInput = input.split(":");
         if (splitInput.length > 1) {
             return splitInput[1];
@@ -99,6 +113,13 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
                 e.printStackTrace();
             }
         }
+    }
+
+    public Player getLocalSelf() {
+        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+            return getPlayer(0).getPlayer();
+        }
+        return null; // player not found i.e. not properly initialized
     }
 
     public PlayerConnection getPlayer(int playerId) {
@@ -163,24 +184,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     @Override
     public void responseReceived(String text, Object sender) {
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-            int playerID = -1;
-            if(text !=  null){
-                switch (parseTypeFromPayload(Message.parseAndExtractPayload(text))){
-                    case PLAYER_MANAGER_ID_ASSIGNED:
-                        playerID = Integer.parseInt(parseDataFromPayload(Message.parseAndExtractPayload(text)));
-                        if(playerID != -1){
-                            playerClient.setPlayerId(playerID);
-                        }
-                        break;
-                    case PLAYER_MANAGER_ID_PLAYER_DISCONNECT:
-                        playerID = Integer.parseInt(parseDataFromPayload(Message.parseAndExtractPayload(text)));
-                        if(playerID != playerClient.getPlayerId()){
-                            networkManager.terminateConnection();
-                        }
-                        break;
-                }
-            }
-        }
+
     }
 }

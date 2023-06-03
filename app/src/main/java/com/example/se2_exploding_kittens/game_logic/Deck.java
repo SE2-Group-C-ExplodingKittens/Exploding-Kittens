@@ -34,6 +34,7 @@ import java.util.Random;
 
 public class Deck {
     ArrayList<Card> cardDeck = new ArrayList<>();
+    ArrayList<Card> cardDeckOld = new ArrayList<>();
     Random random;
 
     public Deck(long seed) {
@@ -106,6 +107,7 @@ public class Deck {
     }
 
     public void shuffleDeck() {
+        cardDeckOld = cardDeck;
         ArrayList<Card> tempDeck = new ArrayList<>();
         while (!cardDeck.isEmpty()) {
             if(cardDeck.size() > 1){
@@ -116,6 +118,12 @@ public class Deck {
 
         }
         cardDeck = tempDeck;
+    }
+
+    public void undoShuffle() {
+        ArrayList<Card> tempDeck = cardDeck;
+        cardDeck = cardDeckOld;
+        cardDeckOld = tempDeck;
     }
 
     private void initAttackCard() {
@@ -196,7 +204,18 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty!");
     }
 
+    public Card removeCard(int cardID) {
+        if (cardDeck.size() > 0 && cardDeck.get(0).getCardID() == cardID) {
+            return cardDeck.remove(0);
+        }
+        throw new IndexOutOfBoundsException("The deck is empty, or card mismatch!");
+    }
+
     public void addBombAtRandomIndex(){
-        cardDeck.add(random.nextInt(cardDeck.size()-1), new BombCard());
+        if(cardDeck.size() > 1){
+            cardDeck.add(random.nextInt(cardDeck.size()-1), new BombCard());
+        }else {
+            cardDeck.add(0, new BombCard());
+        }
     }
 }
