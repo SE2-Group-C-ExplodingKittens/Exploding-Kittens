@@ -94,10 +94,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         discardedCard.setImageResource(cardResource);
                         Card selectedCard = adapter.getSelectedCard(mPosition);
                         if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
-                            adapter.removeCard(mPosition);
-                            discardPile.putCard(selectedCard);
-
-                            GameManager.sendCardPlayed(currentPlayer.getPlayerId(), selectedCard, connection);
+                            //removal should happen via property changed
+                            //adapter.removeCard(mPosition);
+                            //discardPile.putCard(selectedCard);
+                            if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage());
+                            } else {
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null);
+                            }
 
                             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             discardedCard.setLayoutParams(params);
@@ -148,7 +152,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
                         } else {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
-
                         }
                         /*if(nextCard instanceof BombCard){
 

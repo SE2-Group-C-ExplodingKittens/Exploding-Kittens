@@ -3,6 +3,8 @@ package com.example.se2_exploding_kittens.game_logic;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_BOMB_PULLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PLAYED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PULLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_ASSIGNED;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_ID;
@@ -11,6 +13,7 @@ import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_MESSAGE
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_TURN_FINISHED;
 
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
+import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
@@ -186,6 +189,12 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                         discardPile.putCard(Integer.parseInt(message[0]));
                     }
                 }
+            }
+            if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID){
+                GameLogic.nopeEnabled = true;
+            }
+            if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID){
+                GameLogic.nopeEnabled = false;
             }
         }
     }
