@@ -64,6 +64,7 @@ public class TurnManager implements MessageCallback {
     public void sendNextSateToPlayers() {
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
             PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
+            playerManager.getPlayer(currentPlayerIndex).getPlayer().setPlayerTurns(currentPlayerTurns);
             //message will be = playerID:numberOfTurns
             String gameStateMessage = assembleGameStateMessage(TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
 
@@ -87,7 +88,7 @@ public class TurnManager implements MessageCallback {
     }
 
 
-    private void gameStateNextTurn(int turns) {
+    public void gameStateNextTurn(int turns) {
         previousPlayerTurns = currentPlayerTurns;
         currentPlayerTurns = turns;
         previousPlayerIndex = currentPlayerIndex;

@@ -42,7 +42,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
     private RecyclerView recyclerView;
-    private ImageView discardedCard = new ImageView(GameActivity.this);
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
@@ -91,7 +90,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         int cardResource = Integer.parseInt(cardResourceString);
                         int mPosition = Integer.parseInt(mPositionString);
                         // Add the card to the discard pile
-
+                        ImageView discardedCard = new ImageView(GameActivity.this);
                         discardedCard.setImageResource(cardResource);
                         Card selectedCard = adapter.getSelectedCard(mPosition);
                         if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
@@ -145,9 +144,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
                     if(GameLogic.canCardBePulled(currentPlayer)){
                         Card nextCard = deck.getNextCard();
+                        if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                            GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
+                        } else {
+                            GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
 
-                        GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile);
-                        if(nextCard instanceof BombCard){
+                        }
+                        /*if(nextCard instanceof BombCard){
 
                         }else {
 
@@ -155,7 +158,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         // TODO implement the logic, to process Bomb card differently
 
                         // Add the next card to the current player's hand
-                        currentPlayer.getHand().add(nextCard);
+                        currentPlayer.getHand().add(nextCard);*/
 
                         // Notify the adapter that the data has changed
                         adapter.notifyDataSetChanged();
@@ -215,8 +218,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             deck.dealCards(players);
             gameManager = new GameManager(connection,deck,discardPile);
             distributeDeck(deck);
-
             gameManager.distributePlayerHands();
+
             // player id 0 is always the host
             guiInit(playerManager.getLocalSelf());
             gameManager.startGame();

@@ -1,6 +1,7 @@
 package com.example.se2_exploding_kittens.game_logic;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
+import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
@@ -29,11 +30,15 @@ public class GameLogic {
     int idOfLocalPlayer;
     Deck deck;
     int currentPlayer = 0;
+    private GameManager gameManager;
+    private static TurnManager turnManager;
 
-    public GameLogic(int numOfPlayers, int idOfLocalPlayer, int seed) {
+    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck, GameManager gameManager, TurnManager turnManager) {
         initPlayers(numOfPlayers);
         this.idOfLocalPlayer = idOfLocalPlayer;
-        this.deck = new Deck(seed);
+        this.deck = deck;
+        this.gameManager = gameManager;
+        this.turnManager = turnManager;
         deck.dealCards(playerList);
     }
 
@@ -135,18 +140,25 @@ public class GameLogic {
         }
     }
 
-    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile){
+    private static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){
+        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER && turnManager != null){
+            TurnManager.broadcastTurnFinished(player,networkManager);
+            turnManager.gameStateNextTurn(futureTurns);
+        }
+    }
+
+    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
         player.setPlayerTurns(player.getPlayerTurns()-1);
         if(card instanceof BombCard){
             player.setHasBomb(true);
             GameManager.sendBombPulled(player.getPlayerId(), card, networkManager);
             discardPile.putCard(card);
 
-        }else {
+        }else{
             player.getHand().add(card);
             GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);
             if(player.getPlayerTurns() == 0){
-                TurnManager.broadcastTurnFinished(player,networkManager);
+                finishTurn(player,networkManager,1, turnManager);
             }
         }
     }

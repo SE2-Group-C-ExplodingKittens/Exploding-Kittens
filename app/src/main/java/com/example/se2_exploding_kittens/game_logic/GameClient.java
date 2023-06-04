@@ -1,5 +1,8 @@
 package com.example.se2_exploding_kittens.game_logic;
 
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_BOMB_PULLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PLAYED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PULLED_ID;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_ASSIGNED;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_ID;
@@ -15,6 +18,7 @@ import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 public class GameClient implements MessageCallback, DisconnectedCallback {
 
@@ -30,7 +34,10 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager = networkManager;
         this.networkManager.subscribeToDisconnectedCallback(this);
         this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
-        networkManager.subscribeCallbackToMessageID(this, TURN_MANAGER_MESSAGE_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PULLED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, TURN_MANAGER_MESSAGE_ID);
     }
 
     public Player getPlayer() {
@@ -148,6 +155,35 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                     String [] message = Message.parseAndExtractPayload(text).split(":");
                     if(message.length >=3){
                         handleTurnManagerMessage(Integer.parseInt(message[0]), Integer.parseInt(message[1]), Integer.parseInt(message[2]));
+                    }
+                }
+            }
+
+            if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PULLED_ID){
+                String[] message = Message.parseAndExtractPayload(text).split(":");
+                if (message.length == 2){
+                    int playerID = Integer.parseInt(message[1]);
+                    if(playerID != player.getPlayerId()){
+                        deck.removeCard(Integer.parseInt(message[0]));
+                    }
+                }
+            }
+            if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_BOMB_PULLED_ID){
+                String[] message = Message.parseAndExtractPayload(text).split(":");
+                if (message.length == 2){
+                    int playerID = Integer.parseInt(message[1]);
+                    if(playerID != player.getPlayerId()){
+                        Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
+                        discardPile.putCard(removedCard);
+                    }
+                }
+            }
+            if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PLAYED_ID){
+                String[] message = Message.parseAndExtractPayload(text).split(":");
+                if (message.length == 2){
+                    int playerID = Integer.parseInt(message[1]);
+                    if(playerID != player.getPlayerId()){
+                        discardPile.putCard(Integer.parseInt(message[0]));
                     }
                 }
             }

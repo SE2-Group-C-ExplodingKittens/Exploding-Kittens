@@ -7,6 +7,7 @@ import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
+import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
@@ -40,6 +41,10 @@ public class GameManager implements MessageCallback {
         this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
 
+    public TurnManager getTurnManage(){
+        return turnManager;
+    }
+
     public void updateDeck(Deck deck){
         this.deck = deck;
     }
@@ -65,10 +70,10 @@ public class GameManager implements MessageCallback {
     public static void sendCardPulled(int playerID, Card card, NetworkManager networkManager) {
         try {
             if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID()+":"+playerID));
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
 
             }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID()+":"+playerID));
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -91,10 +96,10 @@ public class GameManager implements MessageCallback {
     public static void sendCardPlayed(int playerID, Card card, NetworkManager networkManager) {
         try {
             if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID()+":"+playerID));
 
             }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID()+":"+playerID));
             }
             // player has to draw another card
             /*if (playerManager.getPlayer(playerID).numberOfTurnsLeft() <= 0) {
@@ -117,7 +122,8 @@ public class GameManager implements MessageCallback {
                     if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
                         //broadcast to other clients
                         sendCardPulled(playerID,removedCard, networkManager);
-                        playerManager.getPlayer(playerID).getPlayer().addCardToHand(Integer.toString(removedCard.getCardID()));
+                        GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(),removedCard,networkManager,discardPile,turnManager);
+                        //playerManager.getPlayer(playerID).getPlayer().addCardToHand(Integer.toString(removedCard.getCardID()));
                     }
                 }
             }
@@ -130,9 +136,10 @@ public class GameManager implements MessageCallback {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
                     if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
                         //broadcast to other clients
-                        sendCardPulled(playerID,removedCard, networkManager);
-                        playerManager.getPlayer(playerID).getPlayer().setHasBomb(true);
-                        discardPile.putCard(removedCard);
+                        sendBombPulled(playerID,removedCard, networkManager);
+                        GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(),removedCard,networkManager,discardPile,turnManager);
+                        //playerManager.getPlayer(playerID).getPlayer().setHasBomb(true);
+                        //discardPile.putCard(removedCard);
                     }
                 }
             }
@@ -148,7 +155,6 @@ public class GameManager implements MessageCallback {
                         //broadcast to other clients
                         sendCardPlayed(playerID,playedCard, networkManager);
                         playerManager.getPlayer(playerID).getPlayer().removeCardFromHand(Integer.toString(playedCard.getCardID()));
-                        discardPile.putCard(playedCard);
                     }
                 }
             }
