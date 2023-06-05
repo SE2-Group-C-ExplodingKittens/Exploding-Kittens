@@ -39,7 +39,7 @@ public class Deck {
 
     public Deck(long seed) {
         initAttackCard();
-        initCatCards();
+        //initCatCards();
         initFavorCard();
         initNopeCard();
         initShuffleCard();
@@ -129,6 +129,11 @@ public class Deck {
 
         }
         cardDeck = tempDeck;
+    }
+
+    public void insertCard(int cardID,int index) {
+        cardDeck.add(index,getCardByID(cardID));
+        cardDeckOld = (ArrayList<Card>) cardDeck.clone();
     }
 
     public void undoShuffle() {
@@ -222,11 +227,14 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty, or card mismatch!");
     }
 
-    public void addBombAtRandomIndex(){
+    public int addBombAtRandomIndex(){
         if(cardDeck.size() > 1){
-            cardDeck.add(random.nextInt(cardDeck.size()-1), new BombCard());
+            int index = random.nextInt(cardDeck.size()-1);
+            cardDeck.add(index, new BombCard());
+            return index;
         }else {
             cardDeck.add(0, new BombCard());
+            return 0;
         }
     }
 }

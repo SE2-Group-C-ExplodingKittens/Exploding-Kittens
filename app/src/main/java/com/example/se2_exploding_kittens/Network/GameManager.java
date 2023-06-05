@@ -30,6 +30,8 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_BOMB_PULLED_ID = 504;
     public static final int GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID = 506;
     public static final int GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID = 507;
+    public static final int GAME_MANAGER_MESSAGE_PLAYER_LOST_ID = 508;
+    public static final int GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID = 509;
 
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
@@ -71,6 +73,14 @@ public class GameManager implements MessageCallback {
         }
     }
 
+    public static void sendDeckInsetCard(NetworkManager networkManager, int cardID, int idx) {
+        try {
+            networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID, cardID + ":" + idx));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void sendNopeEnabled(NetworkManager networkManager) {
         try {
             if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
@@ -106,6 +116,19 @@ public class GameManager implements MessageCallback {
 
             }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendPlayerLost(int playerID, NetworkManager networkManager) {
+        try {
+            if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID, Integer.toString(playerID)));
+
+            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -188,7 +211,7 @@ public class GameManager implements MessageCallback {
                     if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
                         //broadcast to other clients
                         sendCardPlayed(playerID,playedCard, networkManager);
-                        GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(),playedCard,networkManager,discardPile,turnManager);
+                        GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(),playedCard,networkManager,discardPile,turnManager, deck);
                         //playerManager.getPlayer(playerID).getPlayer().removeCardFromHand(Integer.toString(playedCard.getCardID()));
                     }
                 }

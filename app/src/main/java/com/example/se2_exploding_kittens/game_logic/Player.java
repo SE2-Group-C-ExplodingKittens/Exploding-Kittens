@@ -185,6 +185,7 @@ public class Player extends Observable implements MessageCallback {
                 case ATTACK_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == ATTACK_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -193,6 +194,7 @@ public class Player extends Observable implements MessageCallback {
                 case BOMB_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == BOMB_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -201,6 +203,7 @@ public class Player extends Observable implements MessageCallback {
                 case CAT_FIVE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == CAT_FIVE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -209,6 +212,7 @@ public class Player extends Observable implements MessageCallback {
                 case CAT_FOUR_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == CAT_FOUR_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -217,6 +221,7 @@ public class Player extends Observable implements MessageCallback {
                 case CAT_ONE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == CAT_ONE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -225,6 +230,7 @@ public class Player extends Observable implements MessageCallback {
                 case CAT_THREE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == CAT_THREE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -233,6 +239,7 @@ public class Player extends Observable implements MessageCallback {
                 case CAT_TWO_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == CAT_TWO_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -241,6 +248,7 @@ public class Player extends Observable implements MessageCallback {
                 case DEFUSE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == DEFUSE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -249,6 +257,7 @@ public class Player extends Observable implements MessageCallback {
                 case FAVOR_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == FAVOR_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -257,6 +266,7 @@ public class Player extends Observable implements MessageCallback {
                 case NOPE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == NOPE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -265,6 +275,7 @@ public class Player extends Observable implements MessageCallback {
                 case SEE_THE_FUTURE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == SEE_THE_FUTURE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -273,6 +284,7 @@ public class Player extends Observable implements MessageCallback {
                 case SHUFFLE_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == SHUFFLE_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }
@@ -281,6 +293,7 @@ public class Player extends Observable implements MessageCallback {
                 case SKIP_CARD_ID:
                     for (Card c: hand) {
                         if(c.getCardID() == SKIP_CARD_ID){
+                            propertyChangeSupport.firePropertyChange("handCardRemoved",hand.indexOf(c),hand.indexOf(c));
                             hand.remove(c);
                             break;
                         }

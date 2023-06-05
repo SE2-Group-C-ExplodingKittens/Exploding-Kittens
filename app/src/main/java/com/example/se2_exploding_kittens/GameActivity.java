@@ -44,19 +44,17 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
 
 
-    private RecyclerView recyclerView;
+
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
-
-    private ImageView deckImage;
-
     private GameManager gameManager;
-
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
 
+    private ImageView deckImage;
+    private RecyclerView recyclerView;
     private View discardPileView;
 
     PropertyChangeListener cardPileChangeListener = new PropertyChangeListener() {
@@ -127,11 +125,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
                         Card selectedCard = adapter.getSelectedCard(mPosition);
                         if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
-                            adapter.removeCard(mPosition);
+                            //adapter.removeCard(mPosition);
+                            //adapter.notifyItemRemoved(mPosition);
                             if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
-                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage());
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck);
                             } else {
-                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null);
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck);
                             }
 
                             // changed via discard pile porperty changes

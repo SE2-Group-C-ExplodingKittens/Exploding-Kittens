@@ -92,7 +92,14 @@ public class TurnManager implements MessageCallback {
         previousPlayerTurns = currentPlayerTurns;
         currentPlayerTurns = turns;
         previousPlayerIndex = currentPlayerIndex;
-        currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
+        if(playerManager.getPlayerSize() > 1){
+            currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
+            int counter = playerManager.getPlayerSize();
+            while(!playerManager.getPlayer(currentPlayerIndex).getPlayer().isAlive() && counter > 0){
+                currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
+                counter--;
+            }
+        }
         sendNextSateToPlayers();
     }
 
