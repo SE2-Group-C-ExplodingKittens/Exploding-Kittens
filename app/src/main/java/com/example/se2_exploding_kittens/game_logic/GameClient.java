@@ -41,6 +41,8 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, TURN_MANAGER_MESSAGE_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
     }
 
     public Player getPlayer() {
@@ -186,7 +188,8 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                 if (message.length == 2){
                     int playerID = Integer.parseInt(message[1]);
                     if(playerID != player.getPlayerId()){
-                        discardPile.putCard(Integer.parseInt(message[0]));
+                        GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null);
+                        //discardPile.putCard(Integer.parseInt(message[0]));
                     }
                 }
             }

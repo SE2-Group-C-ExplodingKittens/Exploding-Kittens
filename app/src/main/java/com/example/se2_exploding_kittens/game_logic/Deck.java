@@ -52,50 +52,61 @@ public class Deck {
     public Deck(String exportString) {
         if(exportString != null){
             String[] arr = exportString.split("-");
+            Card card = null;
             for(String s: arr){
-                switch (Integer.parseInt(s)){
-                    case ATTACK_CARD_ID:
-                        cardDeck.add(new AttackCard());
-                        break;
-                    case BOMB_CARD_ID:
-                        cardDeck.add(new BombCard());
-                        break;
-                    case CAT_FIVE_CARD_ID:
-                        cardDeck.add(new CatFiveCard());
-                        break;
-                    case CAT_FOUR_CARD_ID:
-                        cardDeck.add(new CatFourCard());
-                        break;
-                    case CAT_ONE_CARD_ID:
-                        cardDeck.add(new CatOneCard());
-                        break;
-                    case CAT_THREE_CARD_ID:
-                        cardDeck.add(new CatThreeCard());
-                        break;
-                    case CAT_TWO_CARD_ID:
-                        cardDeck.add(new CatTwoCard());
-                        break;
-                    case DEFUSE_CARD_ID:
-                        cardDeck.add(new DefuseCard());
-                        break;
-                    case FAVOR_CARD_ID:
-                        cardDeck.add(new FavorCard());
-                        break;
-                    case NOPE_CARD_ID:
-                        cardDeck.add(new NopeCard());
-                        break;
-                    case SEE_THE_FUTURE_CARD_ID:
-                        cardDeck.add(new SeeTheFutureCard());
-                        break;
-                    case SHUFFLE_CARD_ID:
-                        cardDeck.add(new ShuffleCard());
-                        break;
-                    case SKIP_CARD_ID:
-                        cardDeck.add(new SkipCard());
-                        break;
+                card = getCardByID(Integer.parseInt(s));
+                if(card != null){
+                    cardDeck.add(card);
+
                 }
             }
         }
+    }
+
+    public static Card getCardByID(int cardID){
+        Card card = null;
+        switch (cardID){
+            case ATTACK_CARD_ID:
+                card = (new AttackCard());
+                break;
+            case BOMB_CARD_ID:
+                card = (new BombCard());
+                break;
+            case CAT_FIVE_CARD_ID:
+                card = (new CatFiveCard());
+                break;
+            case CAT_FOUR_CARD_ID:
+                card = (new CatFourCard());
+                break;
+            case CAT_ONE_CARD_ID:
+                card = (new CatOneCard());
+                break;
+            case CAT_THREE_CARD_ID:
+                card = (new CatThreeCard());
+                break;
+            case CAT_TWO_CARD_ID:
+                card = (new CatTwoCard());
+                break;
+            case DEFUSE_CARD_ID:
+                card = (new DefuseCard());
+                break;
+            case FAVOR_CARD_ID:
+                card = (new FavorCard());
+                break;
+            case NOPE_CARD_ID:
+                card = (new NopeCard());
+                break;
+            case SEE_THE_FUTURE_CARD_ID:
+                card = (new SeeTheFutureCard());
+                break;
+            case SHUFFLE_CARD_ID:
+                card = (new ShuffleCard());
+                break;
+            case SKIP_CARD_ID:
+                card = (new SkipCard());
+                break;
+        }
+        return card;
     }
 
     public String deckToString(){

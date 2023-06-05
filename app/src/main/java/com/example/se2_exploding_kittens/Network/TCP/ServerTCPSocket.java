@@ -74,7 +74,7 @@ public class ServerTCPSocket implements Runnable, TCP{
     }
 
     private boolean checkConnectionDisconnected(Socket connection){
-        if (connection.isClosed()) {
+        if (connection.isClosed() || connState != ConnectionState.CONNECTED) {
             connState = ConnectionState.DISCONNECTING;
             return true;
         }
@@ -90,12 +90,15 @@ public class ServerTCPSocket implements Runnable, TCP{
                     while (messages.size() == 0) {
                         //poll for messages every 5ms
                         listenForMessages(in);
-                        if(checkConnectionDisconnected(connection))
+                        if(checkConnectionDisconnected(connection) )
                             break;
                         Thread.sleep(20);
                     }
                     listenForMessages(in);
                     //drop empty messages
+                    if(messages.size() == 0){
+                        continue;
+                    }
                     if(messages.get(0) == null){
                         messages.remove(0);
                         continue;

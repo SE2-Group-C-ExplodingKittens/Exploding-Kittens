@@ -73,7 +73,20 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         connectionRole = TypeOfConnectionRole.IDLE;
     }
 
+    private void clearAllCallbacks(){
+        for (ClientConnectedCallback cb : connectedCallbacks) {
+            connectedCallbacks.remove(cb);
+        }
+        for (DisconnectedCallback dc : disconnectedCallback) {
+            disconnectedCallback.remove(dc);
+        }
+        for (MessageCallbackPair mc : subscribedCallbacks) {
+            subscribedCallbacks.remove(mc);
+        }
+    }
+
     public void runAsServer(int port){
+        clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.SERVER;
         server = new TCPServer(port,this);
         Thread thread = new Thread(server);
@@ -81,6 +94,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     public void runAsClient(String serverAddress, int port){
+        clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.CLIENT;
         connection = new ClientTCP(serverAddress, port,this);
         Thread thread = new Thread((ClientTCP) connection);

@@ -30,6 +30,7 @@ public class SkipCard implements Card {
         if(player != null){
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             player.setPlayerTurns(player.getPlayerTurns()-1);
+            GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(SKIP_CARD_ID));
             if(player.getPlayerTurns() == 0){
                 GameLogic.finishTurn(player,networkManager,1, turnManager);

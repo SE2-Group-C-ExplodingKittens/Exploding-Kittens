@@ -40,6 +40,8 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PULLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
         this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
 
@@ -179,13 +181,15 @@ public class GameManager implements MessageCallback {
             if (message.length == 2){
                 int playerID = Integer.parseInt(message[1]);
                 if(playerID != playerManager.getLocalSelf().getPlayerId()){
-                    Card playedCard = discardPile.putCard(Integer.parseInt(message[0]));
+
+                    Card playedCard = Deck.getCardByID(Integer.parseInt(message[0]));
+                    //discardPile.putCard(Integer.parseInt(message[0]));
 
                     if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
                         //broadcast to other clients
                         sendCardPlayed(playerID,playedCard, networkManager);
                         GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(),playedCard,networkManager,discardPile,turnManager);
-                        playerManager.getPlayer(playerID).getPlayer().removeCardFromHand(Integer.toString(playedCard.getCardID()));
+                        //playerManager.getPlayer(playerID).getPlayer().removeCardFromHand(Integer.toString(playedCard.getCardID()));
                     }
                 }
             }
