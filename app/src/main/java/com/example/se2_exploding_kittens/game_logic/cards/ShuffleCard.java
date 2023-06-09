@@ -35,7 +35,7 @@ public class ShuffleCard implements Card {
             deck.shuffleDeck();
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(SHUFFLE_CARD_ID));
-            if (player.getPlayerTurns() == 0 && networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+            if (player.getPlayerTurns() == 0) {
                 GameLogic.finishTurn(player, networkManager, 1, turnManager);
                 GameManager.sendNopeEnabled(networkManager);
             }
