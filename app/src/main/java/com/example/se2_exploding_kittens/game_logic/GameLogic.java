@@ -12,6 +12,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.CatFourCard;
 import com.example.se2_exploding_kittens.game_logic.cards.CatOneCard;
 import com.example.se2_exploding_kittens.game_logic.cards.CatThreeCard;
 import com.example.se2_exploding_kittens.game_logic.cards.CatTwoCard;
+import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
 import com.example.se2_exploding_kittens.game_logic.cards.FavorCard;
 import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 public class GameLogic {
 
     private boolean playsTwice = false;
+    public static boolean nopeEnabled = false;
     Card cardToBePlayed;
     boolean cardIsGoingToBeBPlayed;
     private final ArrayList<Card> currentPlayerPlayedCards = new ArrayList<>();
@@ -122,13 +124,29 @@ public class GameLogic {
     }
 
     public static boolean canCardBePlayed(Player player, Card card){
-        if(player.getPlayerTurns() > 0 || player.isCanNope() && card instanceof NopeCard){
+        if(player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard){
             if(player.getPlayerTurns() > 0){
                 //TODO some cards cant be played, like defuse if no bomb has been pulled
+                if(player.isHasBomb() && card instanceof DefuseCard){
+                    return true;
+                }
+                if(card instanceof SkipCard){
+                    return true;
+                }
+            }else if(nopeEnabled && card instanceof NopeCard){
+                return true;
             }
-            return true;
-        }else {
-            return false;
+        }
+        return false;
+    }
+
+    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
+        if(card instanceof SkipCard){
+            ((SkipCard) card).handleSkipActions(player,networkManager,discardPile,turnManager);
+        }else{
+            if(player != null){
+                GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
+            }
         }
     }
 
@@ -140,7 +158,7 @@ public class GameLogic {
         }
     }
 
-    private static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){
+    public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER && turnManager != null){
             TurnManager.broadcastTurnFinished(player,networkManager);
             turnManager.gameStateNextTurn(futureTurns);
@@ -157,6 +175,7 @@ public class GameLogic {
         }else{
             player.getHand().add(card);
             GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);
+            GameManager.sendNopeDisabled(networkManager);
             if(player.getPlayerTurns() == 0){
                 finishTurn(player,networkManager,1, turnManager);
             }

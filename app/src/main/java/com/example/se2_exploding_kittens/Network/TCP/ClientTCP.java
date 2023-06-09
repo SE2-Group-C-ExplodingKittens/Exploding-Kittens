@@ -65,7 +65,7 @@ public class ClientTCP implements Runnable, TCP{
     }
 
     private boolean checkConnectionDisconnected(Socket connection){
-        if (connection.isClosed()) {
+        if (connection.isClosed() || connState != ConnectionState.CONNECTED) {
             connState = ConnectionState.DISCONNECTING;
             return true;
         }
@@ -105,6 +105,9 @@ public class ClientTCP implements Runnable, TCP{
                     listenForMessages(in);
 
                     //drop empty messages
+                    if(messages.size() == 0){
+                        continue;
+                    }
                     if(messages.get(0) == null){
                         messages.remove(0);
                         continue;

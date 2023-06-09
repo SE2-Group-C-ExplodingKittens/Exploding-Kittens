@@ -1,6 +1,7 @@
 package com.example.se2_exploding_kittens;
 
 import android.content.ClipData;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +34,8 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
@@ -54,10 +57,38 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private DiscardPile discardPile;
     private GameClient gameClient;
 
+    private View discardPileView;
+
+    PropertyChangeListener cardPileChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("discardPile".equals(event.getPropertyName())) {
+                        //ImageView discardImage = findViewById(R.id.discard_pile_image);
+                        //discardImage.setImageResource(discardPile.getCardPile().get(0).getImageResource());
+
+                        ImageView discardedCard = new ImageView(GameActivity.this);
+                        discardedCard.setImageResource(discardPile.getCardPile().get(0).getImageResource());
+
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        discardedCard.setLayoutParams(params);
+                        ((ViewGroup) discardPileView).addView(discardedCard);
+                        // Setting image at the beginning to the invisible state
+                        ImageView discardImage = findViewById(R.id.discard_pile_image);
+                        discardImage.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
+
+        }
+    };
+
     //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer){
         // Implement onDragListener for the discard pile view
-        View discardPileView = findViewById(R.id.discardPile);
+        discardPileView = findViewById(R.id.discardPile);
 
         Rect dropBounds = new Rect(discardPileView.getLeft(), discardPileView.getTop(),
                 discardPileView.getRight(), discardPileView.getBottom());
@@ -89,27 +120,33 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         String cardResourceString = String.valueOf(item.getText());
                         int cardResource = Integer.parseInt(cardResourceString);
                         int mPosition = Integer.parseInt(mPositionString);
+
                         // Add the card to the discard pile
-                        ImageView discardedCard = new ImageView(GameActivity.this);
-                        discardedCard.setImageResource(cardResource);
+/*                        ImageView discardedCard = new ImageView(GameActivity.this);
+                        discardedCard.setImageResource(cardResource);*/
+
                         Card selectedCard = adapter.getSelectedCard(mPosition);
                         if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
                             adapter.removeCard(mPosition);
-                            discardPile.putCard(selectedCard);
+                            if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage());
+                            } else {
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null);
+                            }
 
-                            GameManager.sendCardPlayed(currentPlayer.getPlayerId(), selectedCard, connection);
-
-                            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            // changed via discard pile porperty changes
+/*                            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             discardedCard.setLayoutParams(params);
                             ((ViewGroup) view).addView(discardedCard);
                             // Setting image at the beginning to the invisible state
                             ImageView discardImage = findViewById(R.id.discard_pile_image);
-                            discardImage.setVisibility(View.INVISIBLE);
+                            discardImage.setVisibility(View.INVISIBLE);*/
                         }
                 }
                 return true;
             }
         });
+        discardPile.addPropertyChangeListener(cardPileChangeListener);
         playerHandInit(currentPlayer);
     }
 
@@ -148,7 +185,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
                         } else {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
-
                         }
                         /*if(nextCard instanceof BombCard){
 
