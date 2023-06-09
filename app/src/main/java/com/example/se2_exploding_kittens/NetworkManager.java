@@ -74,14 +74,14 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     private void clearAllCallbacks(){
-        for (ClientConnectedCallback cb : connectedCallbacks) {
-            connectedCallbacks.remove(cb);
+        for(int i = 0; i < connectedCallbacks.size(); i++){
+            connectedCallbacks.remove(0);
         }
-        for (DisconnectedCallback dc : disconnectedCallback) {
-            disconnectedCallback.remove(dc);
+        for(int i = 0; i < disconnectedCallback.size(); i++){
+            disconnectedCallback.remove(0);
         }
-        for (MessageCallbackPair mc : subscribedCallbacks) {
-            subscribedCallbacks.remove(mc);
+        for(int i = 0; i < subscribedCallbacks.size(); i++){
+            subscribedCallbacks.remove(0);
         }
     }
 

@@ -130,26 +130,28 @@ public class GameLogic {
         }
         if(player.isHasBomb() && card instanceof DefuseCard){
             return true;
-        }
-        if(player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard){
-            if(player.getPlayerTurns() > 0){
-                //TODO some cards cant be played, like defuse if no bomb has been pulled
+        }else if(!player.isHasBomb()){
+            if(player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard){
+                if(player.getPlayerTurns() > 0){
+                    //TODO some cards cant be played, like defuse if no bomb has been pulled
 
-                if(card instanceof SkipCard){
+                    if(card instanceof SkipCard){
+                        return true;
+                    }
+                }else if(nopeEnabled && card instanceof NopeCard){
                     return true;
                 }
-            }else if(nopeEnabled && card instanceof NopeCard){
-                return true;
             }
         }
+
         return false;
     }
 
     public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck){
         if(card instanceof SkipCard){
-            ((SkipCard) card).handleSkipActions(player,networkManager,discardPile,turnManager);
+            ((SkipCard) card).handleActions(player,networkManager,discardPile,turnManager);
         }else if(card instanceof DefuseCard){
-            ((DefuseCard) card).handleDefuseActions(player,networkManager,discardPile,turnManager, deck);
+            ((DefuseCard) card).handleActions(player,networkManager,discardPile,turnManager, deck);
         }
         else{
             if(player != null){
@@ -179,18 +181,7 @@ public class GameLogic {
     public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
         player.setPlayerTurns(player.getPlayerTurns()-1);
         if(card instanceof BombCard){
-            player.setHasBomb(true);
-            GameManager.sendNopeDisabled(networkManager);
-            GameManager.sendBombPulled(player.getPlayerId(), card, networkManager);
-            discardPile.putCard(card);
-            if(player.getDefuse() == -1){
-                //no defuse existing player has lost
-                player.setAlive(false);
-                if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
-                    GameManager.sendPlayerLost(player.getPlayerId(),networkManager);
-                }
-            }
-
+            ((BombCard) card).handleActions(player,networkManager,discardPile,turnManager);
         }else{
             player.getHand().add(card);
             GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);

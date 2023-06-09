@@ -30,7 +30,8 @@ public class DefuseCard implements Card {
         return DEFUSE_CARD_ID;
     }
 
-    public void handleDefuseActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck){
+    @Override
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck){
         if(player != null){
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             player.setAlive(true);
