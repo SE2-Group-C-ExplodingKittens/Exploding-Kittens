@@ -136,6 +136,9 @@ public class GameLogic {
                 if (card instanceof ShuffleCard) {
                     return true;
                 }
+                if (card instanceof AttackCard) {
+                    return true;
+                }
             } else if (nopeEnabled && card instanceof NopeCard) {
                 return true;
             }
@@ -148,6 +151,8 @@ public class GameLogic {
             ((SkipCard) card).handleSkipActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof ShuffleCard) {
             ((ShuffleCard) card).handleShuffleActions(player, networkManager, discardPile, deck);
+        } else if (card instanceof AttackCard) {
+            ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
         } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
