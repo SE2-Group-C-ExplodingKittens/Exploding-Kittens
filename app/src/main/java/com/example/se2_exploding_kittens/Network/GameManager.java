@@ -2,25 +2,21 @@ package com.example.se2_exploding_kittens.Network;
 
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 
-import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
-import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import com.example.se2_exploding_kittens.game_logic.cards.FavorCard;
 import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
-
-import java.util.ArrayList;
 
 public class GameManager implements MessageCallback {
 
     private NetworkManager networkManager;
     private TurnManager turnManager;
     private int numberOfPlayers;
-    private Deck deck;
+    private static Deck deck;
     private PlayerManager playerManager;
     private DiscardPile discardPile;
     public static final int GAME_MANAGER_MESSAGE_ID = 500;
@@ -35,7 +31,7 @@ public class GameManager implements MessageCallback {
         this.networkManager = networkManager;
         this.playerManager = PlayerManager.getInstance();
         this.turnManager = new TurnManager(networkManager);
-        this.deck = deck;
+        GameManager.deck = deck;
         this.discardPile = discardPile;
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PULLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID);
@@ -49,8 +45,8 @@ public class GameManager implements MessageCallback {
         return turnManager;
     }
 
-    public void updateDeck(Deck deck) {
-        this.deck = deck;
+    public static void updateDeck(Deck updatedDeck) {
+        deck = updatedDeck;
     }
 
     public void startGame() {

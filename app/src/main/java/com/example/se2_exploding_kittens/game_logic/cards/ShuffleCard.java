@@ -1,13 +1,10 @@
 package com.example.se2_exploding_kittens.game_logic.cards;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
-import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
-import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class ShuffleCard implements Card {
@@ -32,6 +29,7 @@ public class ShuffleCard implements Card {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             deck.shuffleDeck();
+            GameManager.updateDeck(deck);
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(SHUFFLE_CARD_ID));
             GameManager.sendNopeEnabled(networkManager);
