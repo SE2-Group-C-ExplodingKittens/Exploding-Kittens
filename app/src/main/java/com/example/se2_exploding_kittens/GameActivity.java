@@ -129,9 +129,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
                             adapter.removeCard(mPosition);
                             if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
-                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage());
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck);
                             } else {
-                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null);
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck);
                             }
 
                             // changed via discard pile porperty changes
