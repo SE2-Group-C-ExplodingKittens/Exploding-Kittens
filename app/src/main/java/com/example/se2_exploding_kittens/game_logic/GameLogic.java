@@ -147,9 +147,8 @@ public class GameLogic {
         if (card instanceof SkipCard) {
             ((SkipCard) card).handleSkipActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof ShuffleCard) {
-            ((ShuffleCard) card).handleShuffleActions(player, networkManager, discardPile, turnManager, deck);
+            ((ShuffleCard) card).handleShuffleActions(player, networkManager, discardPile, deck);
         } else {
-
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
             }
