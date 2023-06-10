@@ -52,7 +52,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     public Deck getDeck() {
         return this.deck;
     }
-    public void setDeckDeck(Deck deck) {
+    public void setDeck(Deck deck) {
         this.deck = deck;
     }
 

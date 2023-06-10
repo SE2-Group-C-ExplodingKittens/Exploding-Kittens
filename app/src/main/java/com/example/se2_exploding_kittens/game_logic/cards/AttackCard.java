@@ -29,13 +29,12 @@ public class AttackCard implements Card {
     public void handleAttackActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
-            player.setPlayerTurns(player.getPlayerTurns() - 1);
+            int remainingTurns = player.getPlayerTurns();
+            //End your turn(s) without drawing
+            player.setPlayerTurns(0);
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(ATTACK_CARD_ID));
-            // If the victim of an Attack Card plays an Attack Card on any of their turns,
-            // the new target must take any remaining turns plus the number of attacks on
-            // the Attack Card just played (e.g. 4 turns, then 6, and so on).
-            GameLogic.finishTurn(player, networkManager, player.getPlayerTurns() + 2, turnManager);
+            GameLogic.finishTurn(player, networkManager, remainingTurns + 1, turnManager);
             GameManager.sendNopeEnabled(networkManager);
         }
         discardPile.putCard(this);

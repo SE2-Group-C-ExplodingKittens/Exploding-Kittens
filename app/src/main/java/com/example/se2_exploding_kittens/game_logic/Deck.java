@@ -30,6 +30,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Deck {
@@ -57,7 +58,6 @@ public class Deck {
                 card = getCardByID(Integer.parseInt(s));
                 if(card != null){
                     cardDeck.add(card);
-
                 }
             }
         }
@@ -119,16 +119,7 @@ public class Deck {
 
     public void shuffleDeck() {
         cardDeckOld = cardDeck;
-        ArrayList<Card> tempDeck = new ArrayList<>();
-        while (!cardDeck.isEmpty()) {
-            if(cardDeck.size() > 1){
-                tempDeck.add(cardDeck.remove(random.nextInt(cardDeck.size() - 1)));
-            }else {
-                tempDeck.add(cardDeck.remove(0));
-            }
-
-        }
-        cardDeck = tempDeck;
+        Collections.shuffle(cardDeck);
     }
 
     public void undoShuffle() {

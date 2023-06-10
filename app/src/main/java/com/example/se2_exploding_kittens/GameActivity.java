@@ -41,7 +41,7 @@ import java.util.ArrayList;
 public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
-    private static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
+    public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
 
 
     private RecyclerView recyclerView;
@@ -86,7 +86,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     };
 
     //hand over the player that plays over on the device
-    private void guiInit(Player currentPlayer){
+    private void guiInit(Player currentPlayer) {
         // Implement onDragListener for the discard pile view
         discardPileView = findViewById(R.id.discardPile);
 
@@ -126,9 +126,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         discardedCard.setImageResource(cardResource);*/
 
                         Card selectedCard = adapter.getSelectedCard(mPosition);
-                        if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
+                        if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
                             adapter.removeCard(mPosition);
-                            if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck);
                             } else {
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck);
@@ -150,7 +150,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         playerHandInit(currentPlayer);
     }
 
-    private void playerHandInit(Player currentPlayer){
+    private void playerHandInit(Player currentPlayer) {
         // Initialize the RecyclerView and layout manager
         recyclerView = findViewById(R.id.recyclerVw);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -178,10 +178,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             public void onClick(View v) {
                 // Get the next card from the deck
                 try {
-
-                    if(GameLogic.canCardBePulled(currentPlayer)){
+                    if (GameLogic.canCardBePulled(currentPlayer)) {
                         Card nextCard = deck.getNextCard();
-                        if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                        System.out.println(deck.deckToString());
+                        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
                         } else {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
@@ -209,7 +209,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     private void distributeDeck(Deck deck) {
         try {
-            if(deck != null){
+            if (deck != null) {
                 connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
             }
         } catch (IllegalAccessException e) {
@@ -228,7 +228,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             }
             connection = null;
         }
-        if(playerManager != null){
+        if (playerManager != null) {
             playerManager.reset();
             playerManager = null;
         }
@@ -239,35 +239,35 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         connection = NetworkManager.getInstance();
-        connection.subscribeCallbackToMessageID(this,GAME_ACTIVITY_DECK_MESSAGE_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
-        if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
             deck = new Deck(seed);
-            playerManager.initializeAsHost(connection.getServerConnections(),connection);
+            playerManager.initializeAsHost(connection.getServerConnections(), connection);
             ArrayList<Player> players = new ArrayList<Player>();
-            for (PlayerConnection pc: playerManager.getPlayers()) {
+            for (PlayerConnection pc : playerManager.getPlayers()) {
                 players.add(pc.getPlayer());
                 pc.getPlayer().subscribePlayerToCardEvents(connection);
             }
             deck.dealCards(players);
-            gameManager = new GameManager(connection,deck,discardPile);
+            gameManager = new GameManager(connection, deck, discardPile);
             distributeDeck(deck);
             gameManager.distributePlayerHands();
 
             // player id 0 is always the host
             guiInit(playerManager.getLocalSelf());
             gameManager.startGame();
-        }else if(connection.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+        } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             deck = null;
             Player localClientPlayer = new Player();
             localClientPlayer.subscribePlayerToCardEvents(connection);
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
-            gameClient = new GameClient(localClientPlayer,deck,discardPile,connection);
+            gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
 
-            Toast toast = Toast.makeText(this, "Waitning for host to start", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
@@ -275,15 +275,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             gameClient.blockUntilReady();
 
 
-            toast = Toast.makeText(this, "You're Player"+localClientPlayer.getPlayerId(), Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this, "You're Player" + localClientPlayer.getPlayerId(), Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
             guiInit(localClientPlayer);
 
 
-
-        }else if(connection.getConnectionRole() == TypeOfConnectionRole.IDLE){
+        } else if (connection.getConnectionRole() == TypeOfConnectionRole.IDLE) {
             //this case just for local testing presumably no connection has ever been established
             //Add players to the player's list
             ArrayList<Player> players = new ArrayList<Player>();
@@ -312,14 +311,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
-        if(sender instanceof ClientTCP){
-            switch (Message.parseAndExtractMessageID(text)){
-                case GAME_ACTIVITY_DECK_MESSAGE_ID:
-                    deck = new Deck(Message.parseAndExtractPayload(text));
-                    if(connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null){
-                        gameClient.setDeckDeck(deck);
-                    }
-                    break;
+        if (sender instanceof ClientTCP) {
+            if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_DECK_MESSAGE_ID) {
+                deck = new Deck(Message.parseAndExtractPayload(text));
+                if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null) {
+                    gameClient.setDeck(deck);
+                }
             }
         }
     }
