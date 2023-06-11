@@ -188,7 +188,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                 if (message.length == 2){
                     int playerID = Integer.parseInt(message[1]);
                     if(playerID != player.getPlayerId()){
-                        GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null, deck);
+                        GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null, deck, null);
                         //discardPile.putCard(Integer.parseInt(message[0]));
                     }
                 }

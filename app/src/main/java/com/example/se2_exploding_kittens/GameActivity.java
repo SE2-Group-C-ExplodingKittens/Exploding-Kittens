@@ -1,28 +1,23 @@
 package com.example.se2_exploding_kittens;
 
-import android.app.Dialog;
 import android.content.ClipData;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -140,11 +135,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
                             adapter.removeCard(mPosition);
                             if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck);
-                                seeTheFutureCard(selectedCard);
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
                             } else {
-                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck);
-                                seeTheFutureCard(selectedCard);
+                                GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
                             }
 
                             // changed via discard pile porperty changes
@@ -162,39 +155,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         discardPile.addPropertyChangeListener(cardPileChangeListener);
         playerHandInit(currentPlayer);
     }
-
-    private void seeTheFutureCard(Card selectedCard) {
-        if (selectedCard.getCardID() == SeeTheFutureCard.SEE_THE_FUTURE_CARD_ID) {
-            ArrayList<Integer> threeCards = deck.getNextThreeCards();
-
-            // Set Image resources
-            int cardOne = threeCards.get(0);
-            int cardTwo = threeCards.get(1);
-            int cardThree = threeCards.get(2);
-
-            TopThreeCardsViewHolder topThreeCardsViewHolder = new TopThreeCardsViewHolder(LayoutInflater.from(this)
-                    .inflate(R.layout.three_cards_layout, null));
-
-            topThreeCardsViewHolder.bindData(cardOne, cardTwo, cardThree);
-            PopupWindow popupWindow = new PopupWindow(this);
-            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            popupWindow.setContentView(topThreeCardsViewHolder.itemView);
-            popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            popupWindow.setFocusable(true);
-            popupWindow.showAtLocation(getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
-
-            // Dismiss the PopupWindow after 5 seconds
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (popupWindow.isShowing()) {
-                        popupWindow.dismiss();
-                    }
-                }
-            }, 5000);
-        }
-    }
-
 
     private void playerHandInit(Player currentPlayer) {
         // Initialize the RecyclerView and layout manager
@@ -226,7 +186,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 try {
                     if (GameLogic.canCardBePulled(currentPlayer)) {
                         Card nextCard = deck.getNextCard();
-                        System.out.println(deck.deckToString());
                         if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
                         } else {

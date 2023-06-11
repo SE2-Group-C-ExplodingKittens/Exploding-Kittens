@@ -209,7 +209,7 @@ public class GameManager implements MessageCallback {
                     if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                         //broadcast to other clients
                         sendCardPlayed(playerID, playedCard, networkManager);
-                        GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(), playedCard, networkManager, discardPile, turnManager, deck);
+                        GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(), playedCard, networkManager, discardPile, turnManager, deck, null);
                         //playerManager.getPlayer(playerID).getPlayer().removeCardFromHand(Integer.toString(playedCard.getCardID()));
                     }
                 }

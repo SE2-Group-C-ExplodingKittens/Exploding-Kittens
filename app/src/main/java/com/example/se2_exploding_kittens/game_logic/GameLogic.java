@@ -151,7 +151,7 @@ public class GameLogic {
         return false;
     }
 
-    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck) {
+    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck, Context context) {
         if (card instanceof SkipCard) {
             ((SkipCard) card).handleSkipActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof ShuffleCard) {
@@ -159,7 +159,7 @@ public class GameLogic {
         } else if (card instanceof AttackCard) {
             ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof SeeTheFutureCard) {
-            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, discardPile, deck);
+            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, turnManager, discardPile, deck, context);
         } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
