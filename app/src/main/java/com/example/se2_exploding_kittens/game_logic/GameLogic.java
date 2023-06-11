@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.game_logic;
 
+import android.content.Context;
+
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -139,6 +141,9 @@ public class GameLogic {
                 if (card instanceof AttackCard) {
                     return true;
                 }
+                if (card instanceof SeeTheFutureCard) {
+                    return true;
+                }
             } else if (nopeEnabled && card instanceof NopeCard) {
                 return true;
             }
@@ -153,6 +158,8 @@ public class GameLogic {
             ((ShuffleCard) card).handleShuffleActions(player, networkManager, discardPile, deck);
         } else if (card instanceof AttackCard) {
             ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
+        } else if (card instanceof SeeTheFutureCard) {
+            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, discardPile, deck);
         } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);

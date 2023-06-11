@@ -1,20 +1,29 @@
 package com.example.se2_exploding_kittens;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +42,7 @@ import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
+import com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -42,7 +52,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
-
+    public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
 
     private RecyclerView recyclerView;
     private CardAdapter adapter;
@@ -50,8 +60,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private PlayerManager playerManager = PlayerManager.getInstance();
 
     private ImageView deckImage;
-
+    private FragmentManager fragmentManager;
     private GameManager gameManager;
+    private int localClientPlayerID;
 
     private Deck deck;
     private DiscardPile discardPile;
@@ -130,8 +141,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                             adapter.removeCard(mPosition);
                             if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck);
+                                seeTheFutureCard(selectedCard);
                             } else {
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck);
+                                seeTheFutureCard(selectedCard);
                             }
 
                             // changed via discard pile porperty changes
@@ -149,6 +162,39 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         discardPile.addPropertyChangeListener(cardPileChangeListener);
         playerHandInit(currentPlayer);
     }
+
+    private void seeTheFutureCard(Card selectedCard) {
+        if (selectedCard.getCardID() == SeeTheFutureCard.SEE_THE_FUTURE_CARD_ID) {
+            ArrayList<Integer> threeCards = deck.getNextThreeCards();
+
+            // Set Image resources
+            int cardOne = threeCards.get(0);
+            int cardTwo = threeCards.get(1);
+            int cardThree = threeCards.get(2);
+
+            TopThreeCardsViewHolder topThreeCardsViewHolder = new TopThreeCardsViewHolder(LayoutInflater.from(this)
+                    .inflate(R.layout.three_cards_layout, null));
+
+            topThreeCardsViewHolder.bindData(cardOne, cardTwo, cardThree);
+            PopupWindow popupWindow = new PopupWindow(this);
+            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            popupWindow.setContentView(topThreeCardsViewHolder.itemView);
+            popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            popupWindow.setFocusable(true);
+            popupWindow.showAtLocation(getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
+
+            // Dismiss the PopupWindow after 5 seconds
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (popupWindow.isShowing()) {
+                        popupWindow.dismiss();
+                    }
+                }
+            }, 5000);
+        }
+    }
+
 
     private void playerHandInit(Player currentPlayer) {
         // Initialize the RecyclerView and layout manager
@@ -240,6 +286,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         setContentView(R.layout.activity_game);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
@@ -276,6 +323,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
             toast = Toast.makeText(this, "You're Player" + localClientPlayer.getPlayerId(), Toast.LENGTH_SHORT);
+            localClientPlayerID = localClientPlayer.getPlayerId();
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
@@ -307,7 +355,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
     }
 
-
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
@@ -319,5 +366,20 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             }
         }
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
+            int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
+            if (playerID != localClientPlayerID) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Player " + playerID + " is watching the top three cards of the deck!", Toast.LENGTH_SHORT);
+                        toast.setDuration(Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.BOTTOM, 0, 100);
+                        toast.show();
+                    }
+                });
+            }
+        }
     }
 }
+

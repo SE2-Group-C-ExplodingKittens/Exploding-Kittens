@@ -31,6 +31,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Random;
 
 public class Deck {
@@ -51,21 +52,21 @@ public class Deck {
     }
 
     public Deck(String exportString) {
-        if(exportString != null){
+        if (exportString != null) {
             String[] arr = exportString.split("-");
             Card card = null;
-            for(String s: arr){
+            for (String s : arr) {
                 card = getCardByID(Integer.parseInt(s));
-                if(card != null){
+                if (card != null) {
                     cardDeck.add(card);
                 }
             }
         }
     }
 
-    public static Card getCardByID(int cardID){
+    public static Card getCardByID(int cardID) {
         Card card = null;
-        switch (cardID){
+        switch (cardID) {
             case ATTACK_CARD_ID:
                 card = (new AttackCard());
                 break;
@@ -109,10 +110,10 @@ public class Deck {
         return card;
     }
 
-    public String deckToString(){
+    public String deckToString() {
         String export = "";
-        for (Card c: cardDeck) {
-            export = export+c.getCardID()+"-";
+        for (Card c : cardDeck) {
+            export = export + c.getCardID() + "-";
         }
         return export;
     }
@@ -120,6 +121,20 @@ public class Deck {
     public void shuffleDeck() {
         cardDeckOld = cardDeck;
         Collections.shuffle(cardDeck);
+    }
+
+    public ArrayList<Integer> getNextThreeCards() {
+        ArrayList<Integer> threeCards = new ArrayList<>();
+        ArrayList<Card> tempDeck = (ArrayList<Card>) cardDeck.clone();
+        for (int i = 0; i < 3; i++) {
+            if (!tempDeck.isEmpty()) {
+                threeCards.add(tempDeck.remove(0).getImageResource());
+            } else {
+                // If less than three cards
+                threeCards.add(0);
+            }
+        }
+        return threeCards;
     }
 
     public void undoShuffle() {
@@ -213,10 +228,10 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty, or card mismatch!");
     }
 
-    public void addBombAtRandomIndex(){
-        if(cardDeck.size() > 1){
-            cardDeck.add(random.nextInt(cardDeck.size()-1), new BombCard());
-        }else {
+    public void addBombAtRandomIndex() {
+        if (cardDeck.size() > 1) {
+            cardDeck.add(random.nextInt(cardDeck.size() - 1), new BombCard());
+        } else {
             cardDeck.add(0, new BombCard());
         }
     }

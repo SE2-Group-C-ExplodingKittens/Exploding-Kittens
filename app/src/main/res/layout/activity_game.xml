@@ -38,8 +38,6 @@
             android:src="@drawable/yourcardgoeshere"/>
     </FrameLayout>
 
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerVw"
         android:layout_width="match_parent"
@@ -50,7 +48,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.4"
         android:paddingTop="10dp"/>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
