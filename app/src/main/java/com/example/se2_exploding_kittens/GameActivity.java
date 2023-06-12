@@ -83,6 +83,35 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
     };
 
+    PropertyChangeListener playerWonChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("playerWon".equals(event.getPropertyName())) {
+                        //check if the local player caused this event
+                        Toast.makeText(GameActivity.this, "You "+event.getNewValue()+" won!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    };
+
+    PropertyChangeListener playerLostChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("playerLost".equals(event.getPropertyName())) {
+                        Toast.makeText(GameActivity.this, "Player "+event.getNewValue()+" lost!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    };
+
     //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer){
         // Implement onDragListener for the discard pile view
@@ -147,6 +176,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         });
         discardPile.addPropertyChangeListener(cardPileChangeListener);
         playerHandInit(currentPlayer);
+        winLossMessagesInit(currentPlayer);
+    }
+
+    private void winLossMessagesInit(Player currentPlayer){
+        currentPlayer.addPropertyChangeListener(playerWonChangeListener);
+        currentPlayer.addPropertyChangeListener(playerLostChangeListener);
     }
 
     private void playerHandInit(Player currentPlayer){
@@ -182,19 +217,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         Card nextCard = deck.getNextCard();
                         if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
+                            gameManager.checkGameEnd();
                         } else {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
                         }
-                        /*if(nextCard instanceof BombCard){
-
-                        }else {
-
-                        }
-                        // TODO implement the logic, to process Bomb card differently
-
-                        // Add the next card to the current player's hand
-                        currentPlayer.getHand().add(nextCard);*/
-
                         // Notify the adapter that the data has changed
                         adapter.notifyDataSetChanged();
                     }
@@ -221,16 +247,18 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     protected void onDestroy() {
         super.onDestroy();
         //Free resources
+        if(playerManager != null){
+            playerManager.reset();
+            playerManager = null;
+        }
+
         if (connection != null) {
             if (connection.getConnectionRole() != TypeOfConnectionRole.IDLE) {
                 connection.terminateConnection();
             }
             connection = null;
         }
-        if(playerManager != null){
-            playerManager.reset();
-            playerManager = null;
-        }
+
     }
 
     @Override

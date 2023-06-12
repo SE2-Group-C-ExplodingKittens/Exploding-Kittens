@@ -32,6 +32,7 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID = 507;
     public static final int GAME_MANAGER_MESSAGE_PLAYER_LOST_ID = 508;
     public static final int GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID = 509;
+    public static final int GAME_MANAGER_MESSAGE_PLAYER_WON_ID = 510;
 
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
@@ -70,6 +71,16 @@ public class GameManager implements MessageCallback {
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void checkGameEnd(){
+        int winner = GameLogic.checkForWinner(playerManager);
+        if(winner != -1){
+            playerManager.getPlayer(winner).getPlayer().setHasWon(true);
+            if(winner != 0){
+                sendPlayerWon(winner,networkManager);
+            }
         }
     }
 
@@ -116,6 +127,19 @@ public class GameManager implements MessageCallback {
 
             }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendPlayerWon(int playerID, NetworkManager networkManager) {
+        try {
+            if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_PLAYER_WON_ID, Integer.toString(playerID)));
+
+            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_PLAYER_WON_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -193,6 +217,7 @@ public class GameManager implements MessageCallback {
                         //broadcast to other clients
                         sendBombPulled(playerID,removedCard, networkManager);
                         GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(),removedCard,networkManager,discardPile,turnManager);
+                        checkGameEnd();
                         //playerManager.getPlayer(playerID).getPlayer().setHasBomb(true);
                         //discardPile.putCard(removedCard);
                     }

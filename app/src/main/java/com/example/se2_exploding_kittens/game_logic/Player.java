@@ -50,6 +50,7 @@ public class Player extends Observable implements MessageCallback {
     private boolean alive = true;
     private boolean hasBomb = false;
     private boolean canNope = false;
+    private boolean hasWon = false;
     private int playerTurns;
     private static String DEBUG_TAG = "Player";
 
@@ -322,7 +323,11 @@ public class Player extends Observable implements MessageCallback {
     }
 
     public void setAlive(boolean alive) {
+        if (this.alive == true && alive == false){
+            propertyChangeSupport.firePropertyChange("playerLost",true,false);
+        }
         this.alive = alive;
+
     }
 
     private int getAddressedPlayerFromPayload(String payload){
@@ -373,5 +378,16 @@ public class Player extends Observable implements MessageCallback {
 
     public void setHasBomb(boolean hasBomb) {
         this.hasBomb = hasBomb;
+    }
+
+    public boolean isHasWon() {
+        return hasWon;
+    }
+
+    public void setHasWon(boolean hasWon) {
+        if (this.hasWon == false && hasWon == true){
+            propertyChangeSupport.firePropertyChange("playerWon",-1,playerId);
+        }
+        this.hasWon = hasWon;
     }
 }

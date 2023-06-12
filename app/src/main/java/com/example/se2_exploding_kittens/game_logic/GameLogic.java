@@ -1,6 +1,8 @@
 package com.example.se2_exploding_kittens.game_logic;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
+import com.example.se2_exploding_kittens.Network.PlayerConnection;
+import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
@@ -169,6 +171,26 @@ public class GameLogic {
         }else {
             return false;
         }
+    }
+
+    public static int checkForWinner(PlayerManager playerManager){
+        if(playerManager.getPlayerSize() == 1){
+            return playerManager.getPlayers().get(0).getPlayerID();
+        }else{
+            int alivePlayers = 0;
+            int winner = -1;
+            for (PlayerConnection pc: playerManager.getPlayers()) {
+                Player p = pc.getPlayer();
+                if(p.isAlive()){
+                    winner = p.getPlayerId();
+                    alivePlayers++;
+                }
+            }
+            if (alivePlayers == 1){
+                return winner;
+            }
+        }
+        return -1;
     }
 
     public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){

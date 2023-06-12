@@ -7,6 +7,7 @@ import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_PLAYER_LOST_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_PLAYER_WON_ID;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_ASSIGNED;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_ID;
@@ -52,6 +53,9 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_WON_ID);
+
     }
 
     public Player getPlayer() {
@@ -171,6 +175,17 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                         //player lost
                         networkManager.terminateConnection();
                         player.setAlive(false);
+                    }
+                }
+            }
+
+            if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_PLAYER_WON_ID){
+                if(sender instanceof ClientTCP){
+                    String  message = Message.parseAndExtractPayload(text);
+                    if(Integer.parseInt(message) == player.getPlayerId()){
+                        //player lost
+                        networkManager.terminateConnection();
+                        player.setHasWon(true);
                     }
                 }
             }
