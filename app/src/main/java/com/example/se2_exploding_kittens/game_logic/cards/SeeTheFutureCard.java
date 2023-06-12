@@ -9,12 +9,12 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
 import com.example.se2_exploding_kittens.TopThreeCardsViewHolder;
-import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.Player;
@@ -39,7 +39,7 @@ public class SeeTheFutureCard implements Card {
         return SEE_THE_FUTURE_CARD_ID;
     }
 
-    public void handleFutureActions(Player player, NetworkManager networkManager, TurnManager turnManager, DiscardPile discardPile, Deck deck, Context context) {
+    public void handleFutureActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Deck deck, Context context) {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             if (context != null) {
@@ -78,8 +78,43 @@ public class SeeTheFutureCard implements Card {
         popupWindow.setFocusable(true);
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
 
+        //Timer
+        TextView timerTextView = topThreeCardsViewHolder.itemView.findViewById(R.id.textViewCounter);
+        timerTextView.setText("5");
+        Handler handler = new Handler();
+
+        handleThread(handler, popupWindow, timerTextView);
+    }
+
+    private void handleThread(Handler handler, PopupWindow popupWindow, TextView timerTextView) {
+        // Delay between each update in milliseconds
+        final int delay = 1000;
+        handler.postDelayed(new Runnable() {
+            // Total time in milliseconds
+            int remainingTime = 5000;
+
+            @Override
+            public void run() {
+                if (popupWindow.isShowing()) {
+                    // Subtract the delay from the remaining time
+                    remainingTime -= delay;
+                    // Calculate seconds
+                    int seconds = remainingTime / 1000;
+
+                    if (seconds >= 0) {
+                        timerTextView.setText(String.valueOf(seconds));
+                        // Schedule the next update
+                        handler.postDelayed(this, delay);
+                    } else {
+                        // Dismiss the PopupWindow after 5000ms
+                        popupWindow.dismiss();
+                    }
+                }
+            }
+        }, delay);
+
         // Dismiss the PopupWindow after 5 seconds
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (popupWindow.isShowing()) {
@@ -88,4 +123,5 @@ public class SeeTheFutureCard implements Card {
             }
         }, 5000);
     }
+
 }

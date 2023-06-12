@@ -159,7 +159,7 @@ public class GameLogic {
         } else if (card instanceof AttackCard) {
             ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof SeeTheFutureCard) {
-            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, turnManager, discardPile, deck, context);
+            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, discardPile, deck, context);
         } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
