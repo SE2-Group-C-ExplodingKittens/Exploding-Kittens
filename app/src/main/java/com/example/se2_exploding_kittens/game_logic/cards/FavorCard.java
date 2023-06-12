@@ -24,7 +24,6 @@ public class FavorCard implements Card {
         return FAVOR_CARD_ID;
     }
 
-    @Override
     public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
 
     }

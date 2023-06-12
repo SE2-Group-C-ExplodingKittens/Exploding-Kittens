@@ -24,7 +24,6 @@ public class AttackCard implements Card {
         return ATTACK_CARD_ID;
     }
 
-    @Override
     public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
 
     }

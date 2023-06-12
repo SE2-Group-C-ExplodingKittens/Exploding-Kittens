@@ -24,7 +24,6 @@ public class ShuffleCard implements Card {
         return SHUFFLE_CARD_ID;
     }
 
-    @Override
     public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
 
     }

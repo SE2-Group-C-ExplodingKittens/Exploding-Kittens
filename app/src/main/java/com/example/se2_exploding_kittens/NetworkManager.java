@@ -97,6 +97,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.CLIENT;
         connection = new ClientTCP(serverAddress, port,this);
+        connection.setDisconnectCallback(this);
         Thread thread = new Thread((ClientTCP) connection);
         thread.start();
     }
@@ -179,6 +180,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     @Override
     public void clientConnected(ServerTCPSocket connection) {
         connection.setDefaultCallback(this);
+        connection.setDisconnectCallback(this);
         serverToClientConnections.add(connection);
         for(ClientConnectedCallback cb:connectedCallbacks){
             cb.clientConnected(connection);

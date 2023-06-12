@@ -28,6 +28,11 @@ public class BombCard implements Card {
     }
 
     public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
+        //wenn eine bombe gezogen wird,
+        //1 setze bombe bei spieler
+        //2 deaktiviere nope
+        //3 anderen mitteilen und karte setzen
+        //4 überprüfen ob defuse existiert, wenn nicht -> ausscheiden
         player.setHasBomb(true);
         GameManager.sendNopeDisabled(networkManager);
         GameManager.sendBombPulled(player.getPlayerId(), this, networkManager);

@@ -20,7 +20,6 @@ public class CatFourCard implements Card {
         return CAT_FOUR_CARD_ID;
     }
 
-    @Override
     public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
 
     }

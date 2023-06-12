@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import java.nio.channels.SocketChannel;
 
 public class ServerTCPSocket implements Runnable, TCP{
 
@@ -62,18 +63,31 @@ public class ServerTCPSocket implements Runnable, TCP{
     @Override
     public void endConnection() {
         connState = ConnectionState.DISCONNECTING;
+        try {
+            out.close();
+            in.close();
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void listenForMessages(BufferedReader in) throws IOException {
-        if (in.ready()) {
-            response = in.readLine();
+        //if (in.ready()) {
+        response = in.readLine();
+        if(response == null){
+            //EOF sent
+            connState = ConnectionState.DISCONNECTING;
+        }else {
             if (defaultCallback != null) {
                 defaultCallback.responseReceived(response, this);
             }
         }
+        //}
     }
 
-    private boolean checkConnectionDisconnected(Socket connection){
+    private boolean checkConnectionDisconnected(Socket connection, BufferedReader in){
+        //tcp sends EOF on disconnect
         if (connection.isClosed() || connState != ConnectionState.CONNECTED) {
             connState = ConnectionState.DISCONNECTING;
             return true;
@@ -85,29 +99,45 @@ public class ServerTCPSocket implements Runnable, TCP{
     public void run() {
         if(connState == ConnectionState.CONNECTED){
             try {
+                //separate thread to write
+                new Thread(() -> {
+                    try {
+                        while (connState == ConnectionState.CONNECTED){
+                            //drop empty messages
+                            if(messages.size() == 0){
+                                continue;
+                            }
+                            if(messages.get(0) == null){
+                                messages.remove(0);
+                                continue;
+                            }else{
+                                out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
+                                messages.remove(0);
+                            }
+                            Thread.sleep(20);
+                        }
+                    } catch (IOException e) {
+                        connState = ConnectionState.DISCONNECTING;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
                 while (connState == ConnectionState.CONNECTED){
                     //wait for messages
-                    while (messages.size() == 0) {
+                    //while (messages.size() == 0) {
                         //poll for messages every 5ms
-                        listenForMessages(in);
-                        if(checkConnectionDisconnected(connection) )
+                        if(checkConnectionDisconnected(connection, in)){
                             break;
-                        Thread.sleep(20);
-                    }
-                    listenForMessages(in);
-                    //drop empty messages
-                    if(messages.size() == 0){
-                        continue;
-                    }
-                    if(messages.get(0) == null){
-                        messages.remove(0);
-                        continue;
-                    }else{
-                        out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
-                        messages.remove(0);
-                    }
-                    if(checkConnectionDisconnected(connection))
+                        }
+                        listenForMessages(in);
+                        //Thread.sleep(20);
+                    //}
+                    //listenForMessages(in);
+
+/*                    if(checkConnectionDisconnected(connection, in)) {
                         break;
+                    }*/
                 }
                 if(connState == ConnectionState.DISCONNECTING){
                     connState = ConnectionState.DISCONNECTED;
@@ -119,9 +149,10 @@ public class ServerTCPSocket implements Runnable, TCP{
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+/*            catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
         }
     }
 }

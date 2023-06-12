@@ -172,6 +172,9 @@ public class GameLogic {
     }
 
     public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){
+        //den zug beenden
+        // teile dem vorherigen zu, dass der zug beebdet wurde
+        // teile dem nächsten spieler die truns zu
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER && turnManager != null){
             TurnManager.broadcastTurnFinished(player,networkManager);
             turnManager.gameStateNextTurn(futureTurns);
