@@ -6,6 +6,7 @@ import com.example.se2_exploding_kittens.cards.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 public class Deck {
     ArrayList<Cards> deck = new ArrayList<>();
@@ -99,8 +100,8 @@ public class Deck {
         // the number of cards to deal to each player
         int numCardsPerPlayer = 6;
 
-        // create a list to store the dealt cards
-        ArrayList<Cards> dealtCards = new ArrayList<Cards>();
+//        // create a list to store the dealt cards
+//        ArrayList<Cards> dealtCards = new ArrayList<Cards>();
 
         // deal cards to each player
         for (Player player : players) {
@@ -108,7 +109,7 @@ public class Deck {
             //Adding defuse card to each players deck
             playerHand.add(factory.getCard("DEFUSECARD"));
             player.setPlayerHand(playerHand);
-            dealtCards.addAll(playerHand);
+//            dealtCards.addAll(playerHand);
             deck.subList(0, numCardsPerPlayer).clear();
         }
 
@@ -127,12 +128,12 @@ public class Deck {
     }
 
     // TODO write the exception for this method
-    public Cards getNextCard() {
+    public Cards getNextCard() throws NoSuchElementException{
         if (deck.size() > 0) {
             Cards card = deck.remove(0);
             return card;
         }
-        throw new IndexOutOfBoundsException("The deck is empty!");
+        throw new NoSuchElementException("The deck is empty!");
     }
 
 
