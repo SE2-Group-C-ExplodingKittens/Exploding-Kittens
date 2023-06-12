@@ -30,6 +30,7 @@ public class TopThreeCardsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindData(int firstCard, int secondCard, int thirdCard) {
+        //TODO: Refactoring
         if (firstCard != 0) {
             cardOne.setImageResource(firstCard);
             cardOne.setVisibility(View.VISIBLE);

@@ -144,6 +144,9 @@ public class GameLogic {
                 if (card instanceof SeeTheFutureCard) {
                     return true;
                 }
+                if (card instanceof FavorCard) {
+                    return true;
+                }
             } else if (nopeEnabled && card instanceof NopeCard) {
                 return true;
             }
@@ -160,6 +163,8 @@ public class GameLogic {
             ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof SeeTheFutureCard) {
             ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, discardPile, deck, context);
+        } else if (card instanceof FavorCard) {
+            ((FavorCard) card).handleFavorActions(player, networkManager, discardPile, context);
         } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);

@@ -101,7 +101,7 @@ public class SeeTheFutureCard implements Card {
                     // Calculate seconds
                     int seconds = remainingTime / 1000;
 
-                    if (seconds >= 0) {
+                    if (seconds > 0) {
                         timerTextView.setText(String.valueOf(seconds));
                         // Schedule the next update
                         handler.postDelayed(this, delay);
@@ -112,16 +112,5 @@ public class SeeTheFutureCard implements Card {
                 }
             }
         }, delay);
-
-        // Dismiss the PopupWindow after 5 seconds
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (popupWindow.isShowing()) {
-                    popupWindow.dismiss();
-                }
-            }
-        }, 5000);
     }
-
 }

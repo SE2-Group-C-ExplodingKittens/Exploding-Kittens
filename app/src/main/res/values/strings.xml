@@ -7,4 +7,6 @@
     <string name="second_card">Second Card</string>
     <string name="third_image_of_card">Third Image of Card</string>
     <string name="third_card">Third Card</string>
+    <string name="playing_deck">Playing Deck</string>
+    <string name="discard_pile">Discard Pile</string>
 </resources>

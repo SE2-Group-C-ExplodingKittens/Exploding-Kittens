@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Activities;
 
 import android.content.ClipData;
 import android.graphics.Rect;
@@ -13,10 +13,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.se2_exploding_kittens.CardAdapter;
+import com.example.se2_exploding_kittens.FavorCardFragment;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -25,6 +29,9 @@ import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
+import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.OverlapDecoration;
+import com.example.se2_exploding_kittens.R;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameClient;
@@ -41,6 +48,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
+    public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
 
     private RecyclerView recyclerView;
     private CardAdapter adapter;
@@ -154,6 +162,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         recyclerView = findViewById(R.id.recyclerVw);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
+
         // This lines of code make sure, that cards are displayed overlapping each other
         int horizontalOverlapPx = getResources().getDimensionPixelSize(R.dimen.card_horizontal_overlap);
         int startMarginPx = getResources().getDimensionPixelSize(R.dimen.card_start_margin);
@@ -239,6 +248,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
@@ -330,6 +340,16 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         toast.show();
                     }
                 });
+            }
+        }
+
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
+            int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
+            if (playerID == localClientPlayerID) {
+                // Create and show the fragment
+                final Fragment fragment = new FavorCardFragment();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.add(android.R.id.content, fragment).commit();
             }
         }
     }

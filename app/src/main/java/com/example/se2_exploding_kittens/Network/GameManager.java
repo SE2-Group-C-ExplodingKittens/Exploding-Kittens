@@ -1,8 +1,9 @@
 package com.example.se2_exploding_kittens.Network;
 
-import static com.example.se2_exploding_kittens.GameActivity.GAME_ACTIVITY_DECK_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.GameActivity.GAME_ACTIVITY_SHOW_THREE_CARDS_ID;
+import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_DECK_MESSAGE_ID;
+import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_SHOW_THREE_CARDS_ID;
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
+import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_FAVOR_CARD_ID;
 
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
@@ -158,6 +159,18 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_SHOW_THREE_CARDS_ID, Integer.toString(playerID)));
             } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_SHOW_THREE_CARDS_ID, Integer.toString(playerID)));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendGiveAwayCard(int playerID, NetworkManager networkManager){
+        try {
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, Integer.toString(playerID)));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
