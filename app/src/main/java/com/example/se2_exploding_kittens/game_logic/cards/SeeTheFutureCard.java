@@ -81,47 +81,7 @@ public class SeeTheFutureCard implements Card {
         //Timer
         TextView timerTextView = topThreeCardsViewHolder.itemView.findViewById(R.id.textViewCounter);
         timerTextView.setText("5");
-        Handler handler = new Handler();
 
-        handleThread(handler, popupWindow, timerTextView);
+        topThreeCardsViewHolder.run(new Handler(), popupWindow, timerTextView);
     }
-
-    private void handleThread(Handler handler, PopupWindow popupWindow, TextView timerTextView) {
-        // Delay between each update in milliseconds
-        final int delay = 1000;
-        handler.postDelayed(new Runnable() {
-            // Total time in milliseconds
-            int remainingTime = 5000;
-
-            @Override
-            public void run() {
-                if (popupWindow.isShowing()) {
-                    // Subtract the delay from the remaining time
-                    remainingTime -= delay;
-                    // Calculate seconds
-                    int seconds = remainingTime / 1000;
-
-                    if (seconds >= 0) {
-                        timerTextView.setText(String.valueOf(seconds));
-                        // Schedule the next update
-                        handler.postDelayed(this, delay);
-                    } else {
-                        // Dismiss the PopupWindow after 5000ms
-                        popupWindow.dismiss();
-                    }
-                }
-            }
-        }, delay);
-
-        // Dismiss the PopupWindow after 5 seconds
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (popupWindow.isShowing()) {
-                    popupWindow.dismiss();
-                }
-            }
-        }, 5000);
-    }
-
 }

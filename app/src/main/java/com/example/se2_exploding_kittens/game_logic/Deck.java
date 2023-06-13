@@ -31,7 +31,6 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Random;
 
 public class Deck {
