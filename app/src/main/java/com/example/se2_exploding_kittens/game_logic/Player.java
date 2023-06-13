@@ -89,9 +89,11 @@ public class Player extends Observable implements MessageCallback {
     public void setPlayerTurns(int numTurns) {
         playerTurns = numTurns;
         if (playerTurns > 0) {
+            //if it's players turn
             propertyChangeSupport.firePropertyChange("yourTurn", null, playerId);
         }
         else if (playerTurns == 0){
+            //if it's not players turn
             propertyChangeSupport.firePropertyChange("notYourTurn", null, playerId);
         }
     }

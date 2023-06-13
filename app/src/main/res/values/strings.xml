@@ -8,6 +8,7 @@
     <string name="third_image_of_card">Third Image of Card</string>
     <string name="third_card">Third Card</string>
     <string name="your_turn">Your turn!</string>
-    <string name="drawing_pile">Drawing Pile</string>
-    <string name="discard_pile">Discard Pile</string>
+    <string name="discard_pile_frameLayout">Discard Pile FrameLayout</string>
+    <string name="discard_pile_image">Discard Pile Image</string>
+    <string name="drawing_pile_image">Drawing Pile Image</string>
 </resources>

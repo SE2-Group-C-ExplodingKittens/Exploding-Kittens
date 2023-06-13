@@ -12,7 +12,7 @@
         android:id="@+id/playingDeck"
         android:layout_width="171dp"
         android:layout_height="149dp"
-        android:contentDescription="@string/drawing_pile"
+        android:contentDescription="@string/drawing_pile_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.303"
@@ -25,7 +25,7 @@
         android:id="@+id/discardPile"
         android:layout_width="137dp"
         android:layout_height="127dp"
-        android:contentDescription="@string/discard_pile"
+        android:contentDescription="@string/discard_pile_frameLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
@@ -36,6 +36,7 @@
             android:id="@+id/discard_pile_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/discard_pile_image"
             android:alpha="0.5"
             android:src="@drawable/yourcardgoeshere" />
     </FrameLayout>
@@ -60,6 +61,20 @@
         android:textStyle="bold"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewSeeTheFutureCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
