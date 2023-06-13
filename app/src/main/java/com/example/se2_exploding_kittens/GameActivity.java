@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,11 +47,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
+    private TextView yourTurnTextView;
 
     private ImageView deckImage;
     private FragmentManager fragmentManager;
     private GameManager gameManager;
-    private int localClientPlayerID;
+    private Player localClientPlayer;
 
     private Deck deck;
     private DiscardPile discardPile;
@@ -83,6 +85,58 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         }
     };
+
+    PropertyChangeListener yourTurnListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (evt.getNewValue() instanceof Integer) {
+                        if ("yourTurn".equals(evt.getPropertyName())) {
+                            //check if the local player caused this event
+                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.VISIBLE);
+                                }
+                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    PropertyChangeListener notYourTurnListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (evt.getNewValue() instanceof Integer) {
+                        if ("notYourTurn".equals(evt.getPropertyName())) {
+                            //check if the local player caused this event
+                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.INVISIBLE);
+                                }
+                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+
 
     //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer) {
@@ -236,6 +290,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        yourTurnTextView = findViewById(R.id.textViewYourTurn);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
@@ -257,11 +312,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
             // player id 0 is always the host
             guiInit(playerManager.getLocalSelf());
+            playerManager.getLocalSelf().addPropertyChangeListener(yourTurnListener);
+            playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
             gameManager.startGame();
         } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             deck = null;
-            Player localClientPlayer = new Player();
+            localClientPlayer = new Player();
             localClientPlayer.subscribePlayerToCardEvents(connection);
+            localClientPlayer.addPropertyChangeListener(yourTurnListener);
+            localClientPlayer.addPropertyChangeListener(notYourTurnListener);
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
@@ -275,7 +334,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
             toast = Toast.makeText(this, "You're Player" + localClientPlayer.getPlayerId(), Toast.LENGTH_SHORT);
-            localClientPlayerID = localClientPlayer.getPlayerId();
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
@@ -320,7 +378,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
             int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
-            if (playerID != localClientPlayerID) {
+            if (playerID != localClientPlayer.getPlayerId()) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

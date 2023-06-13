@@ -38,7 +38,6 @@ import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard;
 import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
-import com.example.se2_exploding_kittens.game_logic.PlayerMessageID;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -60,7 +59,7 @@ public class Player extends Observable implements MessageCallback {
         this.playerId = playerId;
     }
 
-    public Player(){
+    public Player() {
         playerId = -1;
     }
 
@@ -83,12 +82,18 @@ public class Player extends Observable implements MessageCallback {
         return -1;
     }
 
-    public ArrayList<Card> getHand(){
+    public ArrayList<Card> getHand() {
         return hand;
     }
 
     public void setPlayerTurns(int numTurns) {
         playerTurns = numTurns;
+        if (playerTurns > 0) {
+            propertyChangeSupport.firePropertyChange("yourTurn", null, playerId);
+        }
+        else if (playerTurns == 0){
+            propertyChangeSupport.firePropertyChange("notYourTurn", null, playerId);
+        }
     }
 
     public int getPlayerTurns() {
@@ -99,41 +104,41 @@ public class Player extends Observable implements MessageCallback {
         return playerId;
     }
 
-    public String handToString(){
+    public String handToString() {
         String export = "";
         StringBuilder bld = new StringBuilder();
-        if(hand .size() > 0){
-            for (Card c: hand) {
+        if (hand.size() > 0) {
+            for (Card c : hand) {
                 bld.append(c.getCardID());
                 bld.append("-");
             }
         }
-        export= bld.toString();
+        export = bld.toString();
         return export;
     }
 
     public void setHandFromString(String exportString) {
-        if(exportString != null){
+        if (exportString != null) {
             hand = new ArrayList<>();
             String[] arr = exportString.split("-");
-            for(String s: arr){
+            for (String s : arr) {
                 addCardToHand(s);
             }
         }
     }
 
-    public void subscribePlayerToCardEvents(NetworkManager connection){
-        if(connection != null && (connection.getConnectionRole() != TypeOfConnectionRole.IDLE)){
-                connection.subscribeCallbackToMessageID(this, PLAYER_HAND_MESSAGE_ID.id);
-                connection.subscribeCallbackToMessageID(this, PLAYER_CARD_ADDED_MESSAGE_ID.id);
-                connection.subscribeCallbackToMessageID(this, PLAYER_CARD_REMOVED_MESSAGE_ID.id);
+    public void subscribePlayerToCardEvents(NetworkManager connection) {
+        if (connection != null && (connection.getConnectionRole() != TypeOfConnectionRole.IDLE)) {
+            connection.subscribeCallbackToMessageID(this, PLAYER_HAND_MESSAGE_ID.id);
+            connection.subscribeCallbackToMessageID(this, PLAYER_CARD_ADDED_MESSAGE_ID.id);
+            connection.subscribeCallbackToMessageID(this, PLAYER_CARD_REMOVED_MESSAGE_ID.id);
 
         }
     }
 
     public void addCardToHand(String cardID) {
-        if(cardID != null){
-            switch (Integer.parseInt(cardID)){
+        if (cardID != null) {
+            switch (Integer.parseInt(cardID)) {
                 case ATTACK_CARD_ID:
                     hand.add(new AttackCard());
                     break;
@@ -180,107 +185,107 @@ public class Player extends Observable implements MessageCallback {
     }
 
     public void removeCardFromHand(String cardID) {
-        if(cardID != null){
-            switch (Integer.parseInt(cardID)){
+        if (cardID != null) {
+            switch (Integer.parseInt(cardID)) {
                 case ATTACK_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == ATTACK_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == ATTACK_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case BOMB_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == BOMB_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == BOMB_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case CAT_FIVE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_FIVE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == CAT_FIVE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case CAT_FOUR_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_FOUR_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == CAT_FOUR_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case CAT_ONE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_ONE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == CAT_ONE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case CAT_THREE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_THREE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == CAT_THREE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case CAT_TWO_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_TWO_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == CAT_TWO_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case DEFUSE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == DEFUSE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == DEFUSE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case FAVOR_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == FAVOR_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == FAVOR_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case NOPE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == NOPE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == NOPE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case SEE_THE_FUTURE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == SEE_THE_FUTURE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == SEE_THE_FUTURE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case SHUFFLE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == SHUFFLE_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == SHUFFLE_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
                     }
                     break;
                 case SKIP_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == SKIP_CARD_ID){
+                    for (Card c : hand) {
+                        if (c.getCardID() == SKIP_CARD_ID) {
                             hand.remove(c);
                             break;
                         }
@@ -312,7 +317,7 @@ public class Player extends Observable implements MessageCallback {
         this.alive = alive;
     }
 
-    private int getAddressedPlayerFromPayload(String payload){
+    private int getAddressedPlayerFromPayload(String payload) {
         String[] splitInput = payload.split(":");
         if (splitInput.length > 0) {
             try {
@@ -335,20 +340,20 @@ public class Player extends Observable implements MessageCallback {
 
     @Override
     public void responseReceived(String text, Object sender) {
-        if(text != null){
+        if (text != null) {
             int messageID = Message.parseAndExtractMessageID(text);
             String payload = Message.parseAndExtractPayload(text);
-            if(playerId == getAddressedPlayerFromPayload(payload)){
+            if (playerId == getAddressedPlayerFromPayload(payload)) {
                 ArrayList<Card> oldHand = new ArrayList<>(hand);
-                if(messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id){
+                if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
-                    propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
-                }else if(messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id){
+                    propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
+                } else if (messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id) {
                     removeCardFromHand(parseDataFromPayload(payload));
-                    propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
-                }else if(messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id){
+                    propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
+                } else if (messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id) {
                     setHandFromString(parseDataFromPayload(payload));
-                    propertyChangeSupport.firePropertyChange("hand",oldHand,hand);
+                    propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
                 }
             }
         }
