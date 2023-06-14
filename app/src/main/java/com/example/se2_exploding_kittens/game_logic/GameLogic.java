@@ -22,6 +22,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GameLogic {
 
@@ -31,6 +32,7 @@ public class GameLogic {
     boolean cardIsGoingToBeBPlayed;
     private final ArrayList<Card> currentPlayerPlayedCards = new ArrayList<>();
     ArrayList<Player> playerList = new ArrayList<>();
+    private static final ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
     int currentPlayer = 0;
@@ -44,6 +46,18 @@ public class GameLogic {
         this.gameManager = gameManager;
         this.turnManager = turnManager;
         deck.dealCards(playerList);
+    }
+
+    public static void setPlayerIDList(String text) {
+        String[] playerList = text.split(":");
+        playerIDList.addAll(Arrays.asList(playerList));
+        while (playerIDList.size() < 5) {
+            playerIDList.add(null);
+        }
+    }
+
+    public static ArrayList<String> getPlayerIDList() {
+        return playerIDList;
     }
 
     public void endTurnByPullingCard() {
@@ -203,6 +217,7 @@ public class GameLogic {
             }
         }
     }
+
 
     public void playerDoesNotNope(int playerID) {
 /*

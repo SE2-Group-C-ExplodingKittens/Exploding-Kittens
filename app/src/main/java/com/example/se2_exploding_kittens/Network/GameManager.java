@@ -27,7 +27,7 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_BOMB_PULLED_ID = 504;
     public static final int GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID = 506;
     public static final int GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID = 507;
-    public static final int GAME_MANAGER_MESSAGE_DISTRIBUTE_DECK_ID = 508;
+    public static final int GAME_MANAGER_MESSAGE_PLAYER_LIST_ID = 508;
 
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
@@ -40,6 +40,7 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_LIST_ID);
         this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
 
@@ -165,7 +166,7 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    public static void sendGiveAwayCard(int playerID, NetworkManager networkManager){
+    public static void sendGiveAwayCard(int playerID, NetworkManager networkManager) {
         try {
             if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, Integer.toString(playerID)));

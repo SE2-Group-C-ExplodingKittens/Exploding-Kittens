@@ -40,7 +40,7 @@ public class Deck {
 
     public Deck(long seed) {
         initAttackCard();
-        initCatCards();
+        //initCatCards();
         initFavorCard();
         initNopeCard();
         initShuffleCard();

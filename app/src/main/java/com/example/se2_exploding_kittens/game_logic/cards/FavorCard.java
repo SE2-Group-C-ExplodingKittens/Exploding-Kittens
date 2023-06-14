@@ -14,10 +14,11 @@ import android.widget.TextView;
 import com.example.se2_exploding_kittens.ChoosePlayerViewHolder;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
+import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
-import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
+import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 public class FavorCard implements Card {
 
     public static final int FAVOR_CARD_ID = 9;
+    private ArrayList<String> playerIDs;
 
     public FavorCard() {
         //This class in itself is a datatype, so we don't need to initialize anything else here.
@@ -46,10 +48,10 @@ public class FavorCard implements Card {
             if (context != null) {
                 //context is null if the server broadcasts this method
                 //it has to be null in order not to call this method
-                showChoosePlayerLayout(player.getPlayerId(), context);
+                showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
                 // Move lines when player has (or has not) chosen a player
-                int playerID = 0;
-                GameManager.sendGiveAwayCard(playerID, networkManager);
+                //int playerID = 0;
+                //GameManager.sendGiveAwayCard(playerID, networkManager);
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(FAVOR_CARD_ID));
@@ -58,10 +60,14 @@ public class FavorCard implements Card {
         discardPile.putCard(this);
     }
 
-    private void showChoosePlayerLayout(int playerID, Context context) {
-        PlayerManager playerManager = PlayerManager.getInstance();
-        ArrayList<String> playerIDs = playerManager.getPlayersID();
-        System.out.println(playerID);
+    private void showChoosePlayerLayout(int playerID, NetworkManager networkManager, Context context) {
+        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+            playerIDs = PlayerManager.getInstance().getPlayersIDs();
+        }
+        else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+            playerIDs = GameLogic.getPlayerIDList();
+        }
+
         // Remove own playerID
         playerIDs.remove(Integer.toString(playerID));
 
@@ -69,7 +75,6 @@ public class FavorCard implements Card {
         String playerTwoID = playerIDs.get(1);
         String playerThreeID = playerIDs.get(2);
         String playerFourID = playerIDs.get(3);
-        System.out.println(playerIDs);
 
         showPopUp(playerOneID, playerTwoID, playerThreeID, playerFourID, context);
     }
@@ -91,35 +96,6 @@ public class FavorCard implements Card {
         timerTextView.setText("5");
         Handler handler = new Handler();
 
-        handleThread(handler, popupWindow, timerTextView);
-    }
-
-    private void handleThread(Handler handler, PopupWindow popupWindow, TextView timerTextView) {
-        // Delay between each update in milliseconds
-        final int delay = 1000;
-        handler.postDelayed(new Runnable() {
-            // Total time in milliseconds
-            int remainingTime = 5000;
-
-            @Override
-            public void run() {
-                if (popupWindow.isShowing()) {
-                    // Subtract the delay from the remaining time
-                    remainingTime -= delay;
-                    // Calculate seconds
-                    int seconds = remainingTime / 1000;
-
-                    if (seconds > 0) {
-                        timerTextView.setText(String.valueOf(seconds));
-                        // Schedule the next update
-                        handler.postDelayed(this, delay);
-                    } else {
-                        // Dismiss the PopupWindow after 5000ms
-                        popupWindow.dismiss();
-                    }
-                }
-            }
-        }, delay);
-
+        choosePlayerViewHolder.run(handler, popupWindow, timerTextView);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Activities;
 
 import android.content.ClipData;
 import android.graphics.Rect;
