@@ -16,6 +16,8 @@ public class TopThreeCardsViewHolder extends RecyclerView.ViewHolder {
     private final TextView textCardTwo;
     private final TextView textCardThree;
 
+    private final TextView timerTextView;
+
     public TopThreeCardsViewHolder(View itemView) {
         super(itemView);
         cardOne = itemView.findViewById(R.id.firstCard);
@@ -24,6 +26,7 @@ public class TopThreeCardsViewHolder extends RecyclerView.ViewHolder {
         textCardOne = itemView.findViewById(R.id.textViewFirstCard);
         textCardTwo = itemView.findViewById(R.id.textViewSecondCard);
         textCardThree = itemView.findViewById(R.id.textViewThirdCard);
+        timerTextView = itemView.findViewById(R.id.textViewCounter);
     }
 
     public void bindData(int firstCard, int secondCard, int thirdCard) {
@@ -53,7 +56,9 @@ public class TopThreeCardsViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void run(Handler handler, PopupWindow popupWindow, TextView timerTextView) {
+    public void run(Handler handler, PopupWindow popupWindow) {
+        timerTextView.setText("5");
+
         // Delay between each update in milliseconds
         final int delay = 1000;
         handler.postDelayed(new Runnable() {

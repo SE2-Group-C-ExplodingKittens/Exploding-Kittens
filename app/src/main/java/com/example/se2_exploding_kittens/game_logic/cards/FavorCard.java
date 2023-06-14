@@ -9,7 +9,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.example.se2_exploding_kittens.ChoosePlayerViewHolder;
 import com.example.se2_exploding_kittens.Network.GameManager;
@@ -22,8 +21,9 @@ import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedListener {
+public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedListener, ChoosePlayerViewHolder.OnNoPlayerSelectedListener {
 
     public static final int FAVOR_CARD_ID = 9;
     private ArrayList<String> playerIDs;
@@ -49,6 +49,8 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
             if (context != null) {
                 //context is null if the server broadcasts this method
                 //it has to be null in order not to call this method
+
+                //so we can get the connection when the button gets (not) pressed
                 setNetworkManager(networkManager);
                 showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
             }
@@ -59,20 +61,10 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         discardPile.putCard(this);
     }
 
-    private void setNetworkManager(NetworkManager networkManager){
-        this.networkManager = networkManager;
-    }
-
-    private NetworkManager getNetworkManager(){
-        return this.networkManager;
-    }
-
-
     private void showChoosePlayerLayout(int playerID, NetworkManager networkManager, Context context) {
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
             playerIDs = PlayerManager.getInstance().getPlayersIDs();
-        }
-        else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+        } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             playerIDs = GameLogic.getPlayerIDList();
         }
 
@@ -100,15 +92,49 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         choosePlayerViewHolder.bindData(playerOneID, playerTwoID, playerThreeID, playerFourID, popupWindow, this);
 
         //Timer
-        TextView timerTextView = choosePlayerViewHolder.itemView.findViewById(R.id.textViewCounter);
-        timerTextView.setText("5");
         Handler handler = new Handler();
 
-        choosePlayerViewHolder.run(handler, popupWindow, timerTextView);
+        //display popUp
+        choosePlayerViewHolder.run(handler, popupWindow, this);
     }
 
     @Override
     public void onPlayerSelected(String playerID) {
+        //handle when Button got pressed in time
         GameManager.sendGiveAwayCard(playerID, getNetworkManager());
+    }
+
+    @Override
+    public void onNoPlayerSelected() {
+        //handle when time ran out
+        GameManager.sendGiveAwayCard(getRandomPlayer(playerIDs), getNetworkManager());
+    }
+
+    private String getRandomPlayer(ArrayList<String> playerIDs) {
+        // remove null values
+        ArrayList<String> nonNullPlayers = new ArrayList<>();
+        for (String playerID : playerIDs) {
+            if (playerID != null) {
+                nonNullPlayers.add(playerID);
+            }
+        }
+
+        if (nonNullPlayers.isEmpty()) {
+            return null;
+        }
+
+        // get random index of non null players
+        Random random = new Random();
+        int randomIndex = random.nextInt(nonNullPlayers.size());
+
+        return nonNullPlayers.get(randomIndex);
+    }
+
+    private void setNetworkManager(NetworkManager networkManager) {
+        this.networkManager = networkManager;
+    }
+
+    private NetworkManager getNetworkManager() {
+        return this.networkManager;
     }
 }

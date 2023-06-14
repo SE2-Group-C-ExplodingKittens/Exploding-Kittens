@@ -1,7 +1,6 @@
 package com.example.se2_exploding_kittens;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupWindow;
@@ -15,13 +14,9 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
     private final Button buttonPlayerTwo;
     private final Button buttonPlayerThree;
     private final Button buttonPlayerFour;
+    private final TextView timerTextView;
 
-    private Handler handler;
     private PopupWindow popupWindow;
-
-    public interface OnPlayerSelectedListener {
-        void onPlayerSelected(String playerID);
-    }
 
     public ChoosePlayerViewHolder(View itemView) {
         super(itemView);
@@ -29,7 +24,7 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
         buttonPlayerTwo = itemView.findViewById(R.id.buttonSecondPlayer);
         buttonPlayerThree = itemView.findViewById(R.id.buttonThirdPlayer);
         buttonPlayerFour = itemView.findViewById(R.id.buttonFourthPlayer);
-        handler = new Handler(Looper.getMainLooper());
+        timerTextView = itemView.findViewById(R.id.textViewCounter);
     }
 
     public void bindData(String firstPlayerID, String secondPlayerID, String thirdPlayerID, String fourthPlayerID, PopupWindow popupWindow, OnPlayerSelectedListener listener) {
@@ -40,10 +35,12 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
 
         this.popupWindow = popupWindow;
 
-        // Set click listeners for the buttons
         buttonPlayerOne.setOnClickListener(v -> {
+            //set playerID to tag
             String playerID = (String) v.getTag();
+            //listener if button gets clicked
             listener.onPlayerSelected(playerID);
+            //if clicked dismiss popup
             dismissPopup();
         });
 
@@ -70,6 +67,7 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
         if (playerID != null) {
             String text = "Player " + playerID;
             button.setText(text);
+            //tag is only the playerID, so we can pass it on to the listener when clicked
             button.setTag(playerID);
             button.setVisibility(View.VISIBLE);
         } else {
@@ -83,7 +81,9 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void run(Handler handler, PopupWindow popupWindow, TextView timerTextView) {
+    public void run(Handler handler, PopupWindow popupWindow, OnNoPlayerSelectedListener noPlayerSelectedListener) {
+        timerTextView.setText("5");
+
         // Delay between each update in milliseconds
         final int delay = 1000;
         handler.postDelayed(new Runnable() {
@@ -105,9 +105,21 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
                     } else {
                         // Dismiss the PopupWindow after 5000ms
                         dismissPopup();
+                        //
+                        noPlayerSelectedListener.onNoPlayerSelected();
                     }
                 }
             }
         }, delay);
+    }
+
+    public interface OnPlayerSelectedListener {
+        //listener if button gets clicked
+        void onPlayerSelected(String playerID);
+    }
+
+    public interface OnNoPlayerSelectedListener {
+        //listener if timer runs out
+        void onNoPlayerSelected();
     }
 }

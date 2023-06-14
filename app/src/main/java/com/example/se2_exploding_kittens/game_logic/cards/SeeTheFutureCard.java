@@ -9,7 +9,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -78,10 +77,6 @@ public class SeeTheFutureCard implements Card {
         popupWindow.setFocusable(true);
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
 
-        //Timer
-        TextView timerTextView = topThreeCardsViewHolder.itemView.findViewById(R.id.textViewCounter);
-        timerTextView.setText("5");
-
-        topThreeCardsViewHolder.run(new Handler(), popupWindow, timerTextView);
+        topThreeCardsViewHolder.run(new Handler(), popupWindow);
     }
 }
