@@ -17,6 +17,11 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
     private final Button buttonPlayerFour;
 
     private Handler handler;
+    private PopupWindow popupWindow;
+
+    public interface OnPlayerSelectedListener {
+        void onPlayerSelected(String playerID);
+    }
 
     public ChoosePlayerViewHolder(View itemView) {
         super(itemView);
@@ -25,28 +30,60 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
         buttonPlayerThree = itemView.findViewById(R.id.buttonThirdPlayer);
         buttonPlayerFour = itemView.findViewById(R.id.buttonFourthPlayer);
         handler = new Handler(Looper.getMainLooper());
-
     }
 
-    public void bindData(String firstPlayerID, String secondPlayerID, String thirdPlayerID, String fourthPlayerID) {
+    public void bindData(String firstPlayerID, String secondPlayerID, String thirdPlayerID, String fourthPlayerID, PopupWindow popupWindow, OnPlayerSelectedListener listener) {
         updateButton(buttonPlayerOne, firstPlayerID);
         updateButton(buttonPlayerTwo, secondPlayerID);
         updateButton(buttonPlayerThree, thirdPlayerID);
         updateButton(buttonPlayerFour, fourthPlayerID);
+
+        this.popupWindow = popupWindow;
+
+        // Set click listeners for the buttons
+        buttonPlayerOne.setOnClickListener(v -> {
+            String playerID = (String) v.getTag();
+            listener.onPlayerSelected(playerID);
+            dismissPopup();
+        });
+
+        buttonPlayerTwo.setOnClickListener(v -> {
+            String playerID = (String) v.getTag();
+            listener.onPlayerSelected(playerID);
+            dismissPopup();
+        });
+
+        buttonPlayerThree.setOnClickListener(v -> {
+            String playerID = (String) v.getTag();
+            listener.onPlayerSelected(playerID);
+            dismissPopup();
+        });
+
+        buttonPlayerFour.setOnClickListener(v -> {
+            String playerID = (String) v.getTag();
+            listener.onPlayerSelected(playerID);
+            dismissPopup();
+        });
     }
 
     private void updateButton(Button button, String playerID) {
         if (playerID != null) {
             String text = "Player " + playerID;
             button.setText(text);
-            button.setTag(text);
+            button.setTag(playerID);
             button.setVisibility(View.VISIBLE);
         } else {
             button.setVisibility(View.INVISIBLE);
         }
     }
 
-    public void run(Handler handler, PopupWindow popupWindow, TextView timerTextView){
+    private void dismissPopup() {
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
+        }
+    }
+
+    public void run(Handler handler, PopupWindow popupWindow, TextView timerTextView) {
         // Delay between each update in milliseconds
         final int delay = 1000;
         handler.postDelayed(new Runnable() {
@@ -67,7 +104,7 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
                         handler.postDelayed(this, delay);
                     } else {
                         // Dismiss the PopupWindow after 5000ms
-                        popupWindow.dismiss();
+                        dismissPopup();
                     }
                 }
             }

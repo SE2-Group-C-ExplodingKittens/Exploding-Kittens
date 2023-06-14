@@ -23,10 +23,11 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 
 import java.util.ArrayList;
 
-public class FavorCard implements Card {
+public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedListener {
 
     public static final int FAVOR_CARD_ID = 9;
     private ArrayList<String> playerIDs;
+    private NetworkManager networkManager;
 
     public FavorCard() {
         //This class in itself is a datatype, so we don't need to initialize anything else here.
@@ -48,10 +49,8 @@ public class FavorCard implements Card {
             if (context != null) {
                 //context is null if the server broadcasts this method
                 //it has to be null in order not to call this method
+                setNetworkManager(networkManager);
                 showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
-                // Move lines when player has (or has not) chosen a player
-                //int playerID = 0;
-                //GameManager.sendGiveAwayCard(playerID, networkManager);
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(FAVOR_CARD_ID));
@@ -59,6 +58,15 @@ public class FavorCard implements Card {
         }
         discardPile.putCard(this);
     }
+
+    private void setNetworkManager(NetworkManager networkManager){
+        this.networkManager = networkManager;
+    }
+
+    private NetworkManager getNetworkManager(){
+        return this.networkManager;
+    }
+
 
     private void showChoosePlayerLayout(int playerID, NetworkManager networkManager, Context context) {
         if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
@@ -83,13 +91,13 @@ public class FavorCard implements Card {
         ChoosePlayerViewHolder choosePlayerViewHolder = new ChoosePlayerViewHolder(LayoutInflater.from(context)
                 .inflate(R.layout.favor_card_choose_player_layout, null));
 
-        choosePlayerViewHolder.bindData(playerOneID, playerTwoID, playerThreeID, playerFourID);
         PopupWindow popupWindow = new PopupWindow(context);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setContentView(choosePlayerViewHolder.itemView);
         popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setFocusable(true);
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
+        choosePlayerViewHolder.bindData(playerOneID, playerTwoID, playerThreeID, playerFourID, popupWindow, this);
 
         //Timer
         TextView timerTextView = choosePlayerViewHolder.itemView.findViewById(R.id.textViewCounter);
@@ -97,5 +105,10 @@ public class FavorCard implements Card {
         Handler handler = new Handler();
 
         choosePlayerViewHolder.run(handler, popupWindow, timerTextView);
+    }
+
+    @Override
+    public void onPlayerSelected(String playerID) {
+        GameManager.sendGiveAwayCard(playerID, getNetworkManager());
     }
 }

@@ -306,6 +306,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
@@ -404,11 +405,19 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
             int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
-            if (playerID == localClientPlayer.getPlayerId()) {
-                // Create and show the fragment
-                final Fragment fragment = new FavorCardFragment();
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.add(android.R.id.content, fragment).commit();
+            if (sender instanceof ClientTCP) {
+                if (playerID == localClientPlayer.getPlayerId()) {
+                    // Create and show the fragment
+                    final Fragment fragment = new FavorCardFragment();
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.add(android.R.id.content, fragment).commit();
+                }
+            } else if (sender instanceof ServerTCPSocket) {
+                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
+                    final Fragment fragment = new FavorCardFragment();
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.add(android.R.id.content, fragment).commit();
+                }
             }
         }
     }
@@ -430,7 +439,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
             }
         }, 3000); // 3000 milliseconds = 3 seconds
-        }
     }
+}
 
 

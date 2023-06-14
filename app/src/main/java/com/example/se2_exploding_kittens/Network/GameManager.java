@@ -166,12 +166,12 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    public static void sendGiveAwayCard(int playerID, NetworkManager networkManager) {
+    public static void sendGiveAwayCard(String playerID, NetworkManager networkManager) {
         try {
             if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, Integer.toString(playerID)));
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, playerID));
             } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, Integer.toString(playerID)));
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, playerID));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
