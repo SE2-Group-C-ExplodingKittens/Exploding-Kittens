@@ -7,4 +7,8 @@
     <dimen name="card_horizontal_overlap">16dp</dimen>
     <dimen name="card_start_margin">0dp</dimen>
     <dimen name="card_vertical_offset">10dp</dimen>
+
+    <dimen name="button_width">161dp</dimen>
+    <dimen name="button_height">160dp</dimen>
+    <dimen name="button_margin">12dp</dimen>
 </resources>

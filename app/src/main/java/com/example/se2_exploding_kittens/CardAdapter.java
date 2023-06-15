@@ -63,8 +63,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
                     return true;
                 }
             });
-
-
         }
 
         // Return the size of the dataset (invoked by the layout manager)
@@ -99,10 +97,4 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
             notifyItemRemoved(position);
             return c;
         }
-
-
-
-
     }
-
-

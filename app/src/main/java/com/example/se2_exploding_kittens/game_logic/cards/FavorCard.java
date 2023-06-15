@@ -95,18 +95,20 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
 
         PopupWindow popupWindow = new PopupWindow(context);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popupWindow.setContentView(choosePlayerViewHolder.itemView);
-        popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setContentView(choosePlayerViewHolder.itemView.getRootView());
         popupWindow.setFocusable(true);
+        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
         choosePlayerViewHolder.bindData(playerOneID, playerTwoID, playerThreeID, playerFourID, popupWindow, this);
 
-        //Timer
+        // Timer
         Handler handler = new Handler();
 
-        //display popUp
+        // Display popup
         choosePlayerViewHolder.run(handler, popupWindow, this);
     }
+
 
     @Override
     public void onPlayerSelected(String playerID) {
