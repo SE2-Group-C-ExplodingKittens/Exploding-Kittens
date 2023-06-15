@@ -16,14 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se2_exploding_kittens.CardAdapter;
-import com.example.se2_exploding_kittens.FavorCardFragment;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -31,7 +28,6 @@ import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
-import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.OverlapDecoration;
@@ -67,7 +63,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private ImageView deckImage;
     private FragmentManager fragmentManager;
     private GameManager gameManager;
-    private Player localClientPlayer;
+    private Player localPlayer;
 
     private Deck deck;
     private DiscardPile discardPile;
@@ -115,7 +111,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                                     yourTurnTextView.setVisibility(View.VISIBLE);
                                 }
                             } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
                                     yourTurnTextView.setVisibility(View.VISIBLE);
                                 }
                             }
@@ -140,7 +136,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                                     yourTurnTextView.setVisibility(View.INVISIBLE);
                                 }
                             } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
                                     yourTurnTextView.setVisibility(View.INVISIBLE);
                                 }
                             }
@@ -331,16 +327,17 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             guiInit(playerManager.getLocalSelf());
             playerManager.getLocalSelf().addPropertyChangeListener(yourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
+            localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
         } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             deck = null;
-            localClientPlayer = new Player();
-            localClientPlayer.subscribePlayerToCardEvents(connection);
-            localClientPlayer.addPropertyChangeListener(yourTurnListener);
-            localClientPlayer.addPropertyChangeListener(notYourTurnListener);
+            localPlayer = new Player();
+            localPlayer.subscribePlayerToCardEvents(connection);
+            localPlayer.addPropertyChangeListener(yourTurnListener);
+            localPlayer.addPropertyChangeListener(notYourTurnListener);
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
-            gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
+            gameClient = new GameClient(localPlayer, deck, discardPile, connection);
 
             Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
@@ -350,11 +347,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             gameClient.blockUntilReady();
 
 
-            toast = Toast.makeText(this, "You're Player" + localClientPlayer.getPlayerId(), Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this, "You're Player" + localPlayer.getPlayerId(), Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
             toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
             toast.show();
-            guiInit(localClientPlayer);
+            guiInit(localPlayer);
 
 
         } else if (connection.getConnectionRole() == TypeOfConnectionRole.IDLE) {
@@ -396,45 +393,20 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
             int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
-            // If Client to get localClientPlayer
-            if (sender instanceof ClientTCP) {
-                if (playerID != localClientPlayer.getPlayerId()) {
-                    displaySeeTheFutureCardText(playerID);
-                }
-                // If Server to get getLocalSelf
-            } else if (sender instanceof ServerTCPSocket) {
-                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
-                    displaySeeTheFutureCardText(playerID);
-                }
+            if (playerID != localPlayer.getPlayerId()) {
+                displaySeeTheFutureCardText(playerID);
             }
         }
 
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             int playerID = Integer.parseInt(message[1]);
-            if (sender instanceof ClientTCP) {
-                if (playerID == localClientPlayer.getPlayerId()) {
-                    // Create and show the fragment
-                    //final Fragment fragment = new FavorCardFragment();
-                    //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    //transaction.add(android.R.id.content, fragment).commit();
-
-                    // steal a random Card and display text
-                    displayRandomCardGotStolenText();
-                    Card card = stealRandomCard(localClientPlayer);
-
-                    //send card to stealer
-                    GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
-                }
-            } else if (sender instanceof ServerTCPSocket) {
-                if (playerID == playerManager.getLocalSelf().getPlayerId()) {
-                    // steal a random Card and display text
-                    displayRandomCardGotStolenText();
-                    Card card = stealRandomCard(playerManager.getLocalSelf());
-
-                    //send card to stealer
-                    GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
-                }
+            if (playerID == localPlayer.getPlayerId()) {
+                // steal a random Card and display text
+                displayRandomCardGotStolenText();
+                Card card = stealRandomCard(localPlayer);
+                //send card to stealer
+                GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
             }
         }
     }
@@ -472,7 +444,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             }
         }, 3000); // 3000 milliseconds = 3 seconds
     }
-
 
     private Card stealRandomCard(Player player) {
         if (player.getHand().size() == 0) {
