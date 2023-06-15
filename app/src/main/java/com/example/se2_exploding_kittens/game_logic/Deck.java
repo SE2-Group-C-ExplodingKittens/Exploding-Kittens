@@ -234,9 +234,11 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty, or card mismatch!");
     }
 
-    public void addBombAtRandomIndex() {
+    public int addBombAtRandomIndex() {
         if (cardDeck.size() > 1) {
-            cardDeck.add(random.nextInt(cardDeck.size() - 1), new BombCard());
+            int index = random.nextInt(cardDeck.size() - 1);
+            cardDeck.add(index, new BombCard());
+            return index;
         } else {
             cardDeck.add(0, new BombCard());
             return 0;

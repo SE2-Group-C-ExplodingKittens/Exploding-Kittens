@@ -245,7 +245,7 @@ public class GameManager implements MessageCallback {
                     if(NetworkManager.isServer(networkManager)){
                         //broadcast to other clients
                         sendCardPlayed(playerID,playedCard, networkManager);
-                        GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(),playedCard,networkManager,discardPile,turnManager, deck);
+                        GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(),playedCard,networkManager,discardPile,turnManager, deck, null);
                     }
                 }
             }

@@ -59,8 +59,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
-
-    private ImageView deckImage;
     private RecyclerView recyclerView;
     private View discardPileView;
 
