@@ -229,6 +229,10 @@ public class GameManager implements MessageCallback {
                 }
             }
         }
+
+
+
+
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID) {
             GameLogic.nopeEnabled = true;
             if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {

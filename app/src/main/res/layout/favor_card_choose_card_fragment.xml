@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:gravity="center"
-        android:text="You have been chosen! Drag a card on the discard pile to give it to your opponent or a random card will be chosen!"
+        android:text="You have been chosen! A random card got stolen from your hand!"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"

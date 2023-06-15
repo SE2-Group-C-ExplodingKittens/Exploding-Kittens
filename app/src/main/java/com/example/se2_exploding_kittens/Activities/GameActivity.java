@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.Activities;
 
+import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
+
 import android.content.ClipData;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -46,6 +48,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
 
@@ -411,12 +414,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                     final Fragment fragment = new FavorCardFragment();
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.add(android.R.id.content, fragment).commit();
+                    stealRandomCard(localClientPlayer);
                 }
             } else if (sender instanceof ServerTCPSocket) {
-                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
+                if (playerID == playerManager.getLocalSelf().getPlayerId()) {
                     final Fragment fragment = new FavorCardFragment();
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.add(android.R.id.content, fragment).commit();
+                    stealRandomCard(playerManager.getLocalSelf());
                 }
             }
         }
@@ -439,6 +444,18 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
             }
         }, 3000); // 3000 milliseconds = 3 seconds
+    }
+
+    private void stealRandomCard(Player player) {
+        Random random = new Random();
+        int randomIndex = random.nextInt(localClientPlayer.getHand().size());
+        localClientPlayer.removeCardFromHand(Integer.toString(localClientPlayer.getHand().get(randomIndex).getCardID()));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 }
 
