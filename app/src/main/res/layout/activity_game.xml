@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GameActivity"
+    android:background="@drawable/background"
     android:orientation="horizontal"
-    android:background="@drawable/background">
+    tools:context=".GameActivity">
 
     <ImageView
         android:id="@+id/playingDeck"
         android:layout_width="171dp"
         android:layout_height="149dp"
+        android:contentDescription="@string/drawing_pile_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.303"
@@ -24,33 +25,56 @@
         android:id="@+id/discardPile"
         android:layout_width="137dp"
         android:layout_height="127dp"
-
+        android:contentDescription="@string/discard_pile_frameLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <ImageView
-            android:alpha="0.5"
             android:id="@+id/discard_pile_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/yourcardgoeshere"/>
+            android:contentDescription="@string/discard_pile_image"
+            android:alpha="0.5"
+            android:src="@drawable/yourcardgoeshere" />
     </FrameLayout>
-
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerVw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="320dp"
+        android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.4"
-        android:paddingTop="10dp"/>
+        app:layout_constraintVertical_bias="1.4" />
 
+    <TextView
+        android:id="@+id/textViewYourTurn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/your_turn"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/textViewSeeTheFutureCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

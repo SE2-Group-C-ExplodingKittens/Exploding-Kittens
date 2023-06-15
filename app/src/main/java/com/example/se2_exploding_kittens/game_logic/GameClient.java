@@ -13,13 +13,11 @@ import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_MESSAGE
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_TURN_FINISHED;
 
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
-import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
@@ -52,7 +50,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     public Deck getDeck() {
         return this.deck;
     }
-    public void setDeckDeck(Deck deck) {
+    public void setDeck(Deck deck) {
         this.deck = deck;
     }
 
@@ -188,7 +186,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                 if (message.length == 2){
                     int playerID = Integer.parseInt(message[1]);
                     if(playerID != player.getPlayerId()){
-                        GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null);
+                        GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null, deck, null);
                         //discardPile.putCard(Integer.parseInt(message[0]));
                     }
                 }
