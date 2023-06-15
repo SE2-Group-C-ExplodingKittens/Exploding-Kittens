@@ -69,6 +69,22 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textSize="24sp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewStealRandomCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You have been chosen and a random card got stolen from your hand!"
+        android:gravity="center"
+        android:textSize="24sp"
         android:textColor="@color/white"
         android:textStyle="bold"
         android:visibility="invisible"

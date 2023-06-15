@@ -50,7 +50,6 @@ public class GameLogic {
         return playerIDList;
     }
 
-
     private void initPlayers(int numOfPlayers) {
         for (int i = 0; i < numOfPlayers; i++) {
             playerList.add(new Player(i));
@@ -136,7 +135,9 @@ public class GameLogic {
         }
     }
 
-    public static void cardHasBeenGiven(int playerID, NetworkManager networkManager, Card card){
-        GameManager.sendCardGiven(playerID, networkManager, card);
+    public static void cardHasBeenGiven(int playerID, NetworkManager networkManager, Card card) {
+        if (card != null) {
+            GameManager.sendCardGiven(playerID, networkManager, card);
+        }
     }
 }

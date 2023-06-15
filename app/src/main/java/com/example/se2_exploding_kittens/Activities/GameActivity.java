@@ -62,6 +62,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private TextView yourTurnTextView;
     private TextView seeTheFutureCardTextView;
 
+    private TextView stealRandomCardTextView;
+
     private ImageView deckImage;
     private FragmentManager fragmentManager;
     private GameManager gameManager;
@@ -304,6 +306,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         setContentView(R.layout.activity_game);
         yourTurnTextView = findViewById(R.id.textViewYourTurn);
         seeTheFutureCardTextView = findViewById(R.id.textViewSeeTheFutureCard);
+        stealRandomCardTextView = findViewById(R.id.textViewStealRandomCard);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
@@ -390,6 +393,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             }
         }
+
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
             int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
             // If Client to get localClientPlayer
@@ -404,16 +408,19 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             }
         }
+
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             int playerID = Integer.parseInt(message[1]);
             if (sender instanceof ClientTCP) {
                 if (playerID == localClientPlayer.getPlayerId()) {
                     // Create and show the fragment
-                    final Fragment fragment = new FavorCardFragment();
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.add(android.R.id.content, fragment).commit();
-                    // steal a random Card
+                    //final Fragment fragment = new FavorCardFragment();
+                    //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    //transaction.add(android.R.id.content, fragment).commit();
+
+                    // steal a random Card and display text
+                    displayRandomCardGotStolenText();
                     Card card = stealRandomCard(localClientPlayer);
 
                     //send card to stealer
@@ -421,11 +428,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             } else if (sender instanceof ServerTCPSocket) {
                 if (playerID == playerManager.getLocalSelf().getPlayerId()) {
-                    final Fragment fragment = new FavorCardFragment();
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.add(android.R.id.content, fragment).commit();
-                    // steal a random Card
-
+                    // steal a random Card and display text
+                    displayRandomCardGotStolenText();
                     Card card = stealRandomCard(playerManager.getLocalSelf());
 
                     //send card to stealer
@@ -433,6 +437,22 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             }
         }
+    }
+
+    private void displayRandomCardGotStolenText() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stealRandomCardTextView.setVisibility(View.VISIBLE);
+            }
+        });
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // set invisible after 3 seconds
+                stealRandomCardTextView.setVisibility(View.INVISIBLE);
+            }
+        }, 3000); // 3000 milliseconds = 3 seconds
     }
 
     private void displaySeeTheFutureCardText(int playerID) {
@@ -444,7 +464,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 seeTheFutureCardTextView.setVisibility(View.VISIBLE);
             }
         });
-
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -454,7 +473,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }, 3000); // 3000 milliseconds = 3 seconds
     }
 
+
     private Card stealRandomCard(Player player) {
+        if (player.getHand().size() == 0) {
+            return null;
+        }
+
         Random random = new Random();
         //get random index from hand
         int randomIndex = random.nextInt(player.getHand().size());

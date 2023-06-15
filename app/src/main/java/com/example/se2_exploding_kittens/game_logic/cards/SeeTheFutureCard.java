@@ -55,7 +55,7 @@ public class SeeTheFutureCard implements Card {
     }
 
     private void showTopThreeCards(Deck deck, Context context) {
-        ArrayList<Integer> threeCards = deck.getNextThreeCards();
+        ArrayList<Integer> threeCards = deck.getNextThreeCardResources();
 
         // Set Image resources
         int cardOne = threeCards.get(0);

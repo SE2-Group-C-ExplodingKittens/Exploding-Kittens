@@ -30,29 +30,18 @@ public class TopThreeCardsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindData(int firstCard, int secondCard, int thirdCard) {
-        //TODO: Refactoring
-        if (firstCard != 0) {
-            cardOne.setImageResource(firstCard);
-            cardOne.setVisibility(View.VISIBLE);
-        } else {
-            cardOne.setVisibility(View.INVISIBLE);
-            textCardOne.setVisibility(View.INVISIBLE);
-        }
+        updateImage(firstCard, cardOne, textCardOne);
+        updateImage(secondCard, cardTwo, textCardTwo);
+        updateImage(thirdCard, cardThree, textCardThree);
+    }
 
-        if (secondCard != 0) {
-            cardTwo.setImageResource(secondCard);
-            cardTwo.setVisibility(View.VISIBLE);
+    private void updateImage(int cardImage, ImageView card, TextView cardText) {
+        if (cardImage != 0) {
+            card.setImageResource(cardImage);
+            card.setVisibility(View.VISIBLE);
         } else {
-            cardTwo.setVisibility(View.INVISIBLE);
-            textCardTwo.setVisibility(View.INVISIBLE);
-        }
-
-        if (thirdCard != 0) {
-            cardThree.setImageResource(thirdCard);
-            cardThree.setVisibility(View.VISIBLE);
-        } else {
-            cardThree.setVisibility(View.INVISIBLE);
-            textCardThree.setVisibility(View.INVISIBLE);
+            card.setVisibility(View.INVISIBLE);
+            cardText.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -84,5 +73,11 @@ public class TopThreeCardsViewHolder extends RecyclerView.ViewHolder {
                 }
             }
         }, delay);
+    }
+
+    public void dismiss(PopupWindow popupWindow) {
+        if (popupWindow.isShowing()) {
+            popupWindow.dismiss();
+        }
     }
 }

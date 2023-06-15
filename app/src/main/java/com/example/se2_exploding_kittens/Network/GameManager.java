@@ -167,12 +167,12 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    public static void sendGiveAwayCard(String playerID, NetworkManager networkManager) {
+    public static void sendGiveAwayCard(String fromPlayerIDToPlayerID, NetworkManager networkManager) {
         try {
             if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, playerID));
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, fromPlayerIDToPlayerID));
             } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, playerID));
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, fromPlayerIDToPlayerID));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -240,6 +240,36 @@ public class GameManager implements MessageCallback {
                         //playerManager.getPlayer(playerID).getPlayer().removeCardFromHand(Integer.toString(playedCard.getCardID()));
                     }
                 }
+            }
+        }
+
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_DECK_MESSAGE_ID) {
+            Deck newDeck = new Deck(Message.parseAndExtractPayload(text));
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                distributeDeck(networkManager, newDeck);
+            }
+        }
+
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
+            int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                showTopThreeCards(playerID, networkManager);
+            }
+        }
+
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
+            String fromPlayerIDToPlayerID = Message.parseAndExtractPayload(text);
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                sendGiveAwayCard(fromPlayerIDToPlayerID, networkManager);
+            }
+        }
+
+        if (Message.parseAndExtractMessageID(text) == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
+            String[] message = Message.parseAndExtractPayload(text).split(":");
+            int playerID = Integer.parseInt(message[0]);
+            Card playedCard = Deck.getCardByID(Integer.parseInt(message[1]));
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                sendCardGiven(playerID, networkManager, playedCard);
             }
         }
 

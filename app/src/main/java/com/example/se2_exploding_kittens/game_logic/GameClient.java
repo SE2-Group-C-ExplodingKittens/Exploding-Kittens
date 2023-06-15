@@ -1,6 +1,5 @@
 package com.example.se2_exploding_kittens.game_logic;
 
-import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_FAVOR_CARD_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_BOMB_PULLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PLAYED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PULLED_ID;
@@ -13,11 +12,7 @@ import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MAN
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_ASSIGN_TURNS;
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_TURN_FINISHED;
-import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.se2_exploding_kittens.CardAdapter;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -48,7 +43,6 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
-        //this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
     }
 
     public Player getPlayer() {
@@ -198,12 +192,6 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                         GameLogic.cardHasBeenPlayed(null, Deck.getCardByID(Integer.parseInt(message[0])), networkManager, discardPile, null, deck, null);
                         //discardPile.putCard(Integer.parseInt(message[0]));
                     }
-                }
-            }
-            if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
-                int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
-                if (playerID == player.getPlayerId()) {
-
                 }
             }
             if (Message.parseAndExtractMessageID(text) == PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID) {
