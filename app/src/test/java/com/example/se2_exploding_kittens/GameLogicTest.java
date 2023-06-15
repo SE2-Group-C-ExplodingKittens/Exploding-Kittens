@@ -171,11 +171,11 @@ public class GameLogicTest {
         TurnManager turnManager = mock(TurnManager.class);
         Deck deck = mock(Deck.class);
 
-        cardHasBeenPlayed(player,card,networkManager,discardPile, turnManager, deck);
+        cardHasBeenPlayed(player,card,networkManager,discardPile, turnManager, deck,null);
         verify(((DefuseCard) card), times(1)).handleActions(player,networkManager,discardPile,turnManager, deck);
 
         card = mock(SkipCard.class);
-        cardHasBeenPlayed(player,card,networkManager,discardPile, turnManager, deck);
+        cardHasBeenPlayed(player,card,networkManager,discardPile, turnManager, deck, null);
         verify(((SkipCard) card), times(1)).handleActions(player,networkManager,discardPile,turnManager);
 
     }
