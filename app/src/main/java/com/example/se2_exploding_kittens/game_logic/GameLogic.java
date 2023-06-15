@@ -34,15 +34,11 @@ public class GameLogic {
     int idOfLocalPlayer;
     Deck deck;
     int currentPlayer = 0;
-    private GameManager gameManager;
-    private static TurnManager turnManager;
 
-    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck, GameManager gameManager, TurnManager turnManager) {
+    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
         initPlayers(numOfPlayers);
         this.idOfLocalPlayer = idOfLocalPlayer;
         this.deck = deck;
-        this.gameManager = gameManager;
-        this.turnManager = turnManager;
         deck.dealCards(playerList);
     }
 
@@ -166,11 +162,7 @@ public class GameLogic {
         if(!player.isAlive()){
             return false;
         }
-        if(player.getPlayerTurns() > 0){
-            return true;
-        }else {
-            return false;
-        }
+        return player.getPlayerTurns() > 0;
     }
 
     public static int checkForWinner(PlayerManager playerManager){
@@ -197,7 +189,7 @@ public class GameLogic {
         //den zug beenden
         // teile dem vorherigen zu, dass der zug beebdet wurde
         // teile dem nächsten spieler die truns zu
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER && turnManager != null){
+        if(NetworkManager.isServer(networkManager) && turnManager != null){
             TurnManager.broadcastTurnFinished(player,networkManager);
             turnManager.gameStateNextTurn(futureTurns);
         }

@@ -19,7 +19,6 @@ public class ClientTCP implements Runnable, TCP{
 
     private MessageCallback defaultCallback = null;
     private DisconnectedCallback disconnectedCallback = null;
-    private String response = null;
     private Socket clientSocket = null;
     private ConnectionState connState = ConnectionState.IDLE;
     private DataOutputStream out = null;
@@ -76,7 +75,7 @@ public class ClientTCP implements Runnable, TCP{
     }
 
     private void listenForMessages(BufferedReader in) throws IOException {
-        //if (in.ready()) {
+        String response = null;
         response = in.readLine();
         if(response == null){
             //EOF sent
@@ -86,7 +85,6 @@ public class ClientTCP implements Runnable, TCP{
                 defaultCallback.responseReceived(response, this);
             }
         }
-       //}
     }
 
     public void endConnection(){
@@ -100,6 +98,32 @@ public class ClientTCP implements Runnable, TCP{
         }
     }
 
+    private void startSenderThread(){
+        //separate thread to write
+        new Thread(() -> {
+            try {
+                while (connState == ConnectionState.CONNECTED){
+                    //drop empty messages
+                    if(messages.size() == 0){
+                        continue;
+                    }
+                    if(messages.get(0) == null){
+                        messages.remove(0);
+                        continue;
+                    }else{
+                        out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
+                        messages.remove(0);
+                    }
+                    Thread.sleep(20);
+                }
+            } catch (IOException e) {
+                connState = ConnectionState.DISCONNECTING;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
+    }
+
     @Override
     public void run() {
         if(connect()){
@@ -107,46 +131,14 @@ public class ClientTCP implements Runnable, TCP{
                 out = new DataOutputStream (clientSocket.getOutputStream());
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.US_ASCII));
 
-                //separate thread to write
-                new Thread(() -> {
-                    try {
-                        while (connState == ConnectionState.CONNECTED){
-                            //drop empty messages
-                            if(messages.size() == 0){
-                                continue;
-                            }
-                            if(messages.get(0) == null){
-                                messages.remove(0);
-                                continue;
-                            }else{
-                                out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
-                                messages.remove(0);
-                            }
-                            Thread.sleep(20);
-                        }
-                    } catch (IOException e) {
-                        connState = ConnectionState.DISCONNECTING;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                startSenderThread();
 
                 while (connState == ConnectionState.CONNECTED){
                     //wait for messages
-                    //while (messages.size() == 0) {
-                        //poll for messages every 5ms
-                        if(checkConnectionDisconnected(clientSocket)) {
-                            break;
-                        }
-                        listenForMessages(in);
-                        //Thread.sleep(20);
-                   //}
-
-                    //listenForMessages(in);
-
-/*                    if(checkConnectionDisconnected(clientSocket)) {
+                    if(checkConnectionDisconnected(clientSocket)) {
                         break;
-                    }*/
+                    }
+                    listenForMessages(in);
                 }
 
                 if(connState == ConnectionState.DISCONNECTING){
@@ -162,9 +154,6 @@ public class ClientTCP implements Runnable, TCP{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-/*            catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
         }
     }
 

@@ -40,7 +40,7 @@ public class BombCard implements Card {
         if(player.getDefuse() == -1){
             //no defuse existing player has lost
             player.setAlive(false);
-            if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+            if(NetworkManager.isServer(networkManager)){
                 GameManager.sendPlayerLost(player.getPlayerId(),networkManager);
                 GameLogic.finishTurn(player,networkManager,1, turnManager);
             }

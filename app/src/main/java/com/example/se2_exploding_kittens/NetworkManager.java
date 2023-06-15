@@ -41,8 +41,12 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         return networkManager;
     }
 
+    public static boolean isServer(NetworkManager networkManager) {
+        return networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER;
+    }
+
     public void sendMessageFromTheClient(Message message) throws IllegalAccessException{
-        if(connection instanceof ClientTCP && connection != null){
+        if(connection instanceof ClientTCP){
             connection.addMessage(message);
         }else {
             throw new IllegalAccessException("This is a server connection");
@@ -132,7 +136,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
                 callbackAdded = true;
             }
         }
-        if(callbackAdded == false){
+        if(!callbackAdded){
             subscribedCallbacks.add(new MessageCallbackPair(callback, messageID));
         }
     }

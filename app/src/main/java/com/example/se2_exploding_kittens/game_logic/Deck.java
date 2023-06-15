@@ -105,6 +105,8 @@ public class Deck {
             case SKIP_CARD_ID:
                 card = (new SkipCard());
                 break;
+            default:
+                break;
         }
         return card;
     }

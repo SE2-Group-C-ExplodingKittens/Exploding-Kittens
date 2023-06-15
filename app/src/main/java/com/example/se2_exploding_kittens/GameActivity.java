@@ -156,7 +156,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                         if(GameLogic.canCardBePlayed(currentPlayer,selectedCard)){
                             //adapter.removeCard(mPosition);
                             //adapter.notifyItemRemoved(mPosition);
-                            if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                            if(NetworkManager.isServer(connection)){
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck);
                             } else {
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck);
@@ -215,7 +215,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
                     if(GameLogic.canCardBePulled(currentPlayer)){
                         Card nextCard = deck.getNextCard();
-                        if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                        if(NetworkManager.isServer(connection)){
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
                             gameManager.checkGameEnd();
                         } else {
@@ -270,7 +270,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
-        if(connection.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if(NetworkManager.isServer(connection)){
             deck = new Deck(seed);
             playerManager.initializeAsHost(connection.getServerConnections(),connection);
             ArrayList<Player> players = new ArrayList<Player>();

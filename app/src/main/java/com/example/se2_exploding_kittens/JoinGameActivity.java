@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyListener;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -46,7 +44,7 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
 
         lobbies = ll.getLobbies();
 
-        Lobby_RecyclerViewAdapter lobby_recyclerViewAdapter = new Lobby_RecyclerViewAdapter(this, lobbies, this::JoinLobby);
+        LobbyRecyclerViewAdapter lobby_recyclerViewAdapter = new LobbyRecyclerViewAdapter(this, lobbies, this::JoinLobby);
         lobbyView.setAdapter(lobby_recyclerViewAdapter);
         lobbyView.setLayoutManager(new LinearLayoutManager(this));
         client = NetworkManager.getInstance();
