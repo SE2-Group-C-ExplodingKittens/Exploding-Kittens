@@ -28,6 +28,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
     public static final int FAVOR_CARD_ID = 9;
     private ArrayList<String> playerIDs;
     private NetworkManager networkManager;
+    private int playerID;
 
     public FavorCard() {
         //This class in itself is a datatype, so we don't need to initialize anything else here.
@@ -52,6 +53,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
 
                 //so we can get the connection when the button gets (not) pressed
                 setNetworkManager(networkManager);
+                setPlayerID(player.getPlayerId());
                 showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
@@ -59,6 +61,14 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
             GameManager.sendNopeEnabled(networkManager);
         }
         discardPile.putCard(this);
+    }
+
+    private int getPlayerID() {
+        return playerID;
+    }
+
+    private void setPlayerID(int playerID) {
+        this.playerID = playerID;
     }
 
     private void showChoosePlayerLayout(int playerID, NetworkManager networkManager, Context context) {
@@ -101,13 +111,13 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
     @Override
     public void onPlayerSelected(String playerID) {
         //handle when Button got pressed in time
-        GameManager.sendGiveAwayCard(playerID, getNetworkManager());
+        GameManager.sendGiveAwayCard(getPlayerID() + ":" + playerID, getNetworkManager());
     }
 
     @Override
     public void onNoPlayerSelected() {
         //handle when time ran out
-        GameManager.sendGiveAwayCard(getRandomPlayer(playerIDs), getNetworkManager());
+        GameManager.sendGiveAwayCard(getPlayerID() + ":" + getRandomPlayer(playerIDs), getNetworkManager());
     }
 
     private String getRandomPlayer(ArrayList<String> playerIDs) {

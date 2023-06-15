@@ -18,6 +18,8 @@ import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHU
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
 import android.database.Observable;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.example.se2_exploding_kittens.Network.Message;
@@ -51,6 +53,7 @@ public class Player extends Observable implements MessageCallback {
     private boolean canNope = false;
     private int playerTurns;
     private static String DEBUG_TAG = "Player";
+    private Handler uiHandler = new Handler(Looper.getMainLooper());
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -91,8 +94,7 @@ public class Player extends Observable implements MessageCallback {
         if (playerTurns > 0) {
             //if it's players turn
             propertyChangeSupport.firePropertyChange("yourTurn", null, playerId);
-        }
-        else if (playerTurns == 0){
+        } else if (playerTurns == 0) {
             //if it's not players turn
             propertyChangeSupport.firePropertyChange("notYourTurn", null, playerId);
         }
@@ -349,7 +351,12 @@ public class Player extends Observable implements MessageCallback {
                 ArrayList<Card> oldHand = new ArrayList<>(hand);
                 if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
-                    propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
+                        }
+                    });
                 } else if (messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id) {
                     removeCardFromHand(parseDataFromPayload(payload));
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);

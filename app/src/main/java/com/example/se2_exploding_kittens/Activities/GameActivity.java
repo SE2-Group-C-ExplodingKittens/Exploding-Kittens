@@ -1,7 +1,5 @@
 package com.example.se2_exploding_kittens.Activities;
 
-import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
-
 import android.content.ClipData;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -407,21 +405,31 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             }
         }
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
-            int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
+            String[] message = Message.parseAndExtractPayload(text).split(":");
+            int playerID = Integer.parseInt(message[1]);
             if (sender instanceof ClientTCP) {
                 if (playerID == localClientPlayer.getPlayerId()) {
                     // Create and show the fragment
                     final Fragment fragment = new FavorCardFragment();
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.add(android.R.id.content, fragment).commit();
-                    stealRandomCard(localClientPlayer);
+                    // steal a random Card
+                    Card card = stealRandomCard(localClientPlayer);
+
+                    //send card to stealer
+                    GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
                 }
             } else if (sender instanceof ServerTCPSocket) {
                 if (playerID == playerManager.getLocalSelf().getPlayerId()) {
                     final Fragment fragment = new FavorCardFragment();
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.add(android.R.id.content, fragment).commit();
-                    stealRandomCard(playerManager.getLocalSelf());
+                    // steal a random Card
+
+                    Card card = stealRandomCard(playerManager.getLocalSelf());
+
+                    //send card to stealer
+                    GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
                 }
             }
         }
@@ -446,16 +454,22 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }, 3000); // 3000 milliseconds = 3 seconds
     }
 
-    private void stealRandomCard(Player player) {
+    private Card stealRandomCard(Player player) {
         Random random = new Random();
-        int randomIndex = random.nextInt(localClientPlayer.getHand().size());
-        localClientPlayer.removeCardFromHand(Integer.toString(localClientPlayer.getHand().get(randomIndex).getCardID()));
+        //get random index from hand
+        int randomIndex = random.nextInt(player.getHand().size());
+        Card card = player.getHand().get(randomIndex);
+
+        //remove card
+        player.removeCardFromHand(Integer.toString(card.getCardID()));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //display change
                 adapter.notifyDataSetChanged();
             }
         });
+        return card;
     }
 }
 

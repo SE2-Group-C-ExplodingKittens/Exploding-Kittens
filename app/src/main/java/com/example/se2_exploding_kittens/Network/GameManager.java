@@ -10,6 +10,7 @@ import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
+import com.example.se2_exploding_kittens.game_logic.PlayerMessageID;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 public class GameManager implements MessageCallback {
@@ -178,6 +179,18 @@ public class GameManager implements MessageCallback {
         }
     }
 
+    public static void sendCardGiven(int playerID, NetworkManager networkManager, Card card) {
+        try {
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id, playerID + ":" + card.getCardID()));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id, playerID + ":" + card.getCardID()));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void responseReceived(String text, Object sender) {
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PULLED_ID) {
@@ -229,9 +242,6 @@ public class GameManager implements MessageCallback {
                 }
             }
         }
-
-
-
 
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID) {
             GameLogic.nopeEnabled = true;
