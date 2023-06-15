@@ -54,7 +54,8 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
         params.width = (int) itemView.getContext().getResources().getDimension(R.dimen.button_width);
         params.height = (int) itemView.getContext().getResources().getDimension(R.dimen.button_height);
 
-        int margin = (int) itemView.getContext().getResources().getDimension(R.dimen.button_margin);
+        // set spacing = 12dp
+        int margin = (int) itemView.getContext().getResources().getDimension(R.dimen.spacing);
         params.setMargins(margin, margin, margin, margin);
 
         button.setLayoutParams(params);

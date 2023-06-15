@@ -3,79 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:background="@android:color/transparent">
 
-    <ImageView
-        android:id="@+id/firstCard"
-        android:layout_width="161dp"
-        android:layout_height="160dp"
-        android:contentDescription="@string/first_image_of_card"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/secondCard"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/defusecard" />
-
-    <TextView
-        android:id="@+id/textViewFirstCard"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/first_card"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/firstCard"
-        app:layout_constraintEnd_toStartOf="@id/textViewSecondCard"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/secondCard"
-        android:layout_width="161dp"
-        android:layout_height="160dp"
-        android:contentDescription="@string/second_image_of_card"
-        app:layout_constraintEnd_toStartOf="@id/thirdCard"
-        app:layout_constraintStart_toEndOf="@id/firstCard"
-        app:layout_constraintTop_toTopOf="@id/firstCard"
-        app:srcCompat="@drawable/defusecard" />
-
-    <TextView
-        android:id="@+id/textViewSecondCard"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/second_card"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/secondCard"
-        app:layout_constraintEnd_toStartOf="@id/textViewThirdCard"
-        app:layout_constraintStart_toEndOf="@id/textViewFirstCard"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/thirdCard"
-        android:layout_width="161dp"
-        android:layout_height="160dp"
-        android:contentDescription="@string/third_image_of_card"
+    <LinearLayout
+        android:id="@+id/linearCards"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/textViewCounter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/secondCard"
-        app:layout_constraintTop_toTopOf="@id/secondCard"
-        app:srcCompat="@drawable/defusecard" />
-
-    <TextView
-        android:id="@+id/textViewThirdCard"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/third_card"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/thirdCard"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textViewSecondCard"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

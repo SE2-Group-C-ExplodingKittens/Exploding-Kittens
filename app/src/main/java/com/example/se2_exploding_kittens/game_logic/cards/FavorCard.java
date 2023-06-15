@@ -97,6 +97,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setContentView(choosePlayerViewHolder.itemView.getRootView());
         popupWindow.setFocusable(true);
+        // must be match_parent to be "fullscreen"
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
