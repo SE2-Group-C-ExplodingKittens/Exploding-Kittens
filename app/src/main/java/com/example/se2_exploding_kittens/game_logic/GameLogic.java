@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.game_logic;
 
+import android.content.Context;
+
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
@@ -136,6 +138,15 @@ public class GameLogic {
                     if(card instanceof SkipCard){
                         return true;
                     }
+                    if (card instanceof ShuffleCard) {
+                        return true;
+                    }
+                    if (card instanceof AttackCard) {
+                        return true;
+                    }
+                    if (card instanceof SeeTheFutureCard) {
+                        return true;
+                    }
                 }else if(nopeEnabled && card instanceof NopeCard){
                     return true;
                 }
@@ -145,14 +156,19 @@ public class GameLogic {
         return false;
     }
 
-    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck){
+    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck, Context context) {
         if(card instanceof SkipCard){
             ((SkipCard) card).handleActions(player,networkManager,discardPile,turnManager);
         }else if(card instanceof DefuseCard){
             ((DefuseCard) card).handleActions(player,networkManager,discardPile,turnManager, deck);
-        }
-        else{
-            if(player != null){
+        } else if (card instanceof ShuffleCard) {
+            ((ShuffleCard) card).handleShuffleActions(player, networkManager, discardPile, deck);
+        } else if (card instanceof AttackCard) {
+            ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
+        } else if (card instanceof SeeTheFutureCard) {
+            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, discardPile, deck, context);
+        } else {
+            if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
             }
         }
@@ -203,8 +219,8 @@ public class GameLogic {
             player.getHand().add(card);
             GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);
             GameManager.sendNopeDisabled(networkManager);
-            if(player.getPlayerTurns() == 0){
-                finishTurn(player,networkManager,1, turnManager);
+            if (player.getPlayerTurns() == 0) {
+                finishTurn(player, networkManager, 1, turnManager);
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.Network;
 
+import static com.example.se2_exploding_kittens.GameActivity.GAME_ACTIVITY_DECK_MESSAGE_ID;
+import static com.example.se2_exploding_kittens.GameActivity.GAME_ACTIVITY_SHOW_THREE_CARDS_ID;
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -26,6 +28,7 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_PLAYER_LOST_ID = 508;
     public static final int GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID = 509;
     public static final int GAME_MANAGER_MESSAGE_PLAYER_WON_ID = 510;
+    public static final int GAME_MANAGER_MESSAGE_DISTRIBUTE_DECK_ID = 511;
 
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
@@ -40,15 +43,15 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
     }
 
-    public TurnManager getTurnManage(){
+    public TurnManager getTurnManage() {
         return turnManager;
     }
 
-    public void updateDeck(Deck deck){
-        this.deck = deck;
+    public void updateDeck(Deck updatedDeck) {
+        this.deck = updatedDeck;
     }
 
-    public void startGame(){
+    public void startGame() {
         turnManager.startGame();
     }
 
@@ -89,8 +92,8 @@ public class GameManager implements MessageCallback {
             if(NetworkManager.isServer(networkManager)){
                 GameLogic.nopeEnabled=true;
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID, ""));
-            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                GameLogic.nopeEnabled=true;
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                GameLogic.nopeEnabled = true;
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID, ""));
             }
         } catch (IllegalAccessException e) {
@@ -103,8 +106,8 @@ public class GameManager implements MessageCallback {
             if(NetworkManager.isServer(networkManager)){
                 GameLogic.nopeEnabled=false;
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID, ""));
-            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                GameLogic.nopeEnabled=false;
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                GameLogic.nopeEnabled = false;
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID, ""));
             }
         } catch (IllegalAccessException e) {
@@ -117,8 +120,8 @@ public class GameManager implements MessageCallback {
             if(NetworkManager.isServer(networkManager)){
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
 
-            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+playerID));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID() + ":" + playerID));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -156,8 +159,8 @@ public class GameManager implements MessageCallback {
             if(NetworkManager.isServer(networkManager)){
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID()+":"+playerID));
 
-            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID()+":"+playerID));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID() + ":" + playerID));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -169,8 +172,32 @@ public class GameManager implements MessageCallback {
             if(NetworkManager.isServer(networkManager)){
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID()+":"+playerID));
 
-            }else if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID()+":"+playerID));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID() + ":" + playerID));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void distributeDeck(NetworkManager networkManager, Deck deck) {
+        try {
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void showTopThreeCards(int playerID, NetworkManager networkManager) {
+        try {
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_SHOW_THREE_CARDS_ID, Integer.toString(playerID)));
+            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_SHOW_THREE_CARDS_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -209,9 +236,9 @@ public class GameManager implements MessageCallback {
     private void handleCardPlayedMessage(String text) {
         if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PLAYED_ID){
             String[] message = Message.parseAndExtractPayload(text).split(":");
-            if (message.length == 2){
+            if (message.length == 2) {
                 int playerID = Integer.parseInt(message[1]);
-                if(playerID != playerManager.getLocalSelf().getPlayerId()){
+                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
 
                     Card playedCard = Deck.getCardByID(Integer.parseInt(message[0]));
 

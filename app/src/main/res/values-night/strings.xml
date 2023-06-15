@@ -1,6 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SE2_Exploding-Kittens</string>
-    <string name="element_text" />
     <string name="first_image_of_card">First Image of Card</string>
     <string name="second_image_of_card">Second Image of Card</string>
     <string name="first_card">First Card</string>
