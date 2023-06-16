@@ -38,7 +38,7 @@ public class SeeTheFutureCard implements Card {
         return SEE_THE_FUTURE_CARD_ID;
     }
 
-    public void handleFutureActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Deck deck, Context context) {
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Deck deck, Context context) {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             if (context != null) {

@@ -16,6 +16,9 @@ import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
+import com.example.se2_exploding_kittens.game_logic.DiscardPile;
+import com.example.se2_exploding_kittens.game_logic.GameLogic;
+import com.example.se2_exploding_kittens.game_logic.Player;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -41,7 +44,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         return FAVOR_CARD_ID;
     }
 
-    public void handleFavorActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Context context) {
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Context context) {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             if (context != null) {

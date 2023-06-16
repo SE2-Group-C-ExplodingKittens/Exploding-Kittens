@@ -134,14 +134,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                     if (evt.getNewValue() instanceof Integer) {
                         if ("yourTurn".equals(evt.getPropertyName())) {
                             //check if the local player caused this event
-                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.VISIBLE);
-                                }
-                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                                if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.VISIBLE);
-                                }
+                            if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                yourTurnTextView.setVisibility(View.VISIBLE);
                             }
                         }
                     }
@@ -159,14 +153,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                     if (evt.getNewValue() instanceof Integer) {
                         if ("notYourTurn".equals(evt.getPropertyName())) {
                             //check if the local player caused this event
-                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.INVISIBLE);
-                                }
-                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                                if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.INVISIBLE);
-                                }
+                            if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                yourTurnTextView.setVisibility(View.INVISIBLE);
                             }
                         }
                     }

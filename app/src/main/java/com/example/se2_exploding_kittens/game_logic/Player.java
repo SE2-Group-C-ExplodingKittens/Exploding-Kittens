@@ -190,6 +190,16 @@ public class Player implements MessageCallback {
         }
     }
 
+    private void searchInHandAndRemove(ArrayList<Card>hand, int cardID){
+        for (Card c: hand) {
+            if(c.getCardID() == cardID){
+                propertyChangeSupport.firePropertyChange(PLAYER_CARD_HAND_REMOVED_PROPERTY,null,hand.indexOf(c));
+                hand.remove(c);
+                return;
+            }
+        }
+    }
+
     public void removeCardFromHand(String cardID) {
         if (cardID != null) {
             switch (Integer.parseInt(cardID)) {

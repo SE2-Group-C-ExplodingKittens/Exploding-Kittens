@@ -20,8 +20,8 @@ import android.content.Intent;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.example.se2_exploding_kittens.GameActivity;
-import com.example.se2_exploding_kittens.JoinGameActivity;
+import com.example.se2_exploding_kittens.Activities.GameActivity;
+import com.example.se2_exploding_kittens.Activities.JoinGameActivity;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -54,7 +54,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_WON_ID);
-
+        this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
     }
 
     public Player getPlayer() {

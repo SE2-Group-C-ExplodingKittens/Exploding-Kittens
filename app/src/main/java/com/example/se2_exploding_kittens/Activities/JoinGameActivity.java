@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.se2_exploding_kittens.Lobby_RecyclerViewAdapter;
+import com.example.se2_exploding_kittens.LobbyRecyclerViewAdapter;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyListener;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
