@@ -5,17 +5,11 @@ import android.content.Context;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
-import com.example.se2_exploding_kittens.game_logic.cards.CatFiveCard;
-import com.example.se2_exploding_kittens.game_logic.cards.CatFourCard;
-import com.example.se2_exploding_kittens.game_logic.cards.CatOneCard;
-import com.example.se2_exploding_kittens.game_logic.cards.CatThreeCard;
-import com.example.se2_exploding_kittens.game_logic.cards.CatTwoCard;
 import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
 import com.example.se2_exploding_kittens.game_logic.cards.FavorCard;
 import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
@@ -33,7 +27,6 @@ public class GameLogic {
     private static final ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
-    int currentPlayer = 0;
 
     public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
         initPlayers(numOfPlayers);
@@ -169,7 +162,7 @@ public class GameLogic {
 
     public static void cardHasBeenGiven(int playerID, NetworkManager networkManager, Card card) {
         if (card != null) {
-            GameManager.sendCardGiven(playerID, networkManager, card);
+            GameManager.sendCardTo(playerID, networkManager, card);
         }
     }
 }

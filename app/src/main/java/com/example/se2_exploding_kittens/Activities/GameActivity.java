@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,14 +41,12 @@ import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
     public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
-
 
     private CardAdapter adapter;
     private NetworkManager connection;
@@ -416,7 +413,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             if (playerID == localPlayer.getPlayerId()) {
                 // steal a random Card and display text
                 displayRandomCardGotStolenText();
-                Card card = stealRandomCard(localPlayer);
+                Card card = localPlayer.removeRandomCardFromHand();
                 //send card to stealer
                 GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
             }
@@ -455,28 +452,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
             }
         }, 3000); // 3000 milliseconds = 3 seconds
-    }
-
-    private Card stealRandomCard(Player player) {
-        if (player.getHand().size() == 0) {
-            return null;
-        }
-
-        Random random = new Random();
-        //get random index from hand
-        int randomIndex = random.nextInt(player.getHand().size());
-        Card card = player.getHand().get(randomIndex);
-
-        //remove card
-        player.removeCardFromHand(Integer.toString(card.getCardID()));
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //display change
-                adapter.notifyDataSetChanged();
-            }
-        });
-        return card;
     }
 }
 

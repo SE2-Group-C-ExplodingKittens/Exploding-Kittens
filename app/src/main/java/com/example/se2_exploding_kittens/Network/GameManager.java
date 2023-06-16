@@ -224,7 +224,7 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    public static void sendCardGiven(int playerID, NetworkManager networkManager, Card card) {
+    public static void sendCardTo(int playerID, NetworkManager networkManager, Card card) {
         try {
             if (NetworkManager.isServer(networkManager)) {
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id, playerID + ":" + card.getCardID()));
@@ -356,7 +356,7 @@ public class GameManager implements MessageCallback {
             int playerID = Integer.parseInt(message[0]);
             Card playedCard = Deck.getCardByID(Integer.parseInt(message[1]));
             if (NetworkManager.isServer(networkManager)) {
-                sendCardGiven(playerID, networkManager, playedCard);
+                sendCardTo(playerID, networkManager, playedCard);
             }
         }
     }

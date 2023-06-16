@@ -44,6 +44,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Player implements MessageCallback {
 
@@ -262,6 +263,21 @@ public class Player implements MessageCallback {
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public Card removeRandomCardFromHand() {
+        if (getHand().size() == 0) {
+            return null;
+        }
+
+        Random random = new Random();
+        //get random index from hand
+        int randomIndex = random.nextInt(getHand().size());
+        Card card = getHand().get(randomIndex);
+
+        //remove card
+        removeCardFromHand(Integer.toString(card.getCardID()));
+        return card;
     }
 
     public void setAlive(boolean alive) {
