@@ -72,7 +72,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
     }
 
     private void showChoosePlayerLayout(int playerID, NetworkManager networkManager, Context context) {
-        if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+        if (NetworkManager.isServer(networkManager)) {
             playerIDs = PlayerManager.getInstance().getPlayersIDs();
         } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             playerIDs = GameLogic.getPlayerIDList();

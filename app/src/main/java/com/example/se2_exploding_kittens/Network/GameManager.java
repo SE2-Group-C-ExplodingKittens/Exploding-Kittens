@@ -246,7 +246,7 @@ public class GameManager implements MessageCallback {
         handleDistributeDeckMessage(text);
         handleFavorCardMessage(text);
         handleShowThreeCardsMessage(text);
-        handleUpdatePlayerIDList(text);
+        handleRecieveCard(text);
     }
 
     private void handleNopeDisabledMessage(String text) {
@@ -350,7 +350,7 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    private void handleUpdatePlayerIDList(String text) {
+    private void handleRecieveCard(String text) {
         if (Message.parseAndExtractMessageID(text) == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             int playerID = Integer.parseInt(message[0]);
