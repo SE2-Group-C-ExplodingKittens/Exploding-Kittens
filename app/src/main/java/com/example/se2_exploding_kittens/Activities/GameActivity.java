@@ -60,7 +60,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private TextView stealRandomCardTextView;
 
     private ImageView deckImage;
-    private FragmentManager fragmentManager;
     private GameManager gameManager;
     private Player localPlayer;
 

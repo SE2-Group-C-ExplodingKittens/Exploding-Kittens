@@ -2,6 +2,8 @@ package com.example.se2_exploding_kittens;
 
 import android.content.ClipData;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,6 @@ import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> implements PropertyChangeListener {
 
@@ -74,10 +75,21 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("hand")) {
-            notifyDataSetChanged();
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
         }
         if (evt.getPropertyName().equals("handCardRemoved")) {
-            notifyItemRemoved((int) evt.getNewValue());
+            final int removedIndex = (int) evt.getNewValue();
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemRemoved(removedIndex);
+                }
+            });
         }
     }
 
