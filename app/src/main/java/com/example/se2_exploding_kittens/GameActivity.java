@@ -1,13 +1,11 @@
 package com.example.se2_exploding_kittens;
 
 import android.content.Context;
-import android.content.ClipData;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -43,19 +41,14 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
-
-    private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
-
-    private RecyclerView recyclerView;
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
     private TextView yourTurnTextView;
     private TextView seeTheFutureCardTextView;
 
-    private ImageView deckImage;
     private GameManager gameManager;
     private Player localClientPlayer;
 
@@ -90,20 +83,17 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     PropertyChangeListener yourTurnListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (evt.getNewValue() instanceof Integer) {
-                        if ("yourTurn".equals(evt.getPropertyName())) {
-                            //check if the local player caused this event
-                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.VISIBLE);
-                                }
-                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.VISIBLE);
-                                }
+            runOnUiThread(() -> {
+                if (evt.getNewValue() instanceof Integer) {
+                    if ("yourTurn".equals(evt.getPropertyName())) {
+                        //check if the local player caused this event
+                        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                            if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
+                                yourTurnTextView.setVisibility(View.VISIBLE);
+                            }
+                        } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                            if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                yourTurnTextView.setVisibility(View.VISIBLE);
                             }
                         }
                     }
@@ -115,20 +105,17 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     PropertyChangeListener notYourTurnListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (evt.getNewValue() instanceof Integer) {
-                        if ("notYourTurn".equals(evt.getPropertyName())) {
-                            //check if the local player caused this event
-                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.INVISIBLE);
-                                }
-                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                    yourTurnTextView.setVisibility(View.INVISIBLE);
-                                }
+            runOnUiThread(() -> {
+                if (evt.getNewValue() instanceof Integer) {
+                    if ("notYourTurn".equals(evt.getPropertyName())) {
+                        //check if the local player caused this event
+                        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                            if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
+                                yourTurnTextView.setVisibility(View.INVISIBLE);
+                            }
+                        } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                            if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                yourTurnTextView.setVisibility(View.INVISIBLE);
                             }
                         }
                     }
@@ -144,8 +131,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         discardPileView = findViewById(R.id.discardPile);
         discardPileView.setOnDragListener((view, event) -> {
             if (event.getAction() == DragEvent.ACTION_DROP) {
-                recyclerView.setVisibility(View.INVISIBLE);
-
                 if (vibrator.hasVibrator()) {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                         vibrator.vibrate(
@@ -163,9 +148,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
                     adapter.removeCard((int) event.getLocalState());
                     if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage());
+                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
                     } else {
-                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null);
+                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
                     }
                 }
             }
@@ -178,7 +163,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
     private void playerHandInit(Player currentPlayer) {
         // Initialize the RecyclerView and layout manager
-        recyclerView = findViewById(R.id.recyclerVw);
+        RecyclerView recyclerView = findViewById(R.id.recyclerVw);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         // This lines of code make sure, that cards are displayed overlapping each other
@@ -339,7 +324,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_DECK_MESSAGE_ID) {
                 deck = new Deck(Message.parseAndExtractPayload(text));
                 if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null) {
-                    gameClient.setDeckDeck(deck);
+                    gameClient.setDeck(deck);
                 }
             }
         }
@@ -360,22 +345,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     }
 
     private void displaySeeTheFutureCardText(int playerID) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String txt = "Player " + playerID + " is watching the top three cards of the deck!";
-                seeTheFutureCardTextView.setText(txt);
-                seeTheFutureCardTextView.setVisibility(View.VISIBLE);
-            }
+        runOnUiThread(() -> {
+            String txt = "Player " + playerID + " is watching the top three cards of the deck!";
+            seeTheFutureCardTextView.setText(txt);
+            seeTheFutureCardTextView.setVisibility(View.VISIBLE);
         });
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
-            }
-        }, 3000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> seeTheFutureCardTextView.setVisibility(View.INVISIBLE), 3000);
     }
-
-
 }
