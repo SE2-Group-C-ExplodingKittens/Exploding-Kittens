@@ -43,7 +43,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
-public class Player extends Observable implements MessageCallback {
+public class Player implements MessageCallback {
 
     private int playerId;
     private boolean alive = true;
@@ -52,6 +52,8 @@ public class Player extends Observable implements MessageCallback {
     private boolean hasWon = false;
     private int playerTurns;
     private static String DEBUG_TAG = "Player";
+    public static final String PLAYER_CARD_HAND_REMOVED_PROPERTY = "handCardRemoved";
+
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -131,7 +133,7 @@ public class Player extends Observable implements MessageCallback {
     }
 
     public void subscribePlayerToCardEvents(NetworkManager connection) {
-        if (connection != null && (connection.getConnectionRole() != TypeOfConnectionRole.IDLE)) {
+        if (connection != null && (NetworkManager.isNotIdle(connection))) {
             connection.subscribeCallbackToMessageID(this, PLAYER_HAND_MESSAGE_ID.id);
             connection.subscribeCallbackToMessageID(this, PLAYER_CARD_ADDED_MESSAGE_ID.id);
             connection.subscribeCallbackToMessageID(this, PLAYER_CARD_REMOVED_MESSAGE_ID.id);
@@ -187,125 +189,57 @@ public class Player extends Observable implements MessageCallback {
         }
     }
 
+    private void searchInHandAndRemove(ArrayList<Card>hand, int cardID){
+        for (Card c: hand) {
+            if(c.getCardID() == cardID){
+                propertyChangeSupport.firePropertyChange(PLAYER_CARD_HAND_REMOVED_PROPERTY,null,hand.indexOf(c));
+                hand.remove(c);
+                return;
+            }
+        }
+    }
+
     public void removeCardFromHand(String cardID) {
         if (cardID != null) {
             switch (Integer.parseInt(cardID)) {
                 case ATTACK_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == ATTACK_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, ATTACK_CARD_ID);
                     break;
                 case BOMB_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == BOMB_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, BOMB_CARD_ID);
                     break;
                 case CAT_FIVE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_FIVE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, CAT_FIVE_CARD_ID);
                     break;
                 case CAT_FOUR_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_FOUR_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, CAT_FOUR_CARD_ID);
                     break;
                 case CAT_ONE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_ONE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, CAT_ONE_CARD_ID);
                     break;
                 case CAT_THREE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_THREE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, CAT_THREE_CARD_ID);
                     break;
                 case CAT_TWO_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == CAT_TWO_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, CAT_TWO_CARD_ID);
                     break;
                 case DEFUSE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == DEFUSE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, DEFUSE_CARD_ID);
                     break;
                 case FAVOR_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == FAVOR_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, FAVOR_CARD_ID);
                     break;
                 case NOPE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == NOPE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, NOPE_CARD_ID);
                     break;
                 case SEE_THE_FUTURE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == SEE_THE_FUTURE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, SEE_THE_FUTURE_CARD_ID);
                     break;
                 case SHUFFLE_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == SHUFFLE_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, SHUFFLE_CARD_ID);
                     break;
                 case SKIP_CARD_ID:
-                    for (Card c: hand) {
-                        if(c.getCardID() == SKIP_CARD_ID){
-                            propertyChangeSupport.firePropertyChange("handCardRemoved",null,hand.indexOf(c));
-                            hand.remove(c);
-                            break;
-                        }
-                    }
+                    searchInHandAndRemove(hand, SKIP_CARD_ID);
                     break;
                 default:
                     break;

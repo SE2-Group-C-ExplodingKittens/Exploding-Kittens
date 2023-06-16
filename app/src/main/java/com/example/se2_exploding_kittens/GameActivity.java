@@ -41,7 +41,6 @@ import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
 
-    private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
 
@@ -305,16 +304,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             playerManager.reset();
             playerManager = null;
         }
-
         if (connection != null) {
-            if (connection.getConnectionRole() != TypeOfConnectionRole.IDLE) {
+            if (NetworkManager.isNotIdle(connection)) {
                 connection.terminateConnection();
             }
             connection = null;
-        }
-        if (playerManager != null) {
-            playerManager.reset();
-            playerManager = null;
         }
     }
 

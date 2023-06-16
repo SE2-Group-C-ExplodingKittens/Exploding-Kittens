@@ -45,6 +45,10 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         return networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER;
     }
 
+    public static boolean isNotIdle(NetworkManager networkManager) {
+        return networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE;
+    }
+
     public void sendMessageFromTheClient(Message message) throws IllegalAccessException{
         if(connection instanceof ClientTCP){
             connection.addMessage(message);
