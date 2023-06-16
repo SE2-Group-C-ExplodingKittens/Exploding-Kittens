@@ -26,7 +26,7 @@ public class SkipCard implements Card {
         return SKIP_CARD_ID;
     }
 
-    public void handleSkipActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
         if(player != null){
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             player.setPlayerTurns(player.getPlayerTurns()-1);

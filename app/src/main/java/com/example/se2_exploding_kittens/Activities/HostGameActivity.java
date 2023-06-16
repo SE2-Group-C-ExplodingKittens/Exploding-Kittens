@@ -26,9 +26,8 @@ public class HostGameActivity extends AppCompatActivity {
         super.onDestroy();
         if(lb != null)
             lb.terminateBroadcasting();
-        if(connection != null){
-            if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE)
-                connection.terminateConnection();
+        if(connection != null && (NetworkManager.isNotIdle(connection))) {
+            connection.terminateConnection();
         }
     }
 

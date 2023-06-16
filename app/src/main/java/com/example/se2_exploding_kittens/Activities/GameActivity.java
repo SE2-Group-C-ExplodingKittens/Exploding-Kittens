@@ -46,12 +46,11 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
 
-    private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
     public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
 
-    private RecyclerView recyclerView;
+
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
@@ -68,7 +67,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
-
+    private RecyclerView recyclerView;
     private View discardPileView;
 
     PropertyChangeListener cardPileChangeListener = new PropertyChangeListener() {
@@ -94,6 +93,35 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             });
 
+        }
+    };
+
+    PropertyChangeListener playerWonChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("playerWon".equals(event.getPropertyName())) {
+                        //check if the local player caused this event
+                        Toast.makeText(GameActivity.this, "You "+event.getNewValue()+" won!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    };
+
+    PropertyChangeListener playerLostChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("playerLost".equals(event.getPropertyName())) {
+                        Toast.makeText(GameActivity.this, "Player "+event.getNewValue()+" lost!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     };
 
@@ -147,7 +175,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
     };
 
-
     //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer) {
         // Implement onDragListener for the discard pile view
@@ -190,8 +217,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
                         Card selectedCard = adapter.getSelectedCard(mPosition);
                         if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                            adapter.removeCard(mPosition);
-                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                            //adapter.removeCard(mPosition);
+                            //adapter.notifyItemRemoved(mPosition);
+                            if(NetworkManager.isServer(connection)){
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
                             } else {
                                 GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
@@ -211,6 +239,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         });
         discardPile.addPropertyChangeListener(cardPileChangeListener);
         playerHandInit(currentPlayer);
+        winLossMessagesInit(currentPlayer);
+    }
+
+    private void winLossMessagesInit(Player currentPlayer){
+        currentPlayer.addPropertyChangeListener(playerWonChangeListener);
+        currentPlayer.addPropertyChangeListener(playerLostChangeListener);
     }
 
     private void playerHandInit(Player currentPlayer) {
@@ -243,21 +277,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 try {
                     if (GameLogic.canCardBePulled(currentPlayer)) {
                         Card nextCard = deck.getNextCard();
-                        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                        if(NetworkManager.isServer(connection)){
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
+                            gameManager.checkGameEnd();
                         } else {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
                         }
-                        /*if(nextCard instanceof BombCard){
-
-                        }else {
-
-                        }
-                        // TODO implement the logic, to process Bomb card differently
-
-                        // Add the next card to the current player's hand
-                        currentPlayer.getHand().add(nextCard);*/
-
                         // Notify the adapter that the data has changed
                         adapter.notifyDataSetChanged();
                     }
@@ -284,15 +309,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     protected void onDestroy() {
         super.onDestroy();
         //Free resources
+        if(playerManager != null){
+            playerManager.reset();
+            playerManager = null;
+        }
         if (connection != null) {
-            if (connection.getConnectionRole() != TypeOfConnectionRole.IDLE) {
+            if (NetworkManager.isNotIdle(connection)) {
                 connection.terminateConnection();
             }
             connection = null;
-        }
-        if (playerManager != null) {
-            playerManager.reset();
-            playerManager = null;
         }
     }
 
@@ -310,7 +335,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
-        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+        if(NetworkManager.isServer(connection)){
             deck = new Deck(seed);
             playerManager.initializeAsHost(connection.getServerConnections(), connection);
             ArrayList<Player> players = new ArrayList<Player>();

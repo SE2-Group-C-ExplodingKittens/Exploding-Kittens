@@ -76,6 +76,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         if (evt.getPropertyName().equals("hand")) {
             notifyDataSetChanged();
         }
+        if (evt.getPropertyName().equals("handCardRemoved")) {
+            notifyItemRemoved((int) evt.getNewValue());
+        }
     }
 
     // Provide a reference to the views for each card item
