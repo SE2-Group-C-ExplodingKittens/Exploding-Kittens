@@ -1,20 +1,17 @@
 package com.example.se2_exploding_kittens;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.se2_exploding_kittens.Network.IPUtil;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
-
-import java.net.InetAddress;
 
 public class HostGameActivity extends AppCompatActivity {
 
@@ -25,15 +22,15 @@ public class HostGameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(lb != null)
+        if (lb != null)
             lb.terminateBroadcasting();
-        if(connection != null){
-            if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE)
+        if (connection != null) {
+            if (connection.getConnectionRole() != TypeOfConnectionRole.IDLE)
                 connection.terminateConnection();
         }
     }
 
-    private void hostLobby(String name){
+    private void hostLobby(String name) {
         lb = new LobbyBroadcaster(name, 45000);
         Thread broadcast = new Thread(lb);
         broadcast.start();
@@ -57,15 +54,15 @@ public class HostGameActivity extends AppCompatActivity {
 
         buttonStartHosting.setOnClickListener(v -> {
             String lobbyName = editTextLobbyName.getText().toString().trim();
-            if(IPUtil.getLocalBroadcastAddress() == null){
+            if (IPUtil.getLocalBroadcastAddress() == null) {
                 Toast toast = Toast.makeText(this, "Connect to the local wifi!", Toast.LENGTH_LONG);
                 toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
                 toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
                 toast.show();
-            }else{
+            } else {
                 if (!lobbyName.isEmpty()) {
                     hostLobby(lobbyName);
-                }else{
+                } else {
                     hostLobby("Lobby");
                 }
                 buttonStartHosting.setEnabled(false);

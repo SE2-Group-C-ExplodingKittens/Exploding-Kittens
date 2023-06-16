@@ -68,12 +68,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
                 v.startDragAndDrop(data, shadowBuilder, myPosition, 0);
             }
 
-            holder.helpButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    holder.helpAskListener.askForHelp(card);
-                }
-            });
+            holder.helpButton.setOnClickListener(v1 -> holder.helpAskListener.askForHelp(card));
 
             return true;
         });
@@ -94,7 +89,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
     }
 
     // Provide a reference to the views for each card item
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView cardImage;
         public Button helpButton;
 

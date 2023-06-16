@@ -13,21 +13,16 @@ import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 public class GameManager implements MessageCallback {
 
-    private NetworkManager networkManager;
-    private TurnManager turnManager;
-    private int numberOfPlayers;
-    private Deck deck;
-    private PlayerManager playerManager;
-    private DiscardPile discardPile;
-    public static final int GAME_MANAGER_MESSAGE_ID = 500;
+    private final NetworkManager networkManager;
+    private final TurnManager turnManager;
+    private final Deck deck;
+    private final PlayerManager playerManager;
+    private final DiscardPile discardPile;
     public static final int GAME_MANAGER_MESSAGE_CARD_PULLED_ID = 501;
-    public static final int GAME_MANAGER_MESSAGE_CARD_REMOVED = 502;
     public static final int GAME_MANAGER_MESSAGE_CARD_PLAYED_ID = 503;
     public static final int GAME_MANAGER_MESSAGE_BOMB_PULLED_ID = 504;
     public static final int GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID = 506;
     public static final int GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID = 507;
-    public static final int GAME_MANAGER_MESSAGE_DISTRIBUTE_DECK_ID = 508;
-
     public static final int GAME_MANAGER_MESSAGE_CHECKED_CARD = 508;
 
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
@@ -41,15 +36,10 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
-        this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
 
     public TurnManager getTurnManage() {
         return turnManager;
-    }
-
-    public void updateDeck(Deck deck) {
-        this.deck = deck;
     }
 
     public void startGame() {
@@ -132,11 +122,6 @@ public class GameManager implements MessageCallback {
             } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID() + ":" + playerID));
             }
-            // player has to draw another card
-            /*if (playerManager.getPlayer(playerID).numberOfTurnsLeft() <= 0) {
-                turnManager.broadcastTurnFinished();
-                turnManager.sendNextGameSateToPlayers();
-            }*/
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -194,7 +179,6 @@ public class GameManager implements MessageCallback {
                         sendBombPulled(playerID, removedCard, networkManager);
                         GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(), removedCard, networkManager, discardPile, turnManager);
                         //playerManager.getPlayer(playerID).getPlayer().setHasBomb(true);
-                        //discardPile.putCard(removedCard);
                     }
                 }
             }

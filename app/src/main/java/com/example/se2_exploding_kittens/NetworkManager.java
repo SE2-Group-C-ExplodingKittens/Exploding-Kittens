@@ -29,45 +29,44 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     private TypeOfConnectionRole connectionRole;
 
     //Contains client connections
-    private ArrayList <ServerTCPSocket> serverToClientConnections = new ArrayList<ServerTCPSocket>();
-    private ArrayList <MessageCallbackPair> subscribedCallbacks = new ArrayList<MessageCallbackPair>();
+    private final ArrayList<ServerTCPSocket> serverToClientConnections = new ArrayList<>();
+    private final ArrayList<MessageCallbackPair> subscribedCallbacks = new ArrayList<>();
 
-    private ArrayList <ClientConnectedCallback> connectedCallbacks = new ArrayList<ClientConnectedCallback>();
+    private final ArrayList<ClientConnectedCallback> connectedCallbacks = new ArrayList<>();
 
-    private ArrayList <DisconnectedCallback> disconnectedCallback = new ArrayList<DisconnectedCallback>();
+    private final ArrayList<DisconnectedCallback> disconnectedCallback = new ArrayList<>();
 
-    public static synchronized NetworkManager getInstance()
-    {
+    public static synchronized NetworkManager getInstance() {
         if (networkManager == null)
             networkManager = new NetworkManager();
 
         return networkManager;
     }
 
-    public void sendMessageFromTheClient(Message message) throws IllegalAccessException{
-        if(connection instanceof ClientTCP && connection != null){
+    public void sendMessageFromTheClient(Message message) throws IllegalAccessException {
+        if (connection instanceof ClientTCP) {
             connection.addMessage(message);
-        }else {
+        } else {
             throw new IllegalAccessException("This is a server connection");
         }
     }
 
-    public void sendMessageFromTheSever(Message message, ServerTCPSocket connection) throws IllegalAccessException{
-        if(serverToClientConnections != null && serverToClientConnections.contains(connection)){
+    public void sendMessageFromTheSever(Message message, ServerTCPSocket connection) throws IllegalAccessException {
+        if (serverToClientConnections.contains(connection)) {
             connection.addMessage(message);
         } else {
             throw new IllegalAccessException("This is a client or connection does not exist");
         }
     }
 
-    public void sendMessageBroadcast(Message message) throws IllegalAccessException{
-        if(connection instanceof ClientTCP){
+    public void sendMessageBroadcast(Message message) throws IllegalAccessException {
+        if (connection instanceof ClientTCP) {
             connection.addMessage(message);
-        }else if(serverToClientConnections != null && serverToClientConnections.size() > 0){
-            for(ServerTCPSocket conn: serverToClientConnections){
+        } else if (serverToClientConnections.size() > 0) {
+            for (ServerTCPSocket conn : serverToClientConnections) {
                 conn.addMessage(message);
             }
-        }else{
+        } else {
             throw new IllegalAccessException("No connection found.");
         }
     }
@@ -76,7 +75,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         connectionRole = TypeOfConnectionRole.IDLE;
     }
 
-    private void clearAllCallbacks(){
+    private void clearAllCallbacks() {
         for (ClientConnectedCallback cb : connectedCallbacks) {
             connectedCallbacks.remove(cb);
         }
@@ -88,80 +87,70 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         }
     }
 
-    public void runAsServer(int port){
+    public void runAsServer(int port) {
         clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.SERVER;
-        server = new TCPServer(port,this);
+        server = new TCPServer(port, this);
         Thread thread = new Thread(server);
         thread.start();
     }
 
-    public void runAsClient(String serverAddress, int port){
+    public void runAsClient(String serverAddress, int port) {
         clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.CLIENT;
-        connection = new ClientTCP(serverAddress, port,this);
+        connection = new ClientTCP(serverAddress, port, this);
         Thread thread = new Thread((ClientTCP) connection);
         thread.start();
     }
 
-    public void terminateConnection(){
-        if(connectionRole == TypeOfConnectionRole.SERVER){
-            for ( ServerTCPSocket con: serverToClientConnections) {
+    public void terminateConnection() {
+        if (connectionRole == TypeOfConnectionRole.SERVER) {
+            for (ServerTCPSocket con : serverToClientConnections) {
                 con.endConnection();
             }
             server.terminateServer();
             connectionRole = TypeOfConnectionRole.IDLE;
         }
-        if(connectionRole == TypeOfConnectionRole.CLIENT){
+        if (connectionRole == TypeOfConnectionRole.CLIENT) {
             connection.endConnection();
         }
     }
 
-
-    public void addServerToClientConnection(ServerTCPSocket connection){
-        serverToClientConnections.add(connection);
-    }
-
-    public ArrayList <ServerTCPSocket> getServerConnections(){
+    public ArrayList<ServerTCPSocket> getServerConnections() {
         return serverToClientConnections;
     }
 
-    public void subscribeCallbackToMessageID(MessageCallback callback, int messageID){
+    public void subscribeCallbackToMessageID(MessageCallback callback, int messageID) {
         boolean callbackAdded = false;
-        for (MessageCallbackPair mcp : subscribedCallbacks){
-            if (mcp.getMessageID() == messageID){
+        for (MessageCallbackPair mcp : subscribedCallbacks) {
+            if (mcp.getMessageID() == messageID) {
                 mcp.addCallback(callback);
                 callbackAdded = true;
             }
         }
-        if(callbackAdded == false){
+        if (!callbackAdded) {
             subscribedCallbacks.add(new MessageCallbackPair(callback, messageID));
         }
     }
 
-    public void subscribeToClientConnectedCallback(ClientConnectedCallback callback){
-        if(callback != null)
-            connectedCallbacks.add(callback);
-    }
-
-    public void unsubscribeToClientConnectedCallback(ClientConnectedCallback callback){
-        if(callback != null)
+    public void unsubscribeToClientConnectedCallback(ClientConnectedCallback callback) {
+        if (callback != null)
             connectedCallbacks.remove(callback);
     }
 
-    public void subscribeToDisconnectedCallback(DisconnectedCallback callback){
-        if(callback != null)
+    public void subscribeToDisconnectedCallback(DisconnectedCallback callback) {
+        if (callback != null)
             disconnectedCallback.add(callback);
     }
 
-    public void unsubscribeToDisconnectedCallback(DisconnectedCallback callback){
-        if(callback != null)
+    public void unsubscribeToDisconnectedCallback(DisconnectedCallback callback) {
+        if (callback != null)
             disconnectedCallback.remove(callback);
     }
 
-    public void unsubscribeCallbackFromMessageID(MessageCallback callback, int messageID){
-        for (MessageCallbackPair mcp : subscribedCallbacks){
-            if (mcp.getMessageID() == messageID){
+    public void unsubscribeCallbackFromMessageID(MessageCallback callback, int messageID) {
+        for (MessageCallbackPair mcp : subscribedCallbacks) {
+            if (mcp.getMessageID() == messageID) {
                 mcp.removeCallback(callback);
             }
         }
@@ -169,43 +158,39 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     @Override
     public void responseReceived(String text, Object sender) {
-            int messageID = Message.parseAndExtractMessageID(text);
-            for (MessageCallbackPair mcb:subscribedCallbacks) {
-                if(messageID == mcb.getMessageID()){
-                    for (MessageCallback cb:mcb.getCallbacks()) {
-                        cb.responseReceived(text,sender);
-                    }
+        int messageID = Message.parseAndExtractMessageID(text);
+        for (MessageCallbackPair mcb : subscribedCallbacks) {
+            if (messageID == mcb.getMessageID()) {
+                for (MessageCallback cb : mcb.getCallbacks()) {
+                    cb.responseReceived(text, sender);
                 }
             }
+        }
     }
 
     @Override
     public void clientConnected(ServerTCPSocket connection) {
         connection.setDefaultCallback(this);
         serverToClientConnections.add(connection);
-        for(ClientConnectedCallback cb:connectedCallbacks){
+        for (ClientConnectedCallback cb : connectedCallbacks) {
             cb.clientConnected(connection);
         }
     }
 
     @Override
     public void connectionDisconnected(Object connection) {
-        if(connection instanceof ServerTCPSocket){
+        if (connection instanceof ServerTCPSocket) {
             serverToClientConnections.remove(connection);
-        }else if(connection instanceof ClientTCP){
+        } else if (connection instanceof ClientTCP) {
             connection = null;
         }
-        for(DisconnectedCallback cb:disconnectedCallback){
+        for (DisconnectedCallback cb : disconnectedCallback) {
             cb.connectionDisconnected(connection);
         }
     }
 
     public TypeOfConnectionRole getConnectionRole() {
         return connectionRole;
-    }
-
-    public void setConnectionRole(TypeOfConnectionRole connectionRole) {
-        this.connectionRole = connectionRole;
     }
 
     public void sendCheckeCard(Card card) {

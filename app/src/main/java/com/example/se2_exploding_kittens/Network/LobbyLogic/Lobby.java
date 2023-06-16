@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class Lobby implements Serializable {
     private String name;
-    private String address;
-    private int port;
+    private final String address;
+    private final int port;
 
     public Lobby(String name, String address, int port){
         this.name = name;
@@ -25,15 +25,8 @@ public class Lobby implements Serializable {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
 }

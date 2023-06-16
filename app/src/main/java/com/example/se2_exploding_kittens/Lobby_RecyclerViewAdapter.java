@@ -17,9 +17,9 @@ import java.util.ArrayList;
 
 public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_RecyclerViewAdapter.MyViewHolder> {
 
-    private ArrayList<Lobby> lobbyList;
-    private Context context;
-    private JoinLobbyCallback joinLobbyCallback;
+    private final ArrayList<Lobby> lobbyList;
+    private final Context context;
+    private final JoinLobbyCallback joinLobbyCallback;
 
     public Lobby_RecyclerViewAdapter(Context context, ArrayList<Lobby> lobbyList, JoinLobbyCallback joinLobbyCallback){
         this.context = context;
@@ -39,15 +39,12 @@ public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_Recycl
     public void onBindViewHolder(@NonNull Lobby_RecyclerViewAdapter.MyViewHolder holder, int position) {
         holder.textViewName.setText(lobbyList.get(position).getName());
         holder.textViewAddress.setText(lobbyList.get(position).getAddress());
-        holder.buttonJoinLobby.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    joinLobbyCallback.JoinLobby(lobbyList.get(holder.getAdapterPosition()));
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                    holder.buttonJoinLobby.setEnabled(false);
-                }
+        holder.buttonJoinLobby.setOnClickListener(v -> {
+            try {
+                joinLobbyCallback.JoinLobby(lobbyList.get(holder.getAdapterPosition()));
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                holder.buttonJoinLobby.setEnabled(false);
             }
         });
     }
