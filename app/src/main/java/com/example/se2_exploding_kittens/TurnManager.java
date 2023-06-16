@@ -13,10 +13,13 @@ public class TurnManager implements MessageCallback {
     public static final int TURN_MANAGER_MESSAGE_ID = 300;
 
     public static final int TURN_MANAGER_TURN_FINISHED = 1;
+    //public static final int TURN_MANAGER_ACTION_CARD_PLAYED = 2;
+    //public static final int TURN_MANAGER_NOPE_PLAYED = 3;
     public static final int TURN_MANAGER_ASSIGN_TURNS = 4;
+    public static final int TURN_MANAGER_CARD_PULLED = 2;
 
-    private final NetworkManager networkManager;
-    private final PlayerManager playerManager;
+    private NetworkManager networkManager;
+    private PlayerManager playerManager;
     private int currentPlayerIndex;
     private int previousPlayerIndex;
     private int currentPlayerTurns;
@@ -41,12 +44,21 @@ public class TurnManager implements MessageCallback {
         }
     }
 
+    public int getCurrentPlayerTurns() {
+        return currentPlayerTurns;
+    }
+
+    public void setCurrentPlayerTurns(int turns) {
+        previousPlayerTurns = currentPlayerTurns;
+        currentPlayerTurns = turns;
+    }
+
     private void shuffleOrder() {
         playerManager.shuffle();
     }
 
-    private String assembleGameStateMessage(int turns, int playerID) {
-        return TurnManager.TURN_MANAGER_ASSIGN_TURNS + ":" + turns + ":" + playerID;
+    private String assembleGameStateMessage(int messageType, int turns, int playerID) {
+        return messageType + ":" + turns + ":" + playerID;
     }
 
     public void sendNextSateToPlayers() {
@@ -54,7 +66,7 @@ public class TurnManager implements MessageCallback {
             PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
             playerManager.getPlayer(currentPlayerIndex).getPlayer().setPlayerTurns(currentPlayerTurns);
             //message will be = playerID:numberOfTurns
-            String gameStateMessage = assembleGameStateMessage(currentPlayerTurns, currentPlayerConnection.getPlayerID());
+            String gameStateMessage = assembleGameStateMessage(TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
 
             try {
                 Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
@@ -82,6 +94,43 @@ public class TurnManager implements MessageCallback {
         previousPlayerIndex = currentPlayerIndex;
         currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
         sendNextSateToPlayers();
+    }
+
+    private void resumePreviousGameState() {
+        int tempPlayerIndex = currentPlayerIndex;
+        currentPlayerIndex = previousPlayerIndex;
+        previousPlayerIndex = tempPlayerIndex;
+        int tempTurns = currentPlayerTurns;
+        currentPlayerTurns = previousPlayerTurns;
+        previousPlayerTurns = tempTurns;
+        sendNextSateToPlayers();
+    }
+
+    public void handlePlayerAction(int playerID, int message) {
+        if (currentPlayerIndex != playerID) {
+            //provisional error message
+            sendErrorMessageToPlayer(playerID, "It's not your turn.");
+            return;
+        }
+
+        gameStateNextTurn(1);
+        sendNextSateToPlayers();
+    }
+
+    public int getPlayerTurns(int playerID) {
+        if (playerID == currentPlayerIndex) {
+            return currentPlayerTurns;
+        } else {
+            return 0;
+        }
+    }
+
+    private void sendErrorMessageToPlayer(int playerID, String errorMessage) {
+        try {
+            networkManager.sendMessageFromTheSever(new Message(MessageType.ERROR, TURN_MANAGER_MESSAGE_ID, errorMessage), playerManager.getPlayer(playerID).getConnection());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleMessage(int messageType, int turns, int playerID) {
@@ -134,5 +183,9 @@ public class TurnManager implements MessageCallback {
 
     public int getNumberOfPlayers() {
         return PlayerManager.getInstance().getPlayerSize();
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
     }
 }

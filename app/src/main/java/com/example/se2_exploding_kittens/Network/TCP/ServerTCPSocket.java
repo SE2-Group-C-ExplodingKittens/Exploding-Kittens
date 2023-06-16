@@ -20,13 +20,14 @@ public class ServerTCPSocket implements Runnable, TCP{
     //On the accept method, it blocks until a connection request from a client.
     //this Class is supposed to be created from the clientSocketConnection
 
-    private final Socket connection;
+    private Socket connection = null;
     private BufferedReader in = null;
     private DataOutputStream out = null;
     private MessageCallback defaultCallback = null;
     private DisconnectedCallback disconnectedCallback = null;
     private ConnectionState connState = ConnectionState.IDLE;
-    private final ArrayList<Message> messages = new ArrayList<>();
+    private String response = null;
+    private ArrayList<Message> messages = new ArrayList<Message>();
 
     public ServerTCPSocket(Socket connection){
         this.connection = connection;
@@ -65,7 +66,7 @@ public class ServerTCPSocket implements Runnable, TCP{
 
     private void listenForMessages(BufferedReader in) throws IOException {
         if (in.ready()) {
-            String response = in.readLine();
+            response = in.readLine();
             if (defaultCallback != null) {
                 defaultCallback.responseReceived(response, this);
             }
@@ -116,7 +117,9 @@ public class ServerTCPSocket implements Runnable, TCP{
                     if(disconnectedCallback != null)
                         disconnectedCallback.connectionDisconnected(this);
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

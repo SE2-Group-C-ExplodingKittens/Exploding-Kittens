@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class LobbyListener implements Runnable {
 
     private boolean terminateListening = false;
-    private final MessageCallback packetReceivedCallback;
-    private final ArrayList <Lobby> lobbies = new ArrayList<>();
+    private MessageCallback packetReceivedCallback;
+    private ArrayList <Lobby> lobbies = new ArrayList<Lobby>();
 
     public LobbyListener(MessageCallback packetReceivedCallback){
         this.packetReceivedCallback = packetReceivedCallback;

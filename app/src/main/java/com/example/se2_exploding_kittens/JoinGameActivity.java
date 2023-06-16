@@ -1,16 +1,19 @@
 package com.example.se2_exploding_kittens;
 
-import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.se2_exploding_kittens.Network.LobbyLogic.JoinLobbyCallback;
-import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyListener;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
+import com.example.se2_exploding_kittens.Network.LobbyLogic.JoinLobbyCallback;
+
 
 import java.util.ArrayList;
 
@@ -18,7 +21,7 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
 
     private LobbyListener ll;
 
-    private NetworkManager client;
+    private NetworkManager client ;
 
     private RecyclerView lobbyView;
 
@@ -27,7 +30,7 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (ll != null)
+        if(ll != null)
             ll.terminateListening();
     }
 
@@ -48,30 +51,32 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
         lobbyView.setLayoutManager(new LinearLayoutManager(this));
         client = NetworkManager.getInstance();
     }
-
     @Override
     public void responseReceived(String text, Object sender) {
-        if (sender instanceof LobbyListener) {
+        if(sender instanceof LobbyListener){
             lobbyFound();
         }
     }
 
-    private void lobbyFound() {
+    private void lobbyFound(){
         lobbies = ll.getLobbies();
         runOnUiThread(() -> lobbyView.getAdapter().notifyDataSetChanged());
     }
 
     @Override
     public void JoinLobby(Lobby lobby) {
-        if (lobby == null)
+        if(lobby == null)
             throw new NullPointerException();
         ll.terminateListening();
         //https://www.tutorialspoint.com/how-to-pass-an-object-from-one-activity-to-another-in-android
 
-        client.runAsClient(lobby.getAddress(), lobby.getPort());
-        runOnUiThread(() -> {
-            Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
-            startActivity(intent);
+        client.runAsClient(lobby.getAddress(),lobby.getPort());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
+                startActivity(intent);
+            }
         });
     }
 }

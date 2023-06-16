@@ -5,10 +5,10 @@ import com.example.se2_exploding_kittens.Network.MessageCallback;
 import java.util.ArrayList;
 
 public class MessageCallbackPair {
-    private final ArrayList<MessageCallback> callbacks = new ArrayList<>();
-    private final int messageID;
+    private ArrayList <MessageCallback> callbacks = new ArrayList<MessageCallback>();
+    private int messageID;
 
-    public MessageCallbackPair(MessageCallback callback, int messageID) {
+    public MessageCallbackPair(MessageCallback callback, int messageID){
         callbacks.add(callback);
         this.messageID = messageID;
     }
@@ -17,7 +17,11 @@ public class MessageCallbackPair {
         return messageID;
     }
 
-    public ArrayList<MessageCallback> getCallbacks() {
+    public void setMessageID(int messageID) {
+        this.messageID = messageID;
+    }
+
+    public ArrayList <MessageCallback> getCallbacks() {
         return callbacks;
     }
 

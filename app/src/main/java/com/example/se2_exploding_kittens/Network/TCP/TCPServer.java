@@ -9,9 +9,13 @@ import java.net.Socket;
 public class TCPServer implements Runnable{
 
     ServerSocket serverSocket = null;
-    ClientConnectedCallback clientConnectedCallback;
-    int port;
+    ClientConnectedCallback clientConnectedCallback = null;
+    int port = -1;
     boolean running = true;
+
+    public TCPServer(int port){
+        this.port = port;
+    }
 
     public TCPServer(int port, ClientConnectedCallback clientConnectedCallback){
         this.port = port;
@@ -21,6 +25,10 @@ public class TCPServer implements Runnable{
     private void connectionEstablished(ServerTCPSocket conn){
         if(clientConnectedCallback != null)
             clientConnectedCallback.clientConnected(conn);
+    }
+
+    public void setClientConnectedCallback(ClientConnectedCallback clientConnectedCallback){
+        this.clientConnectedCallback = clientConnectedCallback;
     }
 
     public void terminateServer(){

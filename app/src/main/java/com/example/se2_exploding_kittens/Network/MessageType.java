@@ -10,7 +10,7 @@ public enum MessageType {
 
     public final String value;
 
-    MessageType(String value) {
+    private MessageType(String value) {
         this.value = value;
     }
 }
