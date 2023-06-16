@@ -2,14 +2,17 @@ package com.example.se2_exploding_kittens;
 
 import com.example.se2_exploding_kittens.Network.ClientConnectedCallback;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
+import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.Network.TCP.MessageCallbackPair;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TCP.TCP;
 import com.example.se2_exploding_kittens.Network.TCP.TCPServer;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -203,5 +206,16 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     public void setConnectionRole(TypeOfConnectionRole connectionRole) {
         this.connectionRole = connectionRole;
+    }
+
+    public void sendCheckeCard(Card card) {
+        String cardId = Integer.toString(card.getCardID());
+        Message m = new Message(MessageType.CHECKED_DETAILS, GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD, cardId);
+
+        try {
+            networkManager.sendMessageBroadcast(m);
+        } catch (IllegalAccessException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
     }
 }

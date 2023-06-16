@@ -55,7 +55,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public void reset(){
-        if(networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE){
+        TypeOfConnectionRole role = networkManager.getConnectionRole();
+        if(role != null && role != TypeOfConnectionRole.IDLE){
             this.networkManager.unsubscribeCallbackFromMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
             this.networkManager.unsubscribeToDisconnectedCallback(this);
             if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){

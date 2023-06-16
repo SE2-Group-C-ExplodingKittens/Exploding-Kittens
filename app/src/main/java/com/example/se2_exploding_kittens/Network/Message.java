@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.Network;
 
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
+
 public class Message {
     private MessageType messageType;
     private String payload;
@@ -54,8 +56,10 @@ public class Message {
                 return MessageType.ERROR.value + "ERR###"+ messageID +"###"+payload;
             case REPLY:
                 return MessageType.REPLY.value + "R###"+ messageID +"###"+payload;
+            case CHECKED_DETAILS:
+                return MessageType.CHECKED_DETAILS.value + "D###" + messageID + "###" + payload;
             default:
-                return MessageType.UNKNOWN.value + "###"+ messageID +"###"+payload;
+                return MessageType.UNKNOWN.value + "###"+ messageID +"###"+ payload;
         }
     }
 

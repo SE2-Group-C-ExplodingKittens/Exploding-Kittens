@@ -1,5 +1,14 @@
 package com.example.se2_exploding_kittens;
 
+import static com.example.se2_exploding_kittens.game_logic.cards.AttackCard.ATTACK_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.BombCard.BOMB_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.FavorCard.FAVOR_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.NopeCard.NOPE_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard.SEE_THE_FUTURE_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
+import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,7 +50,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
-public class GameActivity extends AppCompatActivity implements MessageCallback {
+public class GameActivity extends AppCompatActivity implements MessageCallback, CardAdapter.HelpAskListener {
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
     private CardAdapter adapter;
@@ -59,6 +69,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private View discardPileView;
 
     private Vibrator vibrator;
+
+    private ConstraintLayout hintLayout;
 
     PropertyChangeListener cardPileChangeListener = new PropertyChangeListener() {
         @Override
@@ -145,14 +157,16 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
 
                 Card selectedCard = adapter.getSelectedCard((int) event.getLocalState());
-                if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                    adapter.removeCard((int) event.getLocalState());
-                    if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
-                    } else {
-                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
-                    }
+
+                // Had to remove, doesn't allow to play card
+                //if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
+                adapter.removeCard((int) event.getLocalState());
+                if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                    GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
+                } else {
+                    GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
                 }
+                //}
             }
             return true;
         });
@@ -172,7 +186,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
 
         // Initialize the card adapter (for players hand)
-        adapter = new CardAdapter(currentPlayer.getHand());
+        adapter = new CardAdapter(currentPlayer.getHand(), this);
         currentPlayer.addPropertyChangeListener(adapter);
         //currentPlayer-dataSet may change async before addPropertyChangeListener is registered
         adapter.notifyDataSetChanged();
@@ -245,6 +259,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
+        connection.subscribeCallbackToMessageID(this, GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
@@ -314,33 +329,45 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
             guiInit(p1);
         }
+
+        hintLayout = findViewById(R.id.hint_wrapper);
+
+        findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
     }
 
 
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
+        int messageId = Message.parseAndExtractMessageID(text);
         if (sender instanceof ClientTCP) {
-            if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_DECK_MESSAGE_ID) {
+            if (messageId == GAME_ACTIVITY_DECK_MESSAGE_ID) {
                 deck = new Deck(Message.parseAndExtractPayload(text));
                 if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null) {
                     gameClient.setDeck(deck);
                 }
             }
         }
-        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
+        if (messageId == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
             int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
-            // If Client to get localClientPlayer
+// If Client to get localClientPlayer
             if (sender instanceof ClientTCP) {
                 if (playerID != localClientPlayer.getPlayerId()) {
                     displaySeeTheFutureCardText(playerID);
                 }
-                // If Server to get getLocalSelf
+// If Server to get getLocalSelf
             } else if (sender instanceof ServerTCPSocket) {
                 if (playerID != playerManager.getLocalSelf().getPlayerId()) {
                     displaySeeTheFutureCardText(playerID);
                 }
             }
+        } else if (messageId == GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD) {
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+
+            // We can now get the card id from the payload
+            // Could be useful for extending the feature
+            Runnable myRunnable = () -> Toast.makeText(GameActivity.this, "Player looked at a card", Toast.LENGTH_SHORT).show();
+            mainHandler.post(myRunnable);
         }
     }
 
@@ -352,5 +379,110 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         });
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> seeTheFutureCardTextView.setVisibility(View.INVISIBLE), 3000);
+    }
+
+
+    @Override
+    public void askForHelp(Card card) {
+        // Tell others I viewed card
+        connection.sendCheckeCard(card);
+
+        String help = getHelp(card);
+
+        TextView hintText = findViewById(R.id.hint);
+        hintText.setText(help);
+
+        hintLayout.setVisibility(View.VISIBLE);
+    }
+
+    private String getHelp(Card card) {
+        switch (card.getCardID()) {
+            case ATTACK_CARD_ID:
+                return "Do not draw any cards. Instead, immediately force\n" +
+                        "the next player to take 2 turns in a row. Play then\n" +
+                        "continues from that player. The victim of this card\n" +
+                        "takes a turn as normal (play-or-pass then draw).\n" +
+                        "Then, when their first turn is over, it's their\n" +
+                        "turn again.\n" +
+                        "If the victim of an Attack Card plays an Attack\n" +
+                        "Card on any of their turns, the new target must\n" +
+                        "take any remaining turns plus the number of\n" +
+                        "attacks on the Attack Card just played (e.g. 4\n" +
+                        "turns, then 6, and so on).";
+            case BOMB_CARD_ID:
+                return "You must show this card immediately. Unless\n" +
+                        "you have a Defuse Card, you’re dead. Discard\n" +
+                        "all of your cards, including the Exploding Kitten.";
+            case DEFUSE_CARD_ID:
+                return "If you drew an Exploding Kitten, you can play\n" +
+                        "this card instead of dying. Place your Defuse\n" +
+                        "Card in the Discard Pile.\n" +
+                        "Want to hurt the player right after you? Put the\n" +
+                        "Kitten right on top of the deck. If you’d like, hold\n" +
+                        "the deck under the table so that no one else\n" +
+                        "can see where you put it.\n" +
+                        "Your turn is over after playing this card.\n" +
+                        "Then take the Exploding Kitten, and without\n" +
+                        "reordering or viewing the other cards, secretly\n" +
+                        "put it back in the Draw Pile anywhere you’d like.";
+            case FAVOR_CARD_ID:
+                return "Force any other player to give you 1 card from\n" +
+                        "their hand. They choose which card to give you.";
+            case NOPE_CARD_ID:
+                return "\"Stop any action except\n" +
+                        "for an Exploding Kitten\n" +
+                        "or a Defuse Card.\n" +
+                        "Imagine that any card\n" +
+                        "beneath a Nope Card\n" +
+                        "never existed.\n" +
+                        "A Nope can also be\n" +
+                        "played on another Nope\n" +
+                        "to negate it and create\n" +
+                        "a Yup, and so on.\n" +
+                        "A Nope can be played at any time before an\n" +
+                        "action has begun, even if it’s not your turn. Any\n" +
+                        "cards that have been Noped are lost. Leave\n" +
+                        "them in the Discard Pile.\n" +
+                        "You can even play a Nope on a\n" +
+                        "SPECIAL COMBO.\"";
+            case SEE_THE_FUTURE_CARD_ID:
+                return "Privately view the top 3 cards from the Draw\n" +
+                        "Pile and put them back in the same order.\n" +
+                        "Don’t show the cards to the other players.";
+            case SHUFFLE_CARD_ID:
+                return "Shuffle the Draw Pile thoroughly. (Useful when\n" +
+                        "you know there’s an Exploding Kitten coming.)";
+            case SKIP_CARD_ID:
+                return "Immediately end your turn without drawing\n" +
+                        "a card.\n" +
+                        "skip 4 cards\n" +
+                        "If you play a Skip Card as a defense to an Attack\n" +
+                        "Card, it only ends 1 of the 2 turns. 2 Skip Cards\n" +
+                        "would end both turns.";
+            default:
+                return "These cards are powerless on their own, but if\n" +
+                        "you collect any 2 matching Cat Cards, you can\n" +
+                        "play them as a Pair to steal a random card from\n" +
+                        "any player.\n" +
+                        "They can also be used in Special Combos.\n" +
+                        "\n" +
+                        "Special Combos:\n" +
+                        "Two of a kind:\n" +
+                        "Playing matching Pairs of Cat Cards (where\n" +
+                        "you get to steal a random card from another\n" +
+                        "player) no longer only applies to pairs of Cat\n" +
+                        "Cards. It now applies to ANY pair of cards with\n" +
+                        "the same title (a pair of Shuffle Cards, a pair of\n" +
+                        "Skip Cards, etc). Ignore the instructions on the\n" +
+                        "cards when you play a combo.\n" +
+                        "\n" +
+                        "Three of a kind:\n" +
+                        "When you play 3 matching cards (any 3 cards\n" +
+                        "with the same title), you get to pick a player and\n" +
+                        "name a card. If they have that card, they must\n" +
+                        "give one to you. If they don't have it, you get\n" +
+                        "nothing. Ignore the instructions on the cards\n" +
+                        "when you play a combo.\n";
+        }
     }
 }
