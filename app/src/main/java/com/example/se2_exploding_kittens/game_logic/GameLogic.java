@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.game_logic;
 
+import android.content.Context;
+
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -123,61 +125,76 @@ public class GameLogic {
         return false;
     }
 
-    public static boolean canCardBePlayed(Player player, Card card){
-        if(player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard){
-            if(player.getPlayerTurns() > 0){
+    public static boolean canCardBePlayed(Player player, Card card) {
+        if (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard) {
+            if (player.getPlayerTurns() > 0) {
                 //TODO some cards cant be played, like defuse if no bomb has been pulled
-                if(player.isHasBomb() && card instanceof DefuseCard){
+                if (player.isHasBomb() && card instanceof DefuseCard) {
                     return true;
                 }
-                if(card instanceof SkipCard){
+                if (card instanceof SkipCard) {
                     return true;
                 }
-            }else if(nopeEnabled && card instanceof NopeCard){
+                if (card instanceof ShuffleCard) {
+                    return true;
+                }
+                if (card instanceof AttackCard) {
+                    return true;
+                }
+                if (card instanceof SeeTheFutureCard) {
+                    return true;
+                }
+            } else if (nopeEnabled && card instanceof NopeCard) {
                 return true;
             }
         }
         return false;
     }
 
-    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
-        if(card instanceof SkipCard){
-            ((SkipCard) card).handleSkipActions(player,networkManager,discardPile,turnManager);
-        }else{
-            if(player != null){
+    public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck, Context context) {
+        if (card instanceof SkipCard) {
+            ((SkipCard) card).handleSkipActions(player, networkManager, discardPile, turnManager);
+        } else if (card instanceof ShuffleCard) {
+            ((ShuffleCard) card).handleShuffleActions(player, networkManager, discardPile, deck);
+        } else if (card instanceof AttackCard) {
+            ((AttackCard) card).handleAttackActions(player, networkManager, discardPile, turnManager);
+        } else if (card instanceof SeeTheFutureCard) {
+            ((SeeTheFutureCard) card).handleFutureActions(player, networkManager, discardPile, deck, context);
+        } else {
+            if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
             }
         }
     }
 
-    public static boolean canCardBePulled(Player player){
-        if(player.getPlayerTurns() > 0){
+    public static boolean canCardBePulled(Player player) {
+        if (player.getPlayerTurns() > 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
-    public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER && turnManager != null){
-            TurnManager.broadcastTurnFinished(player,networkManager);
+    public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager) {
+        if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER && turnManager != null) {
+            TurnManager.broadcastTurnFinished(player, networkManager);
             turnManager.gameStateNextTurn(futureTurns);
         }
     }
 
-    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
-        player.setPlayerTurns(player.getPlayerTurns()-1);
-        if(card instanceof BombCard){
+    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
+        player.setPlayerTurns(player.getPlayerTurns() - 1);
+        if (card instanceof BombCard) {
             player.setHasBomb(true);
             GameManager.sendBombPulled(player.getPlayerId(), card, networkManager);
             discardPile.putCard(card);
 
-        }else{
+        } else {
             player.getHand().add(card);
             GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);
             GameManager.sendNopeDisabled(networkManager);
-            if(player.getPlayerTurns() == 0){
-                finishTurn(player,networkManager,1, turnManager);
+            if (player.getPlayerTurns() == 0) {
+                finishTurn(player, networkManager, 1, turnManager);
             }
         }
     }

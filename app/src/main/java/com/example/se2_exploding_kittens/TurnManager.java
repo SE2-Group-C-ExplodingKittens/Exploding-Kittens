@@ -34,7 +34,7 @@ public class TurnManager implements MessageCallback {
     }
 
     public void startGame() {
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
             shuffleOrder();
             currentPlayerTurns = 1;
             previousPlayerTurns = currentPlayerTurns;
@@ -44,11 +44,11 @@ public class TurnManager implements MessageCallback {
         }
     }
 
-    public int getCurrentPlayerTurns(){
+    public int getCurrentPlayerTurns() {
         return currentPlayerTurns;
     }
 
-    public void setCurrentPlayerTurns(int turns){
+    public void setCurrentPlayerTurns(int turns) {
         previousPlayerTurns = currentPlayerTurns;
         currentPlayerTurns = turns;
     }
@@ -57,12 +57,12 @@ public class TurnManager implements MessageCallback {
         playerManager.shuffle();
     }
 
-    private String assembleGameStateMessage(int messageType, int turns, int playerID){
-        return messageType + ":" + turns+ ":" + playerID;
+    private String assembleGameStateMessage(int messageType, int turns, int playerID) {
+        return messageType + ":" + turns + ":" + playerID;
     }
 
     public void sendNextSateToPlayers() {
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
             PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
             playerManager.getPlayer(currentPlayerIndex).getPlayer().setPlayerTurns(currentPlayerTurns);
             //message will be = playerID:numberOfTurns
@@ -77,8 +77,8 @@ public class TurnManager implements MessageCallback {
         }
     }
 
-    public static void broadcastTurnFinished(Player player, NetworkManager networkManager){
-        String gameStateMessage = TURN_MANAGER_TURN_FINISHED +":"+ player.getPlayerId();
+    public static void broadcastTurnFinished(Player player, NetworkManager networkManager) {
+        String gameStateMessage = TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
         try {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageBroadcast(m);
@@ -117,11 +117,10 @@ public class TurnManager implements MessageCallback {
         sendNextSateToPlayers();
     }
 
-    public int getPlayerTurns(int playerID){
-        if(playerID == currentPlayerIndex){
+    public int getPlayerTurns(int playerID) {
+        if (playerID == currentPlayerIndex) {
             return currentPlayerTurns;
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -134,22 +133,22 @@ public class TurnManager implements MessageCallback {
         }
     }
 
-    private void handleMessage(int messageType, int turns, int playerID){
-        switch (messageType){
+    private void handleMessage(int messageType, int turns, int playerID) {
+        switch (messageType) {
             case TURN_MANAGER_TURN_FINISHED:
                 previousPlayerTurns = currentPlayerTurns;
                 currentPlayerTurns = 0;
                 //sendNextSateToPlayers();
-                if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                     playerManager.getPlayer(playerID).getPlayer().setPlayerTurns(turns);
                     //game manage call?
                 }
                 break;
             case TURN_MANAGER_ASSIGN_TURNS:
-                if(playerManager.getLocalSelf().getPlayerId() == playerID){
+                if (playerManager.getLocalSelf().getPlayerId() == playerID) {
                     playerManager.getLocalSelf().setPlayerTurns(turns);
                 }
-                if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+                if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                     playerManager.getPlayer(playerID).getPlayer().setPlayerTurns(turns);
                 }
                 break;
@@ -161,19 +160,19 @@ public class TurnManager implements MessageCallback {
     @Override
     public void responseReceived(String text, Object sender) {
 
-        if(Message.parseAndExtractMessageID(text) == TURN_MANAGER_MESSAGE_ID){
-            if(sender == this){
+        if (Message.parseAndExtractMessageID(text) == TURN_MANAGER_MESSAGE_ID) {
+            if (sender == this) {
                 //self message from "server to server" or a message from server to client
-                String [] message = Message.parseAndExtractPayload(text).split(":");
-                if(message.length >=3){
+                String[] message = Message.parseAndExtractPayload(text).split(":");
+                if (message.length >= 3) {
                     handleMessage(Integer.parseInt(message[0]), Integer.parseInt(message[1]), Integer.parseInt(message[2]));
                 }
             }
             if (sender instanceof ServerTCPSocket || sender == this) {
                 //dismiss if wrong player sends turn finished
-                String [] message = Message.parseAndExtractPayload(text).split(":");
-                if(message.length == 2){
-                    handleMessage(Integer.parseInt(message[0]),0,Integer.parseInt(message[1]));
+                String[] message = Message.parseAndExtractPayload(text).split(":");
+                if (message.length == 2) {
+                    handleMessage(Integer.parseInt(message[0]), 0, Integer.parseInt(message[1]));
                 }
 
 
@@ -184,5 +183,9 @@ public class TurnManager implements MessageCallback {
 
     public int getNumberOfPlayers() {
         return PlayerManager.getInstance().getPlayerSize();
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
     }
 }

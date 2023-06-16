@@ -1,9 +1,13 @@
 package com.example.se2_exploding_kittens;
 
 import android.content.Context;
+import android.content.ClipData;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -11,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +29,7 @@ import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
+import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
@@ -37,15 +43,21 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity implements MessageCallback {
-    private static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
 
+    private static final int GAME_ACTIVITY_MESSAGE_ID = 1000;
+    public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
+    public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
 
     private RecyclerView recyclerView;
     private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
+    private TextView yourTurnTextView;
+    private TextView seeTheFutureCardTextView;
 
+    private ImageView deckImage;
     private GameManager gameManager;
+    private Player localClientPlayer;
 
     private Deck deck;
     private DiscardPile discardPile;
@@ -75,7 +87,60 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
     };
 
+    PropertyChangeListener yourTurnListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (evt.getNewValue() instanceof Integer) {
+                        if ("yourTurn".equals(evt.getPropertyName())) {
+                            //check if the local player caused this event
+                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.VISIBLE);
+                                }
+                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    PropertyChangeListener notYourTurnListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (evt.getNewValue() instanceof Integer) {
+                        if ("notYourTurn".equals(evt.getPropertyName())) {
+                            //check if the local player caused this event
+                            if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                                if (playerManager.getLocalSelf().getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.INVISIBLE);
+                                }
+                            } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+                                if (localClientPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                                    yourTurnTextView.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+
+    //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer) {
+        // Implement onDragListener for the discard pile view
         discardPileView = findViewById(R.id.discardPile);
         discardPileView.setOnDragListener((view, event) -> {
             if (event.getAction() == DragEvent.ACTION_DROP) {
@@ -190,8 +255,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+        yourTurnTextView = findViewById(R.id.textViewYourTurn);
+        seeTheFutureCardTextView = findViewById(R.id.textViewSeeTheFutureCard);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
@@ -211,11 +279,16 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
 
             // player id 0 is always the host
             guiInit(playerManager.getLocalSelf());
+            playerManager.getLocalSelf().addPropertyChangeListener(yourTurnListener);
+            playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
             gameManager.startGame();
         } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             deck = null;
-            Player localClientPlayer = new Player();
+            localClientPlayer = new Player();
             localClientPlayer.subscribePlayerToCardEvents(connection);
+            gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
+            localClientPlayer.addPropertyChangeListener(yourTurnListener);
+            localClientPlayer.addPropertyChangeListener(notYourTurnListener);
             gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
 
             Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
@@ -270,5 +343,39 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                 }
             }
         }
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
+            int playerID = Integer.parseInt(Message.parseAndExtractPayload(text));
+            // If Client to get localClientPlayer
+            if (sender instanceof ClientTCP) {
+                if (playerID != localClientPlayer.getPlayerId()) {
+                    displaySeeTheFutureCardText(playerID);
+                }
+                // If Server to get getLocalSelf
+            } else if (sender instanceof ServerTCPSocket) {
+                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
+                    displaySeeTheFutureCardText(playerID);
+                }
+            }
+        }
     }
+
+    private void displaySeeTheFutureCardText(int playerID) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String txt = "Player " + playerID + " is watching the top three cards of the deck!";
+                seeTheFutureCardTextView.setText(txt);
+                seeTheFutureCardTextView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
+            }
+        }, 3000);
+    }
+
+
 }
