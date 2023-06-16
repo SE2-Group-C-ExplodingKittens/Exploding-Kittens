@@ -39,6 +39,7 @@ public class DiscardPile {
     private ArrayList<Card> cardPile = new ArrayList<>();
     private ArrayList<Card> cardPileOld = new ArrayList<>();
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    public static final String DISCARD_PILE_PROPERTY = "discardPile";
 
     public DiscardPile() {
 
@@ -118,7 +119,7 @@ public class DiscardPile {
     public void putCard(Card card) {
         cardPileOld = (ArrayList<Card>) cardPile.clone();
         cardPile.add(0, card);
-        propertyChangeSupport.firePropertyChange("discardPile",cardPileOld,cardPile);
+        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
     }
 
     public Card putCard(int cardID) {
@@ -163,8 +164,10 @@ public class DiscardPile {
             case SKIP_CARD_ID:
                 cardPile.add(0,new SkipCard());
                 break;
+            default:
+                break;
         }
-        propertyChangeSupport.firePropertyChange("discardPile",cardPileOld,cardPile);
+        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
         return cardPile.get(0);
     }
 
@@ -172,12 +175,12 @@ public class DiscardPile {
         ArrayList<Card> tempPile = (ArrayList<Card>) cardPile.clone();
         cardPile = cardPileOld;
         cardPileOld = tempPile;
-        propertyChangeSupport.firePropertyChange("discardPile",cardPileOld,cardPile);
+        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
     }
 
     public Card pullCard(int index) {
         if (cardPile.size() > (index+1)) {
-            propertyChangeSupport.firePropertyChange("discardPile",cardPileOld,cardPile);
+            propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
             return cardPile.remove(index);
         }
         throw new IndexOutOfBoundsException("The pile has to few cards!");

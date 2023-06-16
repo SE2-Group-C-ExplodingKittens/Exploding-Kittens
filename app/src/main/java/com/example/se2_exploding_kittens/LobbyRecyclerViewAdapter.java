@@ -15,13 +15,13 @@ import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
 
 import java.util.ArrayList;
 
-public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_RecyclerViewAdapter.MyViewHolder> {
+public class LobbyRecyclerViewAdapter extends RecyclerView.Adapter<LobbyRecyclerViewAdapter.MyViewHolder> {
 
     private ArrayList<Lobby> lobbyList;
     private Context context;
     private JoinLobbyCallback joinLobbyCallback;
 
-    public Lobby_RecyclerViewAdapter(Context context, ArrayList<Lobby> lobbyList, JoinLobbyCallback joinLobbyCallback){
+    public LobbyRecyclerViewAdapter(Context context, ArrayList<Lobby> lobbyList, JoinLobbyCallback joinLobbyCallback){
         this.context = context;
         this.lobbyList = lobbyList;
         this.joinLobbyCallback = joinLobbyCallback;
@@ -29,25 +29,21 @@ public class Lobby_RecyclerViewAdapter extends RecyclerView.Adapter<Lobby_Recycl
 
     @NonNull
     @Override
-    public Lobby_RecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public LobbyRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.text_row_item, parent, false);
-        return new Lobby_RecyclerViewAdapter.MyViewHolder(view);
+        return new LobbyRecyclerViewAdapter.MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull Lobby_RecyclerViewAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull LobbyRecyclerViewAdapter.MyViewHolder holder, int position) {
         holder.textViewName.setText(lobbyList.get(position).getName());
         holder.textViewAddress.setText(lobbyList.get(position).getAddress());
-        holder.buttonJoinLobby.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    joinLobbyCallback.JoinLobby(lobbyList.get(holder.getAdapterPosition()));
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                    holder.buttonJoinLobby.setEnabled(false);
-                }
+        holder.buttonJoinLobby.setOnClickListener(v -> {
+            try {
+                joinLobbyCallback.JoinLobby(lobbyList.get(holder.getAdapterPosition()));
+            } catch (NullPointerException e) {
+                holder.buttonJoinLobby.setEnabled(false);
             }
         });
     }

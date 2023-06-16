@@ -65,7 +65,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
-
     private View discardPileView;
 
     private Vibrator vibrator;
@@ -89,6 +88,35 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                 }
             });
 
+        }
+    };
+
+    PropertyChangeListener playerWonChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("playerWon".equals(event.getPropertyName())) {
+                        //check if the local player caused this event
+                        Toast.makeText(GameActivity.this, "You "+event.getNewValue()+" won!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    };
+
+    PropertyChangeListener playerLostChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("playerLost".equals(event.getPropertyName())) {
+                        Toast.makeText(GameActivity.this, "Player "+event.getNewValue()+" lost!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     };
 
@@ -173,6 +201,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         discardPile.addPropertyChangeListener(cardPileChangeListener);
 
         playerHandInit(currentPlayer);
+        winLossMessagesInit(currentPlayer);
+    }
+
+    private void winLossMessagesInit(Player currentPlayer){
+        currentPlayer.addPropertyChangeListener(playerWonChangeListener);
+        currentPlayer.addPropertyChangeListener(playerLostChangeListener);
     }
 
     private void playerHandInit(Player currentPlayer) {
@@ -202,15 +236,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
                 if (GameLogic.canCardBePulled(currentPlayer)) {
                     Card nextCard = deck.getNextCard();
-                    if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                    if(NetworkManager.isServer(connection)){
                         GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, gameManager.getTurnManage());
+                        gameManager.checkGameEnd();
                     } else {
                         GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
                     }
-                    // TODO implement the logic, to process Bomb card differently
-
-                    currentPlayer.getHand().add(nextCard);
-
                     adapter.notifyDataSetChanged();
                 }
 
@@ -235,15 +266,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     protected void onDestroy() {
         super.onDestroy();
         //Free resources
+        if(playerManager != null){
+            playerManager.reset();
+            playerManager = null;
+        }
         if (connection != null) {
-            if (connection.getConnectionRole() != TypeOfConnectionRole.IDLE) {
+            if (NetworkManager.isNotIdle(connection)) {
                 connection.terminateConnection();
             }
             connection = null;
-        }
-        if (playerManager != null) {
-            playerManager.reset();
-            playerManager = null;
         }
     }
 
@@ -263,7 +294,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
 
-        if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+        if(NetworkManager.isServer(connection)){
             deck = new Deck(seed);
             playerManager.initializeAsHost(connection.getServerConnections(), connection);
             ArrayList<Player> players;
@@ -334,7 +365,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
     }
-
 
     @Override
     public void responseReceived(String text, Object sender) {

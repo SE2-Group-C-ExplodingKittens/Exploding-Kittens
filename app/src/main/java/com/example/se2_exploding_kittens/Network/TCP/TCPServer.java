@@ -46,12 +46,9 @@ public class TCPServer implements Runnable{
     public void run() {
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Server listening on port");
             running = true;
-
             while (running) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
                 ServerTCPSocket serverTCPSocket = new ServerTCPSocket(clientSocket);
                 connectionEstablished(serverTCPSocket);
                 Thread thread = new Thread(serverTCPSocket);
