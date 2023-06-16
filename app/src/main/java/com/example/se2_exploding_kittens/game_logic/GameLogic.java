@@ -37,13 +37,24 @@ public class GameLogic {
     private GameManager gameManager;
     private static TurnManager turnManager;
 
-    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck, GameManager gameManager, TurnManager turnManager) {
+    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck, GameManager gameManager, TurnManager turnManager) throws IllegalArgumentException {
+        if(numOfPlayers < 2 || numOfPlayers > 6 && idOfLocalPlayer < 0 || idOfLocalPlayer > numOfPlayers){
+            throw new IllegalArgumentException();
+        }
         initPlayers(numOfPlayers);
         this.idOfLocalPlayer = idOfLocalPlayer;
         this.deck = deck;
         this.gameManager = gameManager;
         this.turnManager = turnManager;
         deck.dealCards(playerList);
+    }
+
+    public ArrayList<Player> getPlayerList(){
+        return playerList;
+    }
+
+    public int getIdOfLocalPlayer(){
+        return idOfLocalPlayer;
     }
 
     public void endTurnByPullingCard() {
