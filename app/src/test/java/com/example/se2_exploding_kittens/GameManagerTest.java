@@ -2,6 +2,8 @@ package com.example.se2_exploding_kittens;
 
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_BOMB_PULLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PULLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 import static org.mockito.Matchers.anyInt;
@@ -20,6 +22,7 @@ import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
+import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
@@ -211,6 +214,33 @@ public class GameManagerTest {
         }while(!(card instanceof BombCard));
         //check if the implemented cards are on the pile unimplemented cards don`t end up there
     }
+
+    @Test
+    void testGAME_MANAGER_MESSAGE_NOPE_ENABLED_ID() {
+        GameManager gameManager = new GameManager(networkManager,deck,discardPile);
+        PlayerManager playerManager = PlayerManager.getInstance();
+        //4 players in total
+        startGameSequence(gameManager, playerManager, 3);
+        Assert.assertEquals(4, playerManager.getPlayerSize());
+
+        Message m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID, "");
+        gameManager.responseReceived(m.getTransmitMessage(), null);
+        Assert.assertTrue(GameLogic.nopeEnabled);
+    }
+    @Test
+    void testGAME_MANAGER_MESSAGE_NOPE_DISABLED_ID() {
+        GameManager gameManager = new GameManager(networkManager,deck,discardPile);
+        PlayerManager playerManager = PlayerManager.getInstance();
+        //4 players in total
+        startGameSequence(gameManager, playerManager, 3);
+        Assert.assertEquals(4, playerManager.getPlayerSize());
+
+        Message m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID, "");
+        gameManager.responseReceived(m.getTransmitMessage(), null);
+        Assert.assertFalse(GameLogic.nopeEnabled);
+    }
+
+
 
 
 
