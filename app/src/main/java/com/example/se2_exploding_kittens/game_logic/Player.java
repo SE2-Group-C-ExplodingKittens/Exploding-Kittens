@@ -17,12 +17,10 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
-import android.database.Observable;
 import android.util.Log;
 
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
@@ -51,11 +49,10 @@ public class Player implements MessageCallback {
     private boolean canNope = false;
     private boolean hasWon = false;
     private int playerTurns;
-    private static String DEBUG_TAG = "Player";
     public static final String PLAYER_CARD_HAND_REMOVED_PROPERTY = "handCardRemoved";
 
 
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     // if the client initalizes a player object, ID may NOT be known yet thus getter and setter may be needed
     public Player(int playerId) {
@@ -94,8 +91,7 @@ public class Player implements MessageCallback {
         if (playerTurns > 0) {
             //if it's players turn
             propertyChangeSupport.firePropertyChange("yourTurn", null, playerId);
-        }
-        else if (playerTurns == 0){
+        } else if (playerTurns == 0) {
             //if it's not players turn
             propertyChangeSupport.firePropertyChange("notYourTurn", null, playerId);
         }
@@ -110,7 +106,7 @@ public class Player implements MessageCallback {
     }
 
     public String handToString() {
-        String export = "";
+        String export;
         StringBuilder bld = new StringBuilder();
         if (hand.size() > 0) {
             for (Card c : hand) {
@@ -189,10 +185,10 @@ public class Player implements MessageCallback {
         }
     }
 
-    private void searchInHandAndRemove(ArrayList<Card>hand, int cardID){
-        for (Card c: hand) {
-            if(c.getCardID() == cardID){
-                propertyChangeSupport.firePropertyChange(PLAYER_CARD_HAND_REMOVED_PROPERTY,null,hand.indexOf(c));
+    private void searchInHandAndRemove(ArrayList<Card> hand, int cardID) {
+        for (Card c : hand) {
+            if (c.getCardID() == cardID) {
+                propertyChangeSupport.firePropertyChange(PLAYER_CARD_HAND_REMOVED_PROPERTY, null, hand.indexOf(c));
                 hand.remove(c);
                 return;
             }
@@ -264,8 +260,8 @@ public class Player implements MessageCallback {
     }
 
     public void setAlive(boolean alive) {
-        if (this.alive == true && alive == false){
-            propertyChangeSupport.firePropertyChange("playerLost",true,false);
+        if (this.alive && !alive) {
+            propertyChangeSupport.firePropertyChange("playerLost", true, false);
         }
         this.alive = alive;
 
@@ -277,6 +273,7 @@ public class Player implements MessageCallback {
             try {
                 return Integer.parseInt(splitInput[0]);
             } catch (NumberFormatException e) {
+                String DEBUG_TAG = "Player";
                 Log.e(DEBUG_TAG, "Could not parse");
             }
         }
@@ -326,8 +323,8 @@ public class Player implements MessageCallback {
     }
 
     public void setHasWon(boolean hasWon) {
-        if (this.hasWon == false && hasWon == true){
-            propertyChangeSupport.firePropertyChange("playerWon",-1,playerId);
+        if (!this.hasWon && hasWon) {
+            propertyChangeSupport.firePropertyChange("playerWon", -1, playerId);
         }
         this.hasWon = hasWon;
     }

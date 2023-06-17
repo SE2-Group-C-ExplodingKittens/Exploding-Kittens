@@ -30,6 +30,8 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_PLAYER_WON_ID = 510;
     public static final int GAME_MANAGER_MESSAGE_DISTRIBUTE_DECK_ID = 511;
 
+    public static final int GAME_MANAGER_MESSAGE_CHECKED_CARD = 508;
+
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
         this.playerManager = PlayerManager.getInstance();
@@ -47,8 +49,8 @@ public class GameManager implements MessageCallback {
         return turnManager;
     }
 
-    public void updateDeck(Deck updatedDeck) {
-        this.deck = updatedDeck;
+    public void updateDeck(Deck deck) {
+        this.deck = deck;
     }
 
     public void startGame() {

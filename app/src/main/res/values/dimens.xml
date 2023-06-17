@@ -2,9 +2,5 @@
 <resources>
     <dimen name="list_item_height">15</dimen>
     <dimen name="margin_medium">3</dimen>
-
-
-    <dimen name="card_horizontal_overlap">16dp</dimen>
-    <dimen name="card_start_margin">0dp</dimen>
-    <dimen name="card_vertical_offset">10dp</dimen>
+    <dimen name="card_offset">40dp</dimen>
 </resources>

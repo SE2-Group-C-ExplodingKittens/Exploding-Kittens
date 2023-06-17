@@ -10,47 +10,77 @@
 
     <ImageView
         android:id="@+id/playingDeck"
-        android:layout_width="171dp"
-        android:layout_height="149dp"
-        android:contentDescription="@string/drawing_pile_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.303"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toStartOf="@id/discardPile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.497"
         app:srcCompat="@drawable/deck" />
 
     <FrameLayout
         android:id="@+id/discardPile"
-        android:layout_width="137dp"
-        android:layout_height="127dp"
-        android:contentDescription="@string/discard_pile_frameLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.592"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/playingDeck"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/discard_pile_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/discard_pile_image"
             android:alpha="0.5"
             android:src="@drawable/yourcardgoeshere" />
     </FrameLayout>
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerVw"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="320dp"
         android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.4" />
+        app:layout_constraintVertical_bias="1" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/hint_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="48dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/close_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:text="AGKAOKBOEKBPKABGGDGDSSDGSDGSGDSAOVKAPEOBPA"
+                android:textSize="20sp" />
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textViewYourTurn"
@@ -67,12 +97,12 @@
         android:id="@+id/textViewSeeTheFutureCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:text=""
-        android:textSize="24sp"
         android:textColor="@color/white"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:visibility="invisible"
-        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
