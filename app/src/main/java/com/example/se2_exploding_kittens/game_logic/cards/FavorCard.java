@@ -103,11 +103,8 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
         choosePlayerViewHolder.bindData(playerOneID, playerTwoID, playerThreeID, playerFourID, popupWindow, this);
 
-        // Timer
-        Handler handler = new Handler();
-
         // Display popup
-        choosePlayerViewHolder.run(handler, popupWindow, this);
+        choosePlayerViewHolder.run(new Handler(), popupWindow, this);
     }
 
     @Override

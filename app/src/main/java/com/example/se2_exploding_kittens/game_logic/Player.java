@@ -54,7 +54,6 @@ public class Player implements MessageCallback {
     private boolean hasWon = false;
     private int playerTurns;
     private static String DEBUG_TAG = "Player";
-    private Handler uiHandler = new Handler(Looper.getMainLooper());
     public static final String PLAYER_CARD_HAND_REMOVED_PROPERTY = "handCardRemoved";
 
 
@@ -320,7 +319,7 @@ public class Player implements MessageCallback {
                 ArrayList<Card> oldHand = new ArrayList<>(hand);
                 if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
-                    uiHandler.post(new Runnable() {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             propertyChangeSupport.firePropertyChange("hand", oldHand, hand);

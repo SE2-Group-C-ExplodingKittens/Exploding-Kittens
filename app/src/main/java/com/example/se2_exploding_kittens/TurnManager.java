@@ -187,4 +187,8 @@ public class TurnManager implements MessageCallback {
     public int getNumberOfPlayers() {
         return PlayerManager.getInstance().getPlayerSize();
     }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
 }
