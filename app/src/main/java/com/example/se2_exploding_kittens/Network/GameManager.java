@@ -6,19 +6,22 @@ import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MAN
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_FAVOR_CARD_ID;
 
+import com.example.se2_exploding_kittens.Activities.GameActivity;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.PlayerMessageID;
+import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
+
+import java.util.ArrayList;
 
 public class GameManager implements MessageCallback {
 
     private NetworkManager networkManager;
     private TurnManager turnManager;
-    private int numberOfPlayers;
     private Deck deck;
     private PlayerManager playerManager;
     private DiscardPile discardPile;
@@ -50,7 +53,6 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
-        this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
 
     public void reset(){
@@ -375,6 +377,16 @@ public class GameManager implements MessageCallback {
             if (NetworkManager.isServer(networkManager)) {
                 sendCardTo(playerID, networkManager, playedCard);
             }
+        }
+    }
+
+    public void distributeDeck(Deck deck) {
+        try {
+            if (deck != null) {
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }

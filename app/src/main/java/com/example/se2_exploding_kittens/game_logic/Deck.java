@@ -40,7 +40,7 @@ public class Deck {
 
     public Deck(long seed) {
         initAttackCard();
-        //initCatCards();
+        initCatCards();
         initFavorCard();
         initNopeCard();
         initShuffleCard();
@@ -225,6 +225,10 @@ public class Deck {
             return cardDeck.remove(0);
         }
         throw new IndexOutOfBoundsException("The deck is empty!");
+    }
+
+    public ArrayList<Card> getCards() {
+        return cardDeck;
     }
 
     public Card removeCard(int cardID) {

@@ -12,7 +12,7 @@ public class CatFourCard implements Card {
 
     @Override
     public int getImageResource() {
-        return R.drawable.uglykittencard;
+        return R.drawable.nachos;
     }
 
     @Override
