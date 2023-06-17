@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-public class SkipCardTest {
+class SkipCardTest {
     NetworkManager networkManager;
     DiscardPile discardPile;
 

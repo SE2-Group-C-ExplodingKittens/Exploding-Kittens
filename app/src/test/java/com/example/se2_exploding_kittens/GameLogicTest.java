@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 
-public class GameLogicTest {
+class GameLogicTest {
 
     PlayerManager playerManager;
     PlayerConnection pCon0;
