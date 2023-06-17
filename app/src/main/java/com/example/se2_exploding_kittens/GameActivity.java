@@ -271,18 +271,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         discardPile = new DiscardPile();
 
         if (NetworkManager.isServer(connection)) {
-            deck = new Deck(seed);
-            playerManager.initializeAsHost(connection.getServerConnections(), connection);
-            ArrayList<Player> players;
-            players = new ArrayList<>();
-            for (PlayerConnection pc : playerManager.getPlayers()) {
-                players.add(pc.getPlayer());
-                pc.getPlayer().subscribePlayerToCardEvents(connection);
-            }
-            deck.dealCards(players);
-            gameManager = new GameManager(connection, deck, discardPile);
-            gameManager.distributeDeck(deck);
-            gameManager.distributePlayerHands();
+            prepareGame(seed);
 
             // player id 0 is always the host
             guiInit(playerManager.getLocalSelf());
@@ -340,6 +329,21 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         hintLayout = findViewById(R.id.hint_wrapper);
 
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
+    }
+
+    private void prepareGame(long seed) {
+        deck = new Deck(seed);
+        playerManager.initializeAsHost(connection.getServerConnections(), connection);
+        ArrayList<Player> players;
+        players = new ArrayList<>();
+        for (PlayerConnection pc : playerManager.getPlayers()) {
+            players.add(pc.getPlayer());
+            pc.getPlayer().subscribePlayerToCardEvents(connection);
+        }
+        deck.dealCards(players);
+        gameManager = new GameManager(connection, deck, discardPile);
+        gameManager.distributeDeck(deck);
+        gameManager.distributePlayerHands();
     }
 
     @Override

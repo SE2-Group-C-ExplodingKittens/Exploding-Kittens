@@ -53,6 +53,8 @@ public class GameManagerTest {
     void testReset() {
         GameManager gameManager = new GameManager(networkManager,deck,discardPile);
         gameManager.reset();
+        PlayerManager playerManager = PlayerManager.getInstance();
+        playerManager.reset();
         verify(networkManager, times(5)).unsubscribeCallbackFromMessageID(anyObject(), anyInt());
         Assert.assertEquals(null, gameManager.getTurnManage());
 
@@ -76,6 +78,7 @@ public class GameManagerTest {
             players.add(pc.getPlayer());
             pc.getPlayer().subscribePlayerToCardEvents(networkManager);
         }
+
         deck.dealCards(players);
         gameManager = new GameManager(networkManager, deck, discardPile);
         gameManager.distributeDeck(deck);
@@ -87,11 +90,13 @@ public class GameManagerTest {
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4})
-    void testStartGameSequence(int clientPlayers) {
+    void testStartGameStartSequence(int clientPlayers) {
         GameManager gameManager = new GameManager(networkManager,deck,discardPile);
         PlayerManager playerManager = PlayerManager.getInstance();
         startGameSequence(gameManager, playerManager, clientPlayers);
+
         Assert.assertEquals(clientPlayers+1, playerManager.getPlayerSize());
+        int collectiveTurns = 0;
         //everyone gets 8 cards
         for (int i = 0; i<playerManager.getPlayerSize();i++){
             Assert.assertEquals(8, playerManager.getPlayer(i).getPlayer().getHand().size());
@@ -103,8 +108,12 @@ public class GameManagerTest {
                 }
             }
             Assert.assertTrue(hasDefuse);
+
+            collectiveTurns = collectiveTurns + playerManager.getPlayer(i).getPlayer().getPlayerTurns();
         }
 
+        //only one player has its turn
+        Assert.assertEquals(collectiveTurns, 1);
         int bomCount = 0;
         for (int i = 0; i < deck.getCards().size(); i++){
             if(deck.getCards().get(i) instanceof BombCard){
@@ -114,13 +123,13 @@ public class GameManagerTest {
         Assert.assertEquals(bomCount, playerManager.getPlayerSize()-1);
     }
 
-/*    @Test
+    @Test
     void testHandleCardPlayedMessage() {
         GameManager gameManager = new GameManager(networkManager,deck,discardPile);
         PlayerManager playerManager = PlayerManager.getInstance();
         Assert.assertEquals(4, playerManager.getPlayerSize());
         gameManager.responseReceived("text", null);
-    }*/
+    }
 
 
 

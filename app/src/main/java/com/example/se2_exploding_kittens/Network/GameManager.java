@@ -10,7 +10,10 @@ import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
+import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
+
+import java.util.ArrayList;
 
 public class GameManager implements MessageCallback {
 
