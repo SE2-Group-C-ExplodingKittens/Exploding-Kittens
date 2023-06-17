@@ -4,8 +4,8 @@ import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class PlayerConnection {
-    private ServerTCPSocket connection;
-    private Player player;
+    private final ServerTCPSocket connection;
+    private final Player player;
 
     public PlayerConnection(ServerTCPSocket connection, int playerID) {
         this.connection = connection;
@@ -24,7 +24,7 @@ public class PlayerConnection {
         return player;
     }
 
-    public int numberOfTurnsLeft(){
+    public int numberOfTurnsLeft() {
         return player.getPlayerTurns();
     }
 }

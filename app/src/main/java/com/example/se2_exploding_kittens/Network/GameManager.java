@@ -33,6 +33,8 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID = 509;
     public static final int GAME_MANAGER_MESSAGE_PLAYER_WON_ID = 510;
 
+    public static final int GAME_MANAGER_MESSAGE_CHECKED_CARD = 508;
+
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
         this.playerManager = PlayerManager.getInstance();
@@ -51,12 +53,27 @@ public class GameManager implements MessageCallback {
         this.numberOfPlayers = turnManager.getNumberOfPlayers();
     }
 
+    public void reset(){
+        if(networkManager != null){
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_CARD_PULLED_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
+            this.networkManager = null;
+        }
+        this.playerManager = null;
+        this.turnManager = null;
+        this.deck = null;
+        this.discardPile = null;
+    }
+
     public TurnManager getTurnManage() {
         return turnManager;
     }
 
-    public void updateDeck(Deck updatedDeck) {
-        this.deck = updatedDeck;
+    public void updateDeck(Deck deck) {
+        this.deck = deck;
     }
 
     public void startGame() {

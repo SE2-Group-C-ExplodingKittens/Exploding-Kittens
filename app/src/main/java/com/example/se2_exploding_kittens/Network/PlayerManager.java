@@ -14,7 +14,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     //payload has the pattern TYPE:DATA
 
-    private static String DEBUG_TAG = "PlayerManager";
     private static PlayerManager instance = null;
     private ArrayList<PlayerConnection> playerConnections;
     private int nextPlayerID;
@@ -39,7 +38,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     //Initalize as host, as the host assigns player numbers
     public void initializeAsHost(ArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
-        if(NetworkManager.isServer(networkManager)){
+        if (NetworkManager.isServer(networkManager)) {
             nextPlayerID = 0;
             this.playerConnections = new ArrayList<>();
             // selfassign
@@ -53,11 +52,11 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         }
     }
 
-    public void reset(){
-        if(NetworkManager.isNotIdle(networkManager)){
+    public void reset() {
+        if (NetworkManager.isNotIdle(networkManager)) {
             this.networkManager.unsubscribeCallbackFromMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
             this.networkManager.unsubscribeToDisconnectedCallback(this);
-            if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
                 this.networkManager.unsubscribeToClientConnectedCallback(this);
 
             }
@@ -73,6 +72,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             try {
                 return Integer.parseInt(splitInput[0]);
             } catch (NumberFormatException e) {
+                String DEBUG_TAG = "PlayerManager";
                 Log.e(DEBUG_TAG, "Could not parse");
             }
         }
@@ -106,7 +106,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public Player getLocalSelf() {
-        if(NetworkManager.isServer(networkManager)){
+        if (NetworkManager.isServer(networkManager)) {
             return getPlayer(0).getPlayer();
         }
         return null; // player not found i.e. not properly initialized
@@ -162,7 +162,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public void removePlayer(PlayerConnection player) {
-        if(playerConnections.contains(player) && networkManager != null && NetworkManager.isServer(networkManager)){
+        if (playerConnections.contains(player) && networkManager != null && NetworkManager.isServer(networkManager)) {
             try {
                 networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
