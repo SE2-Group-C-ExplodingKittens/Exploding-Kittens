@@ -29,7 +29,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         this.helpAskListener = helpAskListener;
     }
 
-    interface HelpAskListener {
+    public interface HelpAskListener {
         void askForHelp(Card card);
     }
 

@@ -385,9 +385,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     @Override
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
-        int messageId = Message.parseAndExtractMessageID(text);
+        int messageID = Message.parseAndExtractMessageID(text);
         if (sender instanceof ClientTCP) {
-            if (messageId == GAME_ACTIVITY_DECK_MESSAGE_ID) {
+            if (messageID == GAME_ACTIVITY_DECK_MESSAGE_ID) {
                 deck = new Deck(Message.parseAndExtractPayload(text));
                 if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null) {
                     gameClient.setDeck(deck);
@@ -411,7 +411,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                 //send card to stealer
                 GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
             }
-        } else if (messageId == GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD) {
+        } else if (messageID == GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD) {
             Handler mainHandler = new Handler(Looper.getMainLooper());
 
             // We can now get the card id from the payload
