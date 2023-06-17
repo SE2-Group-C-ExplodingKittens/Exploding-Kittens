@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
-import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
@@ -235,16 +234,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         });
     }
 
-    private void distributeDeck(Deck deck) {
-        try {
-            if (deck != null) {
-                connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     protected void onDestroy() {
@@ -292,7 +281,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
             deck.dealCards(players);
             gameManager = new GameManager(connection, deck, discardPile);
-            distributeDeck(deck);
+            gameManager.distributeDeck(deck);
             gameManager.distributePlayerHands();
 
             // player id 0 is always the host
