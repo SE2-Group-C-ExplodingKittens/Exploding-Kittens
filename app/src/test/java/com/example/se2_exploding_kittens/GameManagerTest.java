@@ -25,6 +25,8 @@ import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
+import com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCard;
+import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import org.junit.Assert;
@@ -52,7 +54,6 @@ public class GameManagerTest {
         when(networkManager.getConnectionRole()).thenReturn(TypeOfConnectionRole.SERVER);
         discardPile = new DiscardPile();
         deck = new Deck(1);
-
     }
 
     @Test
@@ -117,7 +118,7 @@ public class GameManagerTest {
         }
 
         //only one player has its turn
-        Assert.assertEquals(collectiveTurns, 1);
+        Assert.assertEquals(1, collectiveTurns);
         int bomCount = 0;
         for (int i = 0; i < deck.getCards().size(); i++){
             if(deck.getCards().get(i) instanceof BombCard){
@@ -136,6 +137,7 @@ public class GameManagerTest {
         Assert.assertEquals(4, playerManager.getPlayerSize());
         TurnManager turnManager = gameManager.getTurnManage();
         Card card = null;
+        //lets pretend player 0 which is locally already lost since this method is called in response to client actions
         playerManager.getPlayer(0).getPlayer().setAlive(false);
         turnManager.gameStateNextTurn(1);
         int prevPlayer = 0;
@@ -145,7 +147,6 @@ public class GameManagerTest {
             Message m;
             if(card instanceof BombCard){
                 m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID()+":"+turnManager.getCurrentPlayerIndex());
-
             }else{
                 m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+turnManager.getCurrentPlayerIndex());
             }
@@ -156,12 +157,59 @@ public class GameManagerTest {
                 }else {
                     Assert.assertEquals(1, turnManager.getCurrentPlayerIndex());
                 }
-
+                //check if the cards are on the hand
+                ArrayList<Card> hand = playerManager.getPlayer(prevPlayer).getPlayer().getHand();
+                Assert.assertEquals(card, hand.get(hand.size()-1));
+                Assert.assertEquals(0, playerManager.getPlayer(prevPlayer).getPlayer().getPlayerTurns());
+                Assert.assertEquals(1, playerManager.getPlayer(turnManager.getCurrentPlayerIndex()).getPlayer().getPlayerTurns());
+            }else{
+                Assert.assertTrue(discardPile.getCardPile().get(0) instanceof BombCard);
             }
+
         }while(!(card instanceof BombCard));
+    }
 
+    @Test
+    void testGAME_MANAGER_MESSAGE_BOMB_PULLED_ID() {
+        GameManager gameManager = new GameManager(networkManager,deck,discardPile);
+        PlayerManager playerManager = PlayerManager.getInstance();
+        //4 players in total
+        startGameSequence(gameManager, playerManager, 3);
+        Assert.assertEquals(4, playerManager.getPlayerSize());
+        TurnManager turnManager = gameManager.getTurnManage();
+        Card card = null;
+        //lets pretend player 0 which is locally already lost since this method is called in response to client actions
+        playerManager.getPlayer(0).getPlayer().setAlive(false);
+        playerManager.getPlayer(0).getPlayer().setPlayerTurns(0);
+        turnManager.gameStateNextTurn(1);
+        int prevPlayer = 0;
+        do{
+            prevPlayer = turnManager.getCurrentPlayerIndex();
+            card = deck.getCards().get(0);
+            Message m;
+            if(card instanceof BombCard){
+                m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID()+":"+turnManager.getCurrentPlayerIndex());
+            }else{
+                m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+turnManager.getCurrentPlayerIndex());
+            }
+            gameManager.responseReceived(m.getTransmitMessage(), null);
+            if((card instanceof BombCard)){
+                Assert.assertTrue(discardPile.getCardPile().get(0) instanceof BombCard);
+                Assert.assertTrue(playerManager.getPlayer(prevPlayer).getPlayer().isHasBomb());
+                int collectiveTurns = 0;
+                //everyone gets 8 cards
+                for (int i = 0; i<playerManager.getPlayerSize();i++){
+                    collectiveTurns = collectiveTurns + playerManager.getPlayer(i).getPlayer().getPlayerTurns();
+                }
+                //no player has its turn, only one has the bomb
+                Assert.assertEquals(0, collectiveTurns);
+            }else {
+                Assert.assertEquals(0, playerManager.getPlayer(prevPlayer).getPlayer().getPlayerTurns());
+                Assert.assertEquals(1, playerManager.getPlayer(turnManager.getCurrentPlayerIndex()).getPlayer().getPlayerTurns());
+            }
 
-
+        }while(!(card instanceof BombCard));
+        //check if the implemented cards are on the pile unimplemented cards don`t end up there
     }
 
 
