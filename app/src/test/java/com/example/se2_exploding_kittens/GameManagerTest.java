@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens;
 
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_BOMB_PULLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PULLED_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 import static org.mockito.Matchers.anyInt;
@@ -10,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
+import com.example.se2_exploding_kittens.Network.Message;
+import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
@@ -17,7 +21,9 @@ import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.Player;
+import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
@@ -53,8 +59,6 @@ public class GameManagerTest {
     void testReset() {
         GameManager gameManager = new GameManager(networkManager,deck,discardPile);
         gameManager.reset();
-        PlayerManager playerManager = PlayerManager.getInstance();
-        playerManager.reset();
         verify(networkManager, times(5)).unsubscribeCallbackFromMessageID(anyObject(), anyInt());
         Assert.assertEquals(null, gameManager.getTurnManage());
 
@@ -124,11 +128,40 @@ public class GameManagerTest {
     }
 
     @Test
-    void testHandleCardPlayedMessage() {
+    void testGAME_MANAGER_MESSAGE_CARD_PULLED_ID() {
         GameManager gameManager = new GameManager(networkManager,deck,discardPile);
         PlayerManager playerManager = PlayerManager.getInstance();
+        //4 players in total
+        startGameSequence(gameManager, playerManager, 3);
         Assert.assertEquals(4, playerManager.getPlayerSize());
-        gameManager.responseReceived("text", null);
+        TurnManager turnManager = gameManager.getTurnManage();
+        Card card = null;
+        playerManager.getPlayer(0).getPlayer().setAlive(false);
+        turnManager.gameStateNextTurn(1);
+        int prevPlayer = 0;
+        do{
+            prevPlayer = turnManager.getCurrentPlayerIndex();
+            card = deck.getCards().get(0);
+            Message m;
+            if(card instanceof BombCard){
+                m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID()+":"+turnManager.getCurrentPlayerIndex());
+
+            }else{
+                m = new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID()+":"+turnManager.getCurrentPlayerIndex());
+            }
+            gameManager.responseReceived(m.getTransmitMessage(), null);
+            if(!(card instanceof BombCard)){
+                if(prevPlayer < 3){
+                    Assert.assertEquals(((prevPlayer + 1) % playerManager.getPlayerSize()), turnManager.getCurrentPlayerIndex());
+                }else {
+                    Assert.assertEquals(1, turnManager.getCurrentPlayerIndex());
+                }
+
+            }
+        }while(!(card instanceof BombCard));
+
+
+
     }
 
 
