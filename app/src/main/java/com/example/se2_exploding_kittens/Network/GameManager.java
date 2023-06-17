@@ -6,17 +6,13 @@ import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MAN
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_FAVOR_CARD_ID;
 
-import com.example.se2_exploding_kittens.Activities.GameActivity;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.PlayerMessageID;
-import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
-
-import java.util.ArrayList;
 
 public class GameManager implements MessageCallback {
 
@@ -25,9 +21,7 @@ public class GameManager implements MessageCallback {
     private Deck deck;
     private PlayerManager playerManager;
     private DiscardPile discardPile;
-    public static final int GAME_MANAGER_MESSAGE_ID = 500;
     public static final int GAME_MANAGER_MESSAGE_CARD_PULLED_ID = 501;
-    public static final int GAME_MANAGER_MESSAGE_CARD_REMOVED = 502;
     public static final int GAME_MANAGER_MESSAGE_CARD_PLAYED_ID = 503;
     public static final int GAME_MANAGER_MESSAGE_BOMB_PULLED_ID = 504;
     public static final int GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID = 506;
@@ -72,10 +66,6 @@ public class GameManager implements MessageCallback {
 
     public TurnManager getTurnManage() {
         return turnManager;
-    }
-
-    public void updateDeck(Deck deck) {
-        this.deck = deck;
     }
 
     public void startGame() {
