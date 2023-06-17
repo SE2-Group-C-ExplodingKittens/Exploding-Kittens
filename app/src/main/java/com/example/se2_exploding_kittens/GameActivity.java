@@ -171,14 +171,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                 Card selectedCard = adapter.getSelectedCard((int) event.getLocalState());
 
                 // Had to remove, doesn't allow to play card
-                //if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                adapter.removeCard((int) event.getLocalState());
+                if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
+                //adapter.removeCard((int) event.getLocalState());
                 if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
                     GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
                 } else {
                     GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
                 }
-                //}
+                }
             }
             return true;
         });
@@ -254,6 +254,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.reset();
             playerManager = null;
         }
+        if (gameManager != null){
+            gameManager.reset();
+        }
         if (connection != null) {
             if (NetworkManager.isNotIdle(connection)) {
                 connection.terminateConnection();
@@ -304,7 +307,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
             localClientPlayer.addPropertyChangeListener(yourTurnListener);
             localClientPlayer.addPropertyChangeListener(notYourTurnListener);
-            gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
+            //gameClient = new GameClient(localClientPlayer, deck, discardPile, connection);
 
             Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT);

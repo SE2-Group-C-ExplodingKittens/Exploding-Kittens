@@ -128,6 +128,9 @@ public class GameLogic {
         if(!player.isAlive()){
             return false;
         }
+        if(player.isHasWon()){
+            return false;
+        }
         if(player.isHasBomb() && card instanceof DefuseCard){
             return true;
         }else if(!player.isHasBomb()){
@@ -176,6 +179,9 @@ public class GameLogic {
 
     public static boolean canCardBePulled(Player player){
         if(!player.isAlive()){
+            return false;
+        }
+        if(player.isHasWon()){
             return false;
         }
         return player.getPlayerTurns() > 0;

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 public class GameLogicTest {
 
-
     PlayerManager playerManager;
     PlayerConnection pCon0;
     PlayerConnection pCon1;
@@ -118,6 +117,11 @@ public class GameLogicTest {
         player.setAlive(true);
         player.setPlayerTurns(2);
         Assertions.assertTrue(canCardBePulled(player));
+
+        player.setHasWon(true);
+        Assertions.assertFalse(canCardBePulled(player));
+
+        player.setHasWon(false);
         player.setPlayerTurns(1);
         Assertions.assertTrue(canCardBePulled(player));
         player.setPlayerTurns(0);
@@ -150,6 +154,11 @@ public class GameLogicTest {
         Assertions.assertFalse(canCardBePlayed(player, new SkipCard()));
         player.setPlayerTurns(2);
         Assertions.assertTrue(canCardBePlayed(player, new SkipCard()));
+
+        player.setHasWon(true);
+        Assertions.assertFalse(canCardBePulled(player));
+        player.setHasWon(false);
+
         player.setPlayerTurns(1);
         Assertions.assertTrue(canCardBePlayed(player, new SkipCard()));
         player.setHasBomb(true);
