@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
-import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
@@ -235,16 +234,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         });
     }
 
-    private void distributeDeck(Deck deck) {
-        try {
-            if (deck != null) {
-                connection.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     protected void onDestroy() {
@@ -282,18 +271,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         discardPile = new DiscardPile();
 
         if (NetworkManager.isServer(connection)) {
-            deck = new Deck(seed);
-            playerManager.initializeAsHost(connection.getServerConnections(), connection);
-            ArrayList<Player> players;
-            players = new ArrayList<>();
-            for (PlayerConnection pc : playerManager.getPlayers()) {
-                players.add(pc.getPlayer());
-                pc.getPlayer().subscribePlayerToCardEvents(connection);
-            }
-            deck.dealCards(players);
-            gameManager = new GameManager(connection, deck, discardPile);
-            distributeDeck(deck);
-            gameManager.distributePlayerHands();
+            prepareGame(seed);
 
             // player id 0 is always the host
             guiInit(playerManager.getLocalSelf());
@@ -351,6 +329,21 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         hintLayout = findViewById(R.id.hint_wrapper);
 
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
+    }
+
+    private void prepareGame(long seed) {
+        deck = new Deck(seed);
+        playerManager.initializeAsHost(connection.getServerConnections(), connection);
+        ArrayList<Player> players;
+        players = new ArrayList<>();
+        for (PlayerConnection pc : playerManager.getPlayers()) {
+            players.add(pc.getPlayer());
+            pc.getPlayer().subscribePlayerToCardEvents(connection);
+        }
+        deck.dealCards(players);
+        gameManager = new GameManager(connection, deck, discardPile);
+        gameManager.distributeDeck(deck);
+        gameManager.distributePlayerHands();
     }
 
     @Override

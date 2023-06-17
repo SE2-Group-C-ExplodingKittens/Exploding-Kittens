@@ -4,12 +4,16 @@ import static com.example.se2_exploding_kittens.GameActivity.GAME_ACTIVITY_DECK_
 import static com.example.se2_exploding_kittens.GameActivity.GAME_ACTIVITY_SHOW_THREE_CARDS_ID;
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 
+import com.example.se2_exploding_kittens.GameActivity;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
+import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
+
+import java.util.ArrayList;
 
 public class GameManager implements MessageCallback {
 
@@ -301,6 +305,16 @@ public class GameManager implements MessageCallback {
                     }
                 }
             }
+        }
+    }
+
+    public void distributeDeck(Deck deck) {
+        try {
+            if (deck != null) {
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }
