@@ -277,6 +277,7 @@ public class Player implements MessageCallback {
 
         //remove card
         removeCardFromHand(Integer.toString(card.getCardID()));
+        propertyChangeSupport.firePropertyChange("cardStolen", null, playerId);
         return card;
     }
 

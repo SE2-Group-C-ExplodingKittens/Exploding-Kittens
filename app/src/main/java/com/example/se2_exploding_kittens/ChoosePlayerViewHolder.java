@@ -13,7 +13,6 @@ public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
 
     private final LinearLayout playerButtonContainer;
     private final TextView timerTextView;
-
     private PopupWindow popupWindow;
 
     public ChoosePlayerViewHolder(View itemView) {

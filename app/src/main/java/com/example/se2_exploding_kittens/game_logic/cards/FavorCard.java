@@ -110,7 +110,6 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         choosePlayerViewHolder.run(handler, popupWindow, this);
     }
 
-
     @Override
     public void onPlayerSelected(String playerID) {
         //handle when Button got pressed in time

@@ -107,6 +107,32 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
         }
     };
 
+    PropertyChangeListener cardStolenListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if("cardStolen".equals(evt.getPropertyName())){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                stealRandomCardTextView.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                // set invisible after 3 seconds
+                                stealRandomCardTextView.setVisibility(View.INVISIBLE);
+                            }
+                        }, 3000); // 3000 milliseconds = 3 seconds
+                    }
+                }
+            });
+        }
+    };
+
     PropertyChangeListener playerLostChangeListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
@@ -336,6 +362,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             guiInit(playerManager.getLocalSelf());
             playerManager.getLocalSelf().addPropertyChangeListener(yourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
+            playerManager.getLocalSelf().addPropertyChangeListener(cardStolenListener);
             localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
         } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
@@ -344,6 +371,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             localPlayer.subscribePlayerToCardEvents(connection);
             localPlayer.addPropertyChangeListener(yourTurnListener);
             localPlayer.addPropertyChangeListener(notYourTurnListener);
+            localPlayer.addPropertyChangeListener(cardStolenListener);
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);
@@ -412,28 +440,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             int playerID = Integer.parseInt(message[1]);
             if (playerID == localPlayer.getPlayerId()) {
                 // steal a random Card and display text
-                displayRandomCardGotStolenText();
                 Card card = localPlayer.removeRandomCardFromHand();
                 //send card to stealer
                 GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
             }
         }
-    }
-
-    private void displayRandomCardGotStolenText() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                stealRandomCardTextView.setVisibility(View.VISIBLE);
-            }
-        });
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // set invisible after 3 seconds
-                stealRandomCardTextView.setVisibility(View.INVISIBLE);
-            }
-        }, 3000); // 3000 milliseconds = 3 seconds
     }
 
     private void displaySeeTheFutureCardText(int playerID) {
