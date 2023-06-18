@@ -3,6 +3,10 @@ package com.example.se2_exploding_kittens;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnTestGame;
 
+    SensorManager sensorManager;
+    private Sensor lightSensor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
         joinGameButton = findViewById(R.id.join_game_button);
         hostGameButton = findViewById(R.id.host_game_button);
         btnTestGame = findViewById(R.id.gameActivityTest);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 
         joinGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,4 +58,6 @@ public class MainActivity extends AppCompatActivity {
         //Testing only
 
     }
+
+
 }

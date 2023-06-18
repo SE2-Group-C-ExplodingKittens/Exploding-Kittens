@@ -2,6 +2,11 @@ package com.example.se2_exploding_kittens;
 
 import android.content.ClipData;
 import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventCallback;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -53,6 +58,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
+
+    private CheatFunction cheatFunction;
+    private SensorManager sensorManager;
+
 
     //hand over the player that plays over on the device
     private void guiInit(Player currentPlayer){
@@ -268,7 +277,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
             // Deal cards
             deck.dealCards(players);
 
+            sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+            cheatFunction = new CheatFunction(sensorManager);
+
+
             guiInit(p1);
+
+
         }
     }
 
