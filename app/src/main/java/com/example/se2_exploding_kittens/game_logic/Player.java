@@ -101,6 +101,7 @@ public class Player implements MessageCallback {
 
     public void setPlayerTurns(int numTurns) {
         playerTurns = numTurns;
+        resetCatCounter();
         if (playerTurns > 0) {
             //if it's players turn
             propertyChangeSupport.firePropertyChange("yourTurn", null, playerId);
@@ -416,6 +417,14 @@ public class Player implements MessageCallback {
             return (getCatFiveCounter() == 3);
         }
         return false;
+    }
+
+    private void resetCatCounter(){
+        this.catOneCounter = 0;
+        this.catTwoCounter = 0;
+        this.catThreeCounter = 0;
+        this.catFourCounter = 0;
+        this.catFiveCounter = 0;
     }
 
 }
