@@ -9,7 +9,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -39,7 +38,7 @@ public class SeeTheFutureCard implements Card {
         return SEE_THE_FUTURE_CARD_ID;
     }
 
-    public void handleFutureActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Deck deck, Context context) {
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Deck deck, Context context) {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             if (context != null) {
@@ -56,7 +55,7 @@ public class SeeTheFutureCard implements Card {
     }
 
     private void showTopThreeCards(Deck deck, Context context) {
-        ArrayList<Integer> threeCards = deck.getNextThreeCards();
+        ArrayList<Integer> threeCards = deck.getNextThreeCardResources();
 
         // Set Image resources
         int cardOne = threeCards.get(0);
@@ -78,10 +77,6 @@ public class SeeTheFutureCard implements Card {
         popupWindow.setFocusable(true);
         popupWindow.showAtLocation(((Activity) context).getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
 
-        //Timer
-        TextView timerTextView = topThreeCardsViewHolder.itemView.findViewById(R.id.textViewCounter);
-        timerTextView.setText("5");
-
-        topThreeCardsViewHolder.run(new Handler(), popupWindow, timerTextView);
+        topThreeCardsViewHolder.run(new Handler(), popupWindow);
     }
 }

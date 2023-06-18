@@ -2,6 +2,8 @@ package com.example.se2_exploding_kittens;
 
 import android.content.ClipData;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
-
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> implements PropertyChangeListener {
 
     private final ArrayList<Card> cards; // List of cards to display
@@ -28,7 +29,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         this.helpAskListener = helpAskListener;
     }
 
-    interface HelpAskListener {
+    public interface HelpAskListener {
         void askForHelp(Card card);
     }
 
@@ -84,10 +85,21 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("hand")) {
-            notifyDataSetChanged();
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
         }
         if (evt.getPropertyName().equals("handCardRemoved")) {
-            notifyItemRemoved((int) evt.getNewValue());
+            final int removedIndex = (int) evt.getNewValue();
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemRemoved(removedIndex);
+                }
+            });
         }
     }
 

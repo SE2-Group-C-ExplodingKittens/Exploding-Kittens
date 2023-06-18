@@ -17,6 +17,9 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
+import android.database.Observable;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.example.se2_exploding_kittens.Network.Message;
@@ -40,6 +43,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Player implements MessageCallback {
 
@@ -49,6 +53,7 @@ public class Player implements MessageCallback {
     private boolean canNope = false;
     private boolean hasWon = false;
     private int playerTurns;
+    private static String DEBUG_TAG = "Player";
     public static final String PLAYER_CARD_HAND_REMOVED_PROPERTY = "handCardRemoved";
 
 
@@ -259,6 +264,22 @@ public class Player implements MessageCallback {
         return alive;
     }
 
+    public Card removeRandomCardFromHand() {
+        if (getHand().size() == 0) {
+            return null;
+        }
+
+        Random random = new Random();
+        //get random index from hand
+        int randomIndex = random.nextInt(getHand().size());
+        Card card = getHand().get(randomIndex);
+
+        //remove card
+        removeCardFromHand(Integer.toString(card.getCardID()));
+        propertyChangeSupport.firePropertyChange("cardStolen", null, playerId);
+        return card;
+    }
+
     public void setAlive(boolean alive) {
         if (this.alive && !alive) {
             propertyChangeSupport.firePropertyChange("playerLost", true, false);
@@ -298,7 +319,12 @@ public class Player implements MessageCallback {
                 ArrayList<Card> oldHand = new ArrayList<>(hand);
                 if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
-                    propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
+                        }
+                    });
                 } else if (messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id) {
                     removeCardFromHand(parseDataFromPayload(payload));
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);

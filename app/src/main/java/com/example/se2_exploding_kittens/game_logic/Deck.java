@@ -124,7 +124,7 @@ public class Deck {
         Collections.shuffle(cardDeck);
     }
 
-    public ArrayList<Integer> getNextThreeCards() {
+    public ArrayList<Integer> getNextThreeCardResources() {
         ArrayList<Integer> threeCards = new ArrayList<>();
         ArrayList<Card> tempDeck = (ArrayList<Card>) cardDeck.clone();
         for (int i = 0; i < 3; i++) {

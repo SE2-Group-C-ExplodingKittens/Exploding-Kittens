@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,10 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.se2_exploding_kittens.LobbyRecyclerViewAdapter;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyListener;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.JoinLobbyCallback;
+import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.R;
 
 
 import java.util.ArrayList;

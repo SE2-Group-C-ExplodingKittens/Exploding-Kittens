@@ -1,7 +1,5 @@
 package com.example.se2_exploding_kittens.Network;
 
-import com.example.se2_exploding_kittens.game_logic.cards.Card;
-
 public class Message {
     private MessageType messageType;
     private String payload;
