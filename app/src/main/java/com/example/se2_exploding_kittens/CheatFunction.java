@@ -7,16 +7,21 @@ import android.hardware.SensorManager;
 
 public class CheatFunction {
 
-    String lightValue;
+    String lightValueString;
+    double lightValue;
 
     private SensorEventListener lightSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            lightValue = String.valueOf(event.values[0]);
-            if (lightValue.equals("0.3")) {
-                System.out.println("Cheat detected");
-            }
+            lightValueString = String.valueOf(event.values[0]);
+            lightValue = Double.parseDouble(lightValueString);
+
+//                if (lightValue.equals("400.0")) {
+            System.out.println("Cheat detected");
+            System.out.println(lightValue);
         }
+//            }
+
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -26,10 +31,8 @@ public class CheatFunction {
     public CheatFunction(SensorManager sensorManager) {
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        lightValue = "";
+        lightValueString = "";
     }
-
-
 
 
 //    @Override

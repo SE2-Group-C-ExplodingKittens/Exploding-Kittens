@@ -10,6 +10,7 @@ import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHU
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se2_exploding_kittens.CardAdapter;
+import com.example.se2_exploding_kittens.CheatFunction;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -358,6 +360,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         hintLayout = findViewById(R.id.hint_wrapper);
 
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
+
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        CheatFunction cheatFunction = new CheatFunction(sensorManager);
+
     }
 
     private void prepareGame(long seed) {
