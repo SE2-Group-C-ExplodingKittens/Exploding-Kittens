@@ -17,7 +17,7 @@ public class Message {
 
     public static int parseAndExtractMessageID(String res){
         String [] sp = res.split("###");
-        if(sp.length == 3){
+        if(sp.length >= 2){
             try {
                 return Integer.parseInt(sp[1]);
             } catch (NumberFormatException e) {
@@ -30,7 +30,7 @@ public class Message {
 
     public static MessageType parseAndExtractMessageType(String res){
         String [] sp = res.split("###");
-        if(sp.length == 3){
+        if(sp.length >= 2){
             if(sp[0].equals(MessageType.MESSAGE.value))
                 return MessageType.MESSAGE;
             if(sp[0].equals(MessageType.REPLY.value))
