@@ -1,7 +1,9 @@
 package com.example.se2_exploding_kittens.game_logic.cards;
 
 import android.content.Context;
+import android.widget.Button;
 
+import com.example.se2_exploding_kittens.Activities.GameActivity;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
@@ -31,10 +33,11 @@ public class CatFiveCard extends ChoosePlayerCard {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             GameLogic.increaseCatCounter(player, this);
-            if (player.isCatCounterThree(this) && context != null) {
-                setNetworkManager(networkManager);
-                setPlayerID(player.getPlayerId());
-                showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
+            if (context != null) {
+                GameActivity gameActivity = (GameActivity) context;
+                Button buttonTwoCats = gameActivity.findViewById(R.id.buttonTwoCats);
+                Button buttonThreeCats = gameActivity.findViewById(R.id.buttonThreeCats);
+                checkCounterAndSetupButtons(buttonTwoCats, buttonThreeCats, player, networkManager, context, discardPile, this);
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(CAT_FIVE_CARD_ID));

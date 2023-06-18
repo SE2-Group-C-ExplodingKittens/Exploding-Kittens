@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
@@ -48,6 +49,9 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
         } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
             playerIDs = GameLogic.getPlayerIDList();
         }
+
+        setNetworkManager(networkManager);
+        setPlayerID(playerID);
 
         // Remove own playerID
         playerIDs.remove(Integer.toString(playerID));
@@ -116,5 +120,32 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
 
     protected NetworkManager getNetworkManager() {
         return this.networkManager;
+    }
+
+    public void checkCounterAndSetupButtons(View buttonTwoCats, View buttonThreeCats, Player player, NetworkManager networkManager, Context context, DiscardPile discardPile, Card card) {
+        if (player.isCatCounter(card, 2) && (context != null)) {
+            buttonTwoCats.setVisibility(View.VISIBLE);
+            buttonTwoCats.setOnClickListener(v -> {
+                buttonTwoCats.setVisibility(View.INVISIBLE);
+                player.resetOneCatCounter(card);
+                int removeIndex = discardPile.getRandomCardIndex();
+                Card removedCard = discardPile.getCardPile().get(removeIndex);
+                discardPile.pullCard(removeIndex);
+                player.addCardToHand(Integer.toString(removedCard.getCardID()));
+                player.updateHandVisually();
+                GameManager.sendDiscardPileCardPulled(playerID, removeIndex, networkManager);
+            });
+        } else if (player.isCatCounter(card, 3) && (context != null)) {
+            buttonTwoCats.setVisibility(View.INVISIBLE);
+            buttonThreeCats.setVisibility(View.VISIBLE);
+            player.resetOneCatCounter(card);
+            buttonThreeCats.setOnClickListener(v -> {
+                buttonThreeCats.setVisibility(View.INVISIBLE);
+                showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
+            });
+        } else {
+            buttonTwoCats.setVisibility(View.INVISIBLE);
+            buttonThreeCats.setVisibility(View.INVISIBLE);
+        }
     }
 }

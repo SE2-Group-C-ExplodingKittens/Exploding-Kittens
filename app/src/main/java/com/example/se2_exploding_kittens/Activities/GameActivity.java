@@ -20,6 +20,7 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -71,6 +72,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private DiscardPile discardPile;
     private GameClient gameClient;
     private View discardPileView;
+    private Button buttonTwoCats;
+    private Button buttonThreeCats;
 
     private Vibrator vibrator;
 
@@ -93,6 +96,18 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                 }
             });
 
+        }
+    };
+
+    PropertyChangeListener catButtonsInvisibleListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(() -> {
+                if ("setCatButtonsInvisible".equals(evt.getPropertyName())) {
+                    buttonTwoCats.setVisibility(View.INVISIBLE);
+                    buttonThreeCats.setVisibility(View.INVISIBLE);
+                }
+            });
         }
     };
 
@@ -128,14 +143,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             runOnUiThread(() -> {
-                    if (evt.getNewValue() instanceof Integer) {
-                        if ("yourTurn".equals(evt.getPropertyName())) {
-                            //check if the local player caused this event
-                            if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                yourTurnTextView.setVisibility(View.VISIBLE);
-                            }
+                if (evt.getNewValue() instanceof Integer) {
+                    if ("yourTurn".equals(evt.getPropertyName())) {
+                        //check if the local player caused this event
+                        if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                            yourTurnTextView.setVisibility(View.VISIBLE);
                         }
                     }
+                }
             });
         }
     };
@@ -181,12 +196,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
                 // Had to remove, doesn't allow to play card
                 if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                //adapter.removeCard((int) event.getLocalState());
-                if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                    GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
-                } else {
-                    GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
-                }
+                    //adapter.removeCard((int) event.getLocalState());
+                    if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
+                    } else {
+                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
+                    }
                 }
             }
             return true;
@@ -237,6 +252,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                     }
                     adapter.notifyDataSetChanged();
                 }
+                System.out.println(discardPile.pileToString());
 
             } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
                 Toast.makeText(GameActivity.this, "The deck is empty!", Toast.LENGTH_SHORT).show();
@@ -253,7 +269,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.reset();
             playerManager = null;
         }
-        if (gameManager != null){
+        if (gameManager != null) {
             gameManager.reset();
         }
         if (connection != null) {
@@ -274,6 +290,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         yourTurnTextView = findViewById(R.id.textViewYourTurn);
         seeTheFutureCardTextView = findViewById(R.id.textViewSeeTheFutureCard);
         stealRandomCardTextView = findViewById(R.id.textViewStealRandomCard);
+        buttonTwoCats = findViewById(R.id.buttonTwoCats);
+        buttonThreeCats = findViewById(R.id.buttonThreeCats);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
@@ -290,6 +308,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.getLocalSelf().addPropertyChangeListener(yourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(cardStolenListener);
+            playerManager.getLocalSelf().addPropertyChangeListener(catButtonsInvisibleListener);
             localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
         } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
@@ -299,6 +318,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             localPlayer.addPropertyChangeListener(yourTurnListener);
             localPlayer.addPropertyChangeListener(notYourTurnListener);
             localPlayer.addPropertyChangeListener(cardStolenListener);
+            localPlayer.addPropertyChangeListener(catButtonsInvisibleListener);
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);

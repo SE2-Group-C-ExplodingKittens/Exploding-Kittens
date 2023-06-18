@@ -328,12 +328,7 @@ public class Player implements MessageCallback {
                 ArrayList<Card> oldHand = new ArrayList<>(hand);
                 if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
-                        }
-                    });
+                    new Handler(Looper.getMainLooper()).post(() -> propertyChangeSupport.firePropertyChange("hand", oldHand, hand));
                 } else if (messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id) {
                     removeCardFromHand(parseDataFromPayload(payload));
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
@@ -404,27 +399,49 @@ public class Player implements MessageCallback {
         return catFiveCounter;
     }
 
-    public boolean isCatCounterThree(Card card){
+    public boolean isCatCounter(Card card, int amount) {
+        //check if the cat counter has a certain amount
         if (card instanceof CatOneCard) {
-            return (getCatOneCounter() == 3);
+            return (getCatOneCounter() == amount);
         } else if (card instanceof CatTwoCard) {
-            return (getCatTwoCounter() == 3);
+            return (getCatTwoCounter() == amount);
         } else if (card instanceof CatThreeCard) {
-            return (getCatThreeCounter() == 3);
+            return (getCatThreeCounter() == amount);
         } else if (card instanceof CatFourCard) {
-            return (getCatFourCounter() == 3);
+            return (getCatFourCounter() == amount);
         } else if (card instanceof CatFiveCard) {
-            return (getCatFiveCounter() == 3);
+            return (getCatFiveCounter() == amount);
         }
         return false;
     }
 
-    private void resetCatCounter(){
+    private void resetCatCounter() {
         this.catOneCounter = 0;
         this.catTwoCounter = 0;
         this.catThreeCounter = 0;
         this.catFourCounter = 0;
         this.catFiveCounter = 0;
+        //stop showing buttons
+        propertyChangeSupport.firePropertyChange("setCatButtonsInvisible", null, playerId);
     }
+
+    public void resetOneCatCounter(Card card) {
+        if (card instanceof CatOneCard) {
+            catOneCounter = 0;
+        } else if (card instanceof CatTwoCard) {
+            catTwoCounter = 0;
+        } else if (card instanceof CatThreeCard) {
+            catThreeCounter = 0;
+        } else if (card instanceof CatFourCard) {
+            catFourCounter = 0;
+        } else if (card instanceof CatFiveCard) {
+            catFiveCounter = 0;
+        }
+    }
+
+    public void updateHandVisually(){
+        propertyChangeSupport.firePropertyChange("hand", null, hand);
+    }
+
 
 }

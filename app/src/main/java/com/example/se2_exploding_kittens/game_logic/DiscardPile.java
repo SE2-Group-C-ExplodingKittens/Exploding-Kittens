@@ -45,7 +45,7 @@ public class DiscardPile {
 
     }
 
-    public ArrayList<Card> getCardPile(){
+    public ArrayList<Card> getCardPile() {
         return cardPile;
     }
 
@@ -58,10 +58,10 @@ public class DiscardPile {
     }
 
     public DiscardPile(String exportString) {
-        if(exportString != null){
+        if (exportString != null) {
             String[] arr = exportString.split("-");
-            for(String s: arr){
-                switch (Integer.parseInt(s)){
+            for (String s : arr) {
+                switch (Integer.parseInt(s)) {
                     case ATTACK_CARD_ID:
                         cardPile.add(new AttackCard());
                         break;
@@ -108,10 +108,10 @@ public class DiscardPile {
         }
     }
 
-    public String pileToString(){
+    public String pileToString() {
         String export = "";
-        for (Card c: cardPile) {
-            export = export+c.getCardID()+"-";
+        for (Card c : cardPile) {
+            export = export + c.getCardID() + "-";
         }
         return export;
     }
@@ -119,55 +119,55 @@ public class DiscardPile {
     public void putCard(Card card) {
         cardPileOld = (ArrayList<Card>) cardPile.clone();
         cardPile.add(0, card);
-        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
+        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY, cardPileOld, cardPile);
     }
 
     public Card putCard(int cardID) {
         cardPileOld = (ArrayList<Card>) cardPile.clone();
-        switch (cardID){
+        switch (cardID) {
             case ATTACK_CARD_ID:
-                cardPile.add(0,new AttackCard());
+                cardPile.add(0, new AttackCard());
                 break;
             case BOMB_CARD_ID:
-                cardPile.add(0,new BombCard());
+                cardPile.add(0, new BombCard());
                 break;
             case CAT_FIVE_CARD_ID:
-                cardPile.add(0,new CatFiveCard());
+                cardPile.add(0, new CatFiveCard());
                 break;
             case CAT_FOUR_CARD_ID:
-                cardPile.add(0,new CatFourCard());
+                cardPile.add(0, new CatFourCard());
                 break;
             case CAT_ONE_CARD_ID:
-                cardPile.add(0,new CatOneCard());
+                cardPile.add(0, new CatOneCard());
                 break;
             case CAT_THREE_CARD_ID:
-                cardPile.add(0,new CatThreeCard());
+                cardPile.add(0, new CatThreeCard());
                 break;
             case CAT_TWO_CARD_ID:
-                cardPile.add(0,new CatTwoCard());
+                cardPile.add(0, new CatTwoCard());
                 break;
             case DEFUSE_CARD_ID:
-                cardPile.add(0,new DefuseCard());
+                cardPile.add(0, new DefuseCard());
                 break;
             case FAVOR_CARD_ID:
-                cardPile.add(0,new FavorCard());
+                cardPile.add(0, new FavorCard());
                 break;
             case NOPE_CARD_ID:
-                cardPile.add(0,new NopeCard());
+                cardPile.add(0, new NopeCard());
                 break;
             case SEE_THE_FUTURE_CARD_ID:
-                cardPile.add(0,new SeeTheFutureCard());
+                cardPile.add(0, new SeeTheFutureCard());
                 break;
             case SHUFFLE_CARD_ID:
-                cardPile.add(0,new ShuffleCard());
+                cardPile.add(0, new ShuffleCard());
                 break;
             case SKIP_CARD_ID:
-                cardPile.add(0,new SkipCard());
+                cardPile.add(0, new SkipCard());
                 break;
             default:
                 break;
         }
-        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
+        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY, cardPileOld, cardPile);
         return cardPile.get(0);
     }
 
@@ -175,15 +175,27 @@ public class DiscardPile {
         ArrayList<Card> tempPile = (ArrayList<Card>) cardPile.clone();
         cardPile = cardPileOld;
         cardPileOld = tempPile;
-        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
+        propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY, cardPileOld, cardPile);
     }
 
-    public Card pullCard(int index) {
-        if (cardPile.size() > (index+1)) {
-            propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
-            return cardPile.remove(index);
+    public void pullCard(int index) {
+        if (cardPile.size() >= (index)) {
+            propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY, cardPileOld, cardPile);
+            cardPile.remove(index);
+            return;
         }
         throw new IndexOutOfBoundsException("The pile has to few cards!");
+    }
+
+    public int getRandomCardIndex() {
+        if (cardPile.size() == 0) {
+            return -1;
+        }
+
+        Random random = new Random();
+        int test = random.nextInt(cardPile.size());
+        System.out.println(test);
+        return test;
     }
 
 }
