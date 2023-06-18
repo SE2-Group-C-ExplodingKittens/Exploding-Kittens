@@ -132,7 +132,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
     });
 
-    private void initDiscardPile(View discardPileView, DiscardPile discardPile, Player currentPlayer, PropertyChangeListener cardPileChangeListener){
+    private void initDiscardPile(DiscardPile discardPile, Player currentPlayer, PropertyChangeListener cardPileChangeListener){
         discardPileView = findViewById(R.id.discardPile);
         discardPileView.setOnDragListener((view, event) -> {
             discardPileHandleDropAction(discardPile, currentPlayer, event);
@@ -160,7 +160,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
             // Had to remove, doesn't allow to play card
             if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                if (NetworkManager.isServer(connection)) {
                     GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
                 } else {
                     GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
@@ -173,7 +173,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private void guiInit(Player currentPlayer) {
         // Implement onDragListener for the discard pile view
 
-        initDiscardPile(discardPileView, discardPile, currentPlayer, cardPileChangeListener);
+        initDiscardPile(discardPile, currentPlayer, cardPileChangeListener);
 
         playerHandInit(currentPlayer);
         winLossMessagesInit(currentPlayer);
@@ -250,7 +250,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
+        localPlayer = null;
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         yourTurnTextView = findViewById(R.id.textViewYourTurn);
@@ -274,7 +274,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.getLocalSelf().addPropertyChangeListener(cardStolenListener);
             localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
-        } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+        } else if (NetworkManager.isClient(connection)) {
             deck = null;
             localPlayer = new Player();
             localPlayer.subscribePlayerToCardEvents(connection);
@@ -288,7 +288,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             toast.setGravity(Gravity.BOTTOM, 0, 100);
             toast.show();
 
-            gameClient.blockUntilReady();
+            gameClient.blockUntilReady(this);
 
 
             toast = Toast.makeText(this, "You're Player" + localPlayer.getPlayerId(), Toast.LENGTH_SHORT);
@@ -298,7 +298,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             guiInit(localPlayer);
 
 
-        } else if (connection.getConnectionRole() == TypeOfConnectionRole.IDLE) {
+        } else if (!NetworkManager.isNotIdle(connection)) {
             //this case just for local testing presumably no connection has ever been established
             //Add players to the player's list
             ArrayList<Player> players = new ArrayList<>();
@@ -348,7 +348,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         int messageID = Message.parseAndExtractMessageID(text);
         if (sender instanceof ClientTCP && (messageID == GAME_ACTIVITY_DECK_MESSAGE_ID)) {
                 deck = new Deck(Message.parseAndExtractPayload(text));
-                if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null) {
+                if (NetworkManager.isClient(connection) && gameClient != null) {
                     gameClient.setDeck(deck);
                 }
 

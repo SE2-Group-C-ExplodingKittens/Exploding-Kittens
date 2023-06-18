@@ -27,7 +27,7 @@ public class GameLogic {
     private static final ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
-    public static Card lastCardPlayed;
+    public static Card lastCardPlayedExceptNope;
 
     public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
         initPlayers(numOfPlayers);
@@ -79,18 +79,27 @@ public class GameLogic {
 
     public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck, Context context) {
         if(card instanceof SkipCard){
+            lastCardPlayedExceptNope = card;
             ((SkipCard) card).handleActions(player,networkManager,discardPile,turnManager);
         }else if(card instanceof DefuseCard){
+            lastCardPlayedExceptNope = card;
             ((DefuseCard) card).handleActions(player,networkManager,discardPile,turnManager, deck);
         } else if (card instanceof ShuffleCard) {
+            lastCardPlayedExceptNope = card;
             ((ShuffleCard) card).handleActions(player, networkManager, discardPile, deck);
         } else if (card instanceof AttackCard) {
+            lastCardPlayedExceptNope = card;
             ((AttackCard) card).handleActions(player, networkManager, discardPile, turnManager);
         } else if (card instanceof SeeTheFutureCard) {
+            lastCardPlayedExceptNope = card;
             ((SeeTheFutureCard) card).handleActions(player, networkManager, discardPile, deck, context);
         } else if (card instanceof FavorCard) {
+            lastCardPlayedExceptNope = card;
             ((FavorCard) card).handleActions(player, networkManager, discardPile, context);
-        } else {
+        } else if (card instanceof NopeCard) {
+            // the lastCardPlayed is not updated, since the NopeCard acts on the previous cards played
+            ((NopeCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
+        }  else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
             }

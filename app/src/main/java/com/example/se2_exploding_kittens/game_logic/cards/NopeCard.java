@@ -3,6 +3,7 @@ package com.example.se2_exploding_kittens.game_logic.cards;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
 import com.example.se2_exploding_kittens.TurnManager;
+import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
@@ -24,7 +25,7 @@ public class NopeCard implements Card {
         return NOPE_CARD_ID;
     }
 
-    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
-
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck) {
+        //if()
     }
 }

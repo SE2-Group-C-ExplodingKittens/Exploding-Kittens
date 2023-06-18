@@ -16,6 +16,10 @@ import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_A
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_TURN_FINISHED;
 
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
+
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -70,27 +74,34 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         return this.networkManager;
     }
 
-    public void blockUntilReady() {
-        while (player.getPlayerId() == -1) {
+    public void blockUntilReady(Activity activity) {
+        double timeout = 60000; // 1minute timeout
+        while (player.getPlayerId() == -1 && timeout > 0) {
             try {
                 Thread.sleep(20);
+                timeout-=20;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        while (deck == null) {
+        while (deck == null && timeout > 0) {
             try {
                 Thread.sleep(20);
+                timeout-=20;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        while (player.getHand().size() == 0) {
+        while (player.getHand().size() == 0 && timeout > 0) {
             try {
                 Thread.sleep(20);
+                timeout-=20;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+        }
+        if(timeout <= 0){
+            activity.finish();
         }
     }
 
@@ -185,6 +196,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PLAYED_ID){
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2){
+                Log.v("GameClient", "Cardplayed"+message[0]+" player "+message[1]);
                 int playerID = Integer.parseInt(message[1]);
                 if(playerID != player.getPlayerId()){
                     GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null, deck, null);

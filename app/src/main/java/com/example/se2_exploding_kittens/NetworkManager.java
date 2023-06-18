@@ -45,10 +45,23 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     public static boolean isServer(NetworkManager networkManager) {
+        if(networkManager == null){
+            return false;
+        }
         return networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER;
     }
 
+    public static boolean isClient(NetworkManager networkManager) {
+        if(networkManager == null){
+            return false;
+        }
+        return networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT;
+    }
+
     public static boolean isNotIdle(NetworkManager networkManager) {
+        if(networkManager == null){
+            return false;
+        }
         return networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE;
     }
 
