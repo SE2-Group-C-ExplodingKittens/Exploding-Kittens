@@ -9,7 +9,7 @@ import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
-public class CatFiveCard implements Card {
+public class CatFiveCard extends ChoosePlayerCard {
 
     public static final int CAT_FIVE_CARD_ID = 3;
 
@@ -31,6 +31,11 @@ public class CatFiveCard implements Card {
         if (player != null) {
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             GameLogic.increaseCatCounter(player, this);
+            if (player.isCatCounterThree(this) && context != null) {
+                setNetworkManager(networkManager);
+                setPlayerID(player.getPlayerId());
+                showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
+            }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(CAT_FIVE_CARD_ID));
             GameManager.sendNopeEnabled(networkManager);
