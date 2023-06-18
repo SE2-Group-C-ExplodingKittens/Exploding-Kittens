@@ -2,7 +2,7 @@ package com.example.se2_exploding_kittens.Network;
 
 import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_DECK_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_SHOW_THREE_CARDS_ID;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
 import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_FAVOR_CARD_ID;
 
@@ -29,8 +29,7 @@ public class GameManager implements MessageCallback {
     public static final int GAME_MANAGER_MESSAGE_PLAYER_LOST_ID = 508;
     public static final int GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID = 509;
     public static final int GAME_MANAGER_MESSAGE_PLAYER_WON_ID = 510;
-
-    public static final int GAME_MANAGER_MESSAGE_CHECKED_CARD = 508;
+    public static final int GAME_MANAGER_MESSAGE_CHECKED_CARD = 511;
 
     public GameManager(NetworkManager networkManager, Deck deck, DiscardPile discardPile) {
         this.networkManager = networkManager;
@@ -46,7 +45,7 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
-        this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
     }
 
     public void reset(){

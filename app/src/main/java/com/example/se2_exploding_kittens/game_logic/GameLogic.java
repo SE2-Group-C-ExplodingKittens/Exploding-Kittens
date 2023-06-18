@@ -27,6 +27,7 @@ public class GameLogic {
     private static final ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
+    public static Card lastCardPlayed;
 
     public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
         initPlayers(numOfPlayers);
@@ -63,32 +64,16 @@ public class GameLogic {
         }
         if(player.isHasBomb() && card instanceof DefuseCard){
             return true;
-        }else if(!player.isHasBomb()){
-            if(player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard){
-                if(player.getPlayerTurns() > 0){
-                    //TODO some cards cant be played, like defuse if no bomb has been pulled
+        }else if(!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)){
 
-                    if(card instanceof SkipCard){
-                        return true;
-                    }
-                    if (card instanceof ShuffleCard) {
-                        return true;
-                    }
-                    if (card instanceof AttackCard) {
-                        return true;
-                    }
-                    if (card instanceof SeeTheFutureCard) {
-                        return true;
-                    }
-                    if (card instanceof FavorCard){
-                        return true;
-                    }
-                }else if(nopeEnabled && card instanceof NopeCard){
-                    return true;
-                }
+            if(player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard)){
+                return true;
+            }
+            //nope is only affected if nopeEnabled == true, the turns of the player don't affect it
+            if(nopeEnabled && card instanceof NopeCard){
+                return true;
             }
         }
-
         return false;
     }
 

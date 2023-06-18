@@ -48,7 +48,6 @@ public class GameManagerTest {
     Deck deck;
     ArrayList <ServerTCPSocket> serverToClientConnections;
 
-
     @BeforeEach
     public void setupUpTest() {
         networkManager = mock(NetworkManager.class);

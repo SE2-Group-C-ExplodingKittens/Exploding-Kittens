@@ -20,9 +20,9 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     private NetworkManager networkManager;
 
     public static final int PLAYER_MANAGER_MESSAGE_ID = 400;
-    public static final int PLAYER_MANAGER_ID_ASSIGNED = 1;
-    public static final int PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
-    public static final int PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID = 705;
+    public static final int LOCAL_PLAYER_MANAGER_ID_ASSIGNED = 1;
+    public static final int LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
+    public static final int LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID = 705;
 
     public static PlayerManager getInstance() {
         if (instance == null) {
@@ -97,8 +97,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         playerConnections.add(playerConnection);
         if (networkManager != null) {
             try {
-                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
+                networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -164,8 +164,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     public void removePlayer(PlayerConnection player) {
         if (playerConnections.contains(player) && networkManager != null && NetworkManager.isServer(networkManager)) {
             try {
-                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
+                networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

@@ -6,14 +6,13 @@ import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class TurnManager implements MessageCallback {
     public static final int TURN_MANAGER_MESSAGE_ID = 300;
 
-    public static final int TURN_MANAGER_TURN_FINISHED = 1;
-    public static final int TURN_MANAGER_ASSIGN_TURNS = 4;
+    public static final int LOCAL_TURN_MANAGER_TURN_FINISHED = 1;
+    public static final int LOCAL_TURN_MANAGER_ASSIGN_TURNS = 4;
 
     private NetworkManager networkManager;
     private PlayerManager playerManager;
@@ -63,7 +62,7 @@ public class TurnManager implements MessageCallback {
             PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
             playerManager.getPlayer(currentPlayerIndex).getPlayer().setPlayerTurns(currentPlayerTurns);
             //message will be = playerID:numberOfTurns
-            String gameStateMessage = assembleGameStateMessage(TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
+            String gameStateMessage = assembleGameStateMessage(LOCAL_TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
 
             try {
                 Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
@@ -75,7 +74,7 @@ public class TurnManager implements MessageCallback {
     }
 
     public static void broadcastTurnFinished(Player player, NetworkManager networkManager) {
-        String gameStateMessage = TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
+        String gameStateMessage = LOCAL_TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
         try {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageBroadcast(m);
@@ -139,7 +138,7 @@ public class TurnManager implements MessageCallback {
 
     private void handleMessage(int messageType, int turns, int playerID) {
         switch (messageType) {
-            case TURN_MANAGER_TURN_FINISHED:
+            case LOCAL_TURN_MANAGER_TURN_FINISHED:
                 previousPlayerTurns = currentPlayerTurns;
                 currentPlayerTurns = 0;
                 if(NetworkManager.isServer(networkManager)){
@@ -147,7 +146,7 @@ public class TurnManager implements MessageCallback {
                     //game manage call?
                 }
                 break;
-            case TURN_MANAGER_ASSIGN_TURNS:
+            case LOCAL_TURN_MANAGER_ASSIGN_TURNS:
                 if (playerManager.getLocalSelf().getPlayerId() == playerID) {
                     playerManager.getLocalSelf().setPlayerTurns(turns);
                 }

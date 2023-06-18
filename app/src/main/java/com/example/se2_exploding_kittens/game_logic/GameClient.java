@@ -8,20 +8,14 @@ import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_PLAYER_LOST_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_PLAYER_WON_ID;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_ASSIGNED;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_ID_ASSIGNED;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
-import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_ASSIGN_TURNS;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
+import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_ASSIGN_TURNS;
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_TURN_FINISHED;
+import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_TURN_FINISHED;
 
-import android.content.Intent;
-import android.view.Gravity;
-import android.widget.Toast;
-
-import com.example.se2_exploding_kittens.Activities.GameActivity;
-import com.example.se2_exploding_kittens.Activities.JoinGameActivity;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -54,7 +48,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_WON_ID);
-        this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
     }
 
     public Player getPlayer() {
@@ -106,7 +100,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     }
 
     public void sendTurnFinished() {
-        String gameStateMessage = TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
+        String gameStateMessage = LOCAL_TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
         try {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageFromTheClient(m);
@@ -116,7 +110,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     }
 
     public void sendCardPulled() {
-        String gameStateMessage = TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
+        String gameStateMessage = LOCAL_TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
         try {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageFromTheClient(m);
@@ -127,12 +121,12 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
 
     private void handleTurnManagerMessage(int messageType, int turns, int playerID) {
         switch (messageType) {
-            case TURN_MANAGER_TURN_FINISHED:
+            case LOCAL_TURN_MANAGER_TURN_FINISHED:
                 if (playerID == player.getPlayerId()) {
                     player.setPlayerTurns(0);
                 }
                 break;
-            case TURN_MANAGER_ASSIGN_TURNS:
+            case LOCAL_TURN_MANAGER_ASSIGN_TURNS:
                 if (player.getPlayerId() == playerID) {
                     player.setPlayerTurns(turns);
                 }
@@ -169,7 +163,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID){
                 GameLogic.nopeEnabled = false;
             }
-            if (Message.parseAndExtractMessageID(text) == PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID) {
+            if (Message.parseAndExtractMessageID(text) == LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID) {
                 String playerIDs = Message.parseAndExtractPayload(text);
                 GameLogic.setPlayerIDList(playerIDs);
             }
@@ -259,13 +253,13 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         if(PLAYER_MANAGER_MESSAGE_ID == Message.parseAndExtractMessageID(text)){
             int playerID = -1;
             switch (PlayerManager.parseTypeFromPayload(Message.parseAndExtractPayload(text))){
-                case PLAYER_MANAGER_ID_ASSIGNED:
+                case LOCAL_PLAYER_MANAGER_ID_ASSIGNED:
                     playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
                     if(playerID != -1){
                         player.setPlayerId(playerID);
                     }
                     break;
-                case PLAYER_MANAGER_ID_PLAYER_DISCONNECT:
+                case LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT:
                     playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
                     if(playerID == player.getPlayerId()){
                         networkManager.terminateConnection();
