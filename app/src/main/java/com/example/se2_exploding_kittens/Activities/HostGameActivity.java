@@ -1,11 +1,10 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,8 +12,8 @@ import android.widget.Toast;
 import com.example.se2_exploding_kittens.Network.IPUtil;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyBroadcaster;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
-
-import java.net.InetAddress;
+import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.R;
 
 public class HostGameActivity extends AppCompatActivity {
 
@@ -27,9 +26,8 @@ public class HostGameActivity extends AppCompatActivity {
         super.onDestroy();
         if(lb != null)
             lb.terminateBroadcasting();
-        if(connection != null){
-            if(connection.getConnectionRole() != TypeOfConnectionRole.IDLE)
-                connection.terminateConnection();
+        if(connection != null && (NetworkManager.isNotIdle(connection))) {
+            connection.terminateConnection();
         }
     }
 

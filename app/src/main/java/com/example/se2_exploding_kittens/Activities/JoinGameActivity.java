@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,13 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
+import com.example.se2_exploding_kittens.LobbyRecyclerViewAdapter;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.LobbyListener;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.Lobby;
 import com.example.se2_exploding_kittens.Network.LobbyLogic.JoinLobbyCallback;
+import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.R;
 
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
 
         lobbies = ll.getLobbies();
 
-        Lobby_RecyclerViewAdapter lobby_recyclerViewAdapter = new Lobby_RecyclerViewAdapter(this, lobbies, this::JoinLobby);
+        LobbyRecyclerViewAdapter lobby_recyclerViewAdapter = new LobbyRecyclerViewAdapter(this, lobbies, this::JoinLobby);
         lobbyView.setAdapter(lobby_recyclerViewAdapter);
         lobbyView.setLayoutManager(new LinearLayoutManager(this));
         client = NetworkManager.getInstance();
@@ -71,12 +72,9 @@ public class JoinGameActivity extends AppCompatActivity implements MessageCallba
         //https://www.tutorialspoint.com/how-to-pass-an-object-from-one-activity-to-another-in-android
 
         client.runAsClient(lobby.getAddress(),lobby.getPort());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
-                startActivity(intent);
-            }
+        runOnUiThread(() -> {
+            Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
+            startActivity(intent);
         });
     }
 }

@@ -14,8 +14,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     //payload has the pattern TYPE:DATA
 
-    private static String DEBUG_TAG = "PlayerManager";
-    //private Player playerClient;
     private static PlayerManager instance = null;
     private ArrayList<PlayerConnection> playerConnections;
     private int nextPlayerID;
@@ -24,7 +22,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     public static final int PLAYER_MANAGER_MESSAGE_ID = 400;
     public static final int PLAYER_MANAGER_ID_ASSIGNED = 1;
     public static final int PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
-
+    public static final int PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID = 705;
 
     public static PlayerManager getInstance() {
         if (instance == null) {
@@ -40,7 +38,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     //Initalize as host, as the host assigns player numbers
     public void initializeAsHost(ArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if (NetworkManager.isServer(networkManager)) {
             nextPlayerID = 0;
             this.playerConnections = new ArrayList<>();
             // selfassign
@@ -54,11 +52,11 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         }
     }
 
-    public void reset(){
-        if(networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE){
+    public void reset() {
+        if (NetworkManager.isNotIdle(networkManager)) {
             this.networkManager.unsubscribeCallbackFromMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
             this.networkManager.unsubscribeToDisconnectedCallback(this);
-            if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
+            if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
                 this.networkManager.unsubscribeToClientConnectedCallback(this);
 
             }
@@ -67,16 +65,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         this.playerConnections = new ArrayList<>();
     }
 
-    //Initalize as client, to listen for player numbers
-/*    public void initializeAsClient(Player player, NetworkManager networkManager){
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT){
-            playerClient = player;
-            this.networkManager = networkManager;
-            this.networkManager.subscribeToClientConnectedCallback(this);
-            this.networkManager.subscribeToDisconnectedCallback(this);
-            this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
-        }
-    }*/
 
     public static int parseTypeFromPayload(String input) {
         String[] splitInput = input.split(":");
@@ -84,6 +72,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             try {
                 return Integer.parseInt(splitInput[0]);
             } catch (NumberFormatException e) {
+                String DEBUG_TAG = "PlayerManager";
                 Log.e(DEBUG_TAG, "Could not parse");
             }
         }
@@ -98,17 +87,18 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         return null;  // null means invalid
     }
 
-    private Message createMessage(int type, String data){
-        return new Message(MessageType.MESSAGE,PLAYER_MANAGER_MESSAGE_ID,type+":"+data);
+    private Message createMessage(int type, String data) {
+        return new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_ID, type + ":" + data);
     }
 
     private void assignPlayerID(ServerTCPSocket connection) {
         int playerID = nextPlayerID++;
         PlayerConnection playerConnection = new PlayerConnection(connection, playerID);
         playerConnections.add(playerConnection);
-        if(networkManager != null){
+        if (networkManager != null) {
             try {
-                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_ASSIGNED,playerID+""),connection);
+                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -116,7 +106,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public Player getLocalSelf() {
-        if(networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
+        if (NetworkManager.isServer(networkManager)) {
             return getPlayer(0).getPlayer();
         }
         return null; // player not found i.e. not properly initialized
@@ -133,6 +123,25 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     public ArrayList<PlayerConnection> getPlayers() {
         return playerConnections;
+    }
+
+    private String getPlayerIDs() {
+        StringBuilder playerIDs = new StringBuilder();
+        for (PlayerConnection p : getPlayers()) {
+            playerIDs.append(p.getPlayerID()).append(":");
+        }
+        return playerIDs.toString();
+    }
+
+    public ArrayList<String> getPlayersIDs(){
+        ArrayList<String> playerIDs = new ArrayList<>();
+        for(PlayerConnection p: getPlayers()){
+            playerIDs.add(Integer.toString(p.getPlayerID()));
+        }
+        while(playerIDs.size() < 5){
+            playerIDs.add(null);
+        }
+        return playerIDs;
     }
 
     public int getPlayerSize() {
@@ -153,15 +162,12 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public void removePlayer(PlayerConnection player) {
-        if(playerConnections.contains(player)){
-            if(networkManager != null){
-                if (networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER){
-                    try {
-                        networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
+        if (playerConnections.contains(player) && networkManager != null && NetworkManager.isServer(networkManager)) {
+            try {
+                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -184,6 +190,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     @Override
     public void responseReceived(String text, Object sender) {
-
+        //this method gets executed, when callbacks are registered with the network manager
     }
 }

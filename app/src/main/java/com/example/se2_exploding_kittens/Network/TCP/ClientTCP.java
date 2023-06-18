@@ -19,9 +19,10 @@ public class ClientTCP implements Runnable, TCP{
 
     private MessageCallback defaultCallback = null;
     private DisconnectedCallback disconnectedCallback = null;
-    private String response = null;
     private Socket clientSocket = null;
     private ConnectionState connState = ConnectionState.IDLE;
+    private DataOutputStream out = null;
+    private BufferedReader in = null;
 
     public ClientTCP(String serverAddress, int serverPort, MessageCallback defaultCallback) {
         this.serverAddress = serverAddress;
@@ -65,7 +66,8 @@ public class ClientTCP implements Runnable, TCP{
     }
 
     private boolean checkConnectionDisconnected(Socket connection){
-        if (connection.isClosed()) {
+        //tcp sends EOF on disconnect
+        if (connection.isClosed() || connState != ConnectionState.CONNECTED) {
             connState = ConnectionState.DISCONNECTING;
             return true;
         }
@@ -73,8 +75,12 @@ public class ClientTCP implements Runnable, TCP{
     }
 
     private void listenForMessages(BufferedReader in) throws IOException {
-        if (in.ready()) {
-            response = in.readLine();
+        String response = null;
+        response = in.readLine();
+        if(response == null){
+            //EOF sent
+            connState = ConnectionState.DISCONNECTING;
+        }else {
             if (defaultCallback != null) {
                 defaultCallback.responseReceived(response, this);
             }
@@ -83,38 +89,56 @@ public class ClientTCP implements Runnable, TCP{
 
     public void endConnection(){
         connState = ConnectionState.DISCONNECTING;
+        try {
+            out.close();
+            in.close();
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startSenderThread(){
+        //separate thread to write
+        new Thread(() -> {
+            try {
+                while (connState == ConnectionState.CONNECTED){
+                    //drop empty messages
+                    if(messages.size() == 0){
+                        continue;
+                    }
+                    if(messages.get(0) == null){
+                        messages.remove(0);
+                        continue;
+                    }else{
+                        out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
+                        messages.remove(0);
+                    }
+                    Thread.sleep(20);
+                }
+            } catch (IOException e) {
+                connState = ConnectionState.DISCONNECTING;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
     }
 
     @Override
     public void run() {
         if(connect()){
             try {
-                DataOutputStream out = new DataOutputStream (clientSocket.getOutputStream());
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.US_ASCII));
+                out = new DataOutputStream (clientSocket.getOutputStream());
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.US_ASCII));
+
+                startSenderThread();
 
                 while (connState == ConnectionState.CONNECTED){
                     //wait for messages
-                    while (messages.size() == 0) {
-                        //poll for messages every 5ms
-                        listenForMessages(in);
-                        if(checkConnectionDisconnected(clientSocket))
-                            break;
-                        Thread.sleep(20);
-                    }
-
-                    listenForMessages(in);
-
-                    //drop empty messages
-                    if(messages.get(0) == null){
-                        messages.remove(0);
-                        continue;
-                    }else{
-                        out.writeBytes(messages.get(0).getTransmitMessage() + "\n");
-//                        receiveReply(in);
-                        messages.remove(0);
-                    }
-                    if(checkConnectionDisconnected(clientSocket))
+                    if(checkConnectionDisconnected(clientSocket)) {
                         break;
+                    }
+                    listenForMessages(in);
                 }
 
                 if(connState == ConnectionState.DISCONNECTING){
@@ -122,13 +146,12 @@ public class ClientTCP implements Runnable, TCP{
                     out.close();
                     in.close();
                     clientSocket.close();
-                    if(disconnectedCallback != null)
+                    if(disconnectedCallback != null) {
                         disconnectedCallback.connectionDisconnected(this);
+                    }
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

@@ -1,4 +1,4 @@
-package com.example.se2_exploding_kittens;
+package com.example.se2_exploding_kittens.Activities;
 
 import static com.example.se2_exploding_kittens.NetworkManager.TEST_MESSAGE_ID;
 
@@ -12,6 +12,8 @@ import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
+import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.R;
 
 public class JoiningGameActivity extends AppCompatActivity implements MessageCallback {
     private NetworkManager client;

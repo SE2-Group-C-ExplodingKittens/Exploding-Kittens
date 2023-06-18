@@ -30,6 +30,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Deck {
@@ -50,74 +51,96 @@ public class Deck {
     }
 
     public Deck(String exportString) {
-        if(exportString != null){
+        if (exportString != null) {
             String[] arr = exportString.split("-");
-            for(String s: arr){
-                switch (Integer.parseInt(s)){
-                    case ATTACK_CARD_ID:
-                        cardDeck.add(new AttackCard());
-                        break;
-                    case BOMB_CARD_ID:
-                        cardDeck.add(new BombCard());
-                        break;
-                    case CAT_FIVE_CARD_ID:
-                        cardDeck.add(new CatFiveCard());
-                        break;
-                    case CAT_FOUR_CARD_ID:
-                        cardDeck.add(new CatFourCard());
-                        break;
-                    case CAT_ONE_CARD_ID:
-                        cardDeck.add(new CatOneCard());
-                        break;
-                    case CAT_THREE_CARD_ID:
-                        cardDeck.add(new CatThreeCard());
-                        break;
-                    case CAT_TWO_CARD_ID:
-                        cardDeck.add(new CatTwoCard());
-                        break;
-                    case DEFUSE_CARD_ID:
-                        cardDeck.add(new DefuseCard());
-                        break;
-                    case FAVOR_CARD_ID:
-                        cardDeck.add(new FavorCard());
-                        break;
-                    case NOPE_CARD_ID:
-                        cardDeck.add(new NopeCard());
-                        break;
-                    case SEE_THE_FUTURE_CARD_ID:
-                        cardDeck.add(new SeeTheFutureCard());
-                        break;
-                    case SHUFFLE_CARD_ID:
-                        cardDeck.add(new ShuffleCard());
-                        break;
-                    case SKIP_CARD_ID:
-                        cardDeck.add(new SkipCard());
-                        break;
+            Card card = null;
+            for (String s : arr) {
+                card = getCardByID(Integer.parseInt(s));
+                if (card != null) {
+                    cardDeck.add(card);
                 }
             }
         }
     }
 
-    public String deckToString(){
+    public static Card getCardByID(int cardID) {
+        Card card = null;
+        switch (cardID) {
+            case ATTACK_CARD_ID:
+                card = (new AttackCard());
+                break;
+            case BOMB_CARD_ID:
+                card = (new BombCard());
+                break;
+            case CAT_FIVE_CARD_ID:
+                card = (new CatFiveCard());
+                break;
+            case CAT_FOUR_CARD_ID:
+                card = (new CatFourCard());
+                break;
+            case CAT_ONE_CARD_ID:
+                card = (new CatOneCard());
+                break;
+            case CAT_THREE_CARD_ID:
+                card = (new CatThreeCard());
+                break;
+            case CAT_TWO_CARD_ID:
+                card = (new CatTwoCard());
+                break;
+            case DEFUSE_CARD_ID:
+                card = (new DefuseCard());
+                break;
+            case FAVOR_CARD_ID:
+                card = (new FavorCard());
+                break;
+            case NOPE_CARD_ID:
+                card = (new NopeCard());
+                break;
+            case SEE_THE_FUTURE_CARD_ID:
+                card = (new SeeTheFutureCard());
+                break;
+            case SHUFFLE_CARD_ID:
+                card = (new ShuffleCard());
+                break;
+            case SKIP_CARD_ID:
+                card = (new SkipCard());
+                break;
+            default:
+                break;
+        }
+        return card;
+    }
+
+    public String deckToString() {
         String export = "";
-        for (Card c: cardDeck) {
-            export = export+c.getCardID()+"-";
+        for (Card c : cardDeck) {
+            export = export + c.getCardID() + "-";
         }
         return export;
     }
 
     public void shuffleDeck() {
         cardDeckOld = cardDeck;
-        ArrayList<Card> tempDeck = new ArrayList<>();
-        while (!cardDeck.isEmpty()) {
-            if(cardDeck.size() > 1){
-                tempDeck.add(cardDeck.remove(random.nextInt(cardDeck.size() - 1)));
-            }else {
-                tempDeck.add(cardDeck.remove(0));
-            }
+        Collections.shuffle(cardDeck);
+    }
 
+    public ArrayList<Integer> getNextThreeCardResources() {
+        ArrayList<Integer> threeCards = new ArrayList<>();
+        ArrayList<Card> tempDeck = (ArrayList<Card>) cardDeck.clone();
+        for (int i = 0; i < 3; i++) {
+            if (!tempDeck.isEmpty()) {
+                threeCards.add(tempDeck.remove(0).getImageResource());
+            } else {
+                // If less than three cards
+                threeCards.add(0);
+            }
         }
-        cardDeck = tempDeck;
+        return threeCards;
+    }
+
+    public void insertCard(int cardID,int index) {
+        cardDeck.add(index,getCardByID(cardID));
+        cardDeckOld = (ArrayList<Card>) cardDeck.clone();
     }
 
     public void undoShuffle() {
@@ -204,6 +227,10 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty!");
     }
 
+    public ArrayList<Card> getCards() {
+        return cardDeck;
+    }
+
     public Card removeCard(int cardID) {
         if (cardDeck.size() > 0 && cardDeck.get(0).getCardID() == cardID) {
             return cardDeck.remove(0);
@@ -211,11 +238,14 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty, or card mismatch!");
     }
 
-    public void addBombAtRandomIndex(){
-        if(cardDeck.size() > 1){
-            cardDeck.add(random.nextInt(cardDeck.size()-1), new BombCard());
-        }else {
+    public int addBombAtRandomIndex() {
+        if (cardDeck.size() > 1) {
+            int index = random.nextInt(cardDeck.size() - 1);
+            cardDeck.add(index, new BombCard());
+            return index;
+        } else {
             cardDeck.add(0, new BombCard());
+            return 0;
         }
     }
 }

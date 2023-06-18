@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,11 +19,10 @@
         android:theme="@style/Theme.SE2_ExplodingKittens"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:screenOrientation="landscape"
+            android:name=".Activities.MainActivity"
             android:configChanges="orientation"
-            >
+            android:exported="true"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,32 +35,31 @@
 
         </activity>
         <activity
-            android:name=".HostGameActivity"
+            android:name=".Activities.HostGameActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".JoiningGameActivity"
+            android:name=".Activities.JoiningGameActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".JoinGameActivity"
+            android:name=".Activities.JoinGameActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".GameActivity"
+            android:name=".Activities.GameActivity"
             android:configChanges="orientation"
             android:exported="true"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

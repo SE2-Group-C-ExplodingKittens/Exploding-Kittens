@@ -1,6 +1,16 @@
 package com.example.se2_exploding_kittens.game_logic.cards;
 
+import static com.example.se2_exploding_kittens.game_logic.cards.BombCard.BOMB_CARD_ID;
+
+import com.example.se2_exploding_kittens.Network.GameManager;
+import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
+import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
+import com.example.se2_exploding_kittens.TurnManager;
+import com.example.se2_exploding_kittens.game_logic.Deck;
+import com.example.se2_exploding_kittens.game_logic.DiscardPile;
+import com.example.se2_exploding_kittens.game_logic.GameLogic;
+import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class DefuseCard implements Card {
 
@@ -19,4 +29,21 @@ public class DefuseCard implements Card {
     public int getCardID() {
         return DEFUSE_CARD_ID;
     }
+
+    public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck){
+        if(player != null){
+            //player is null if this card is played on another client, on the local client or the sever this contains the respective object
+            player.setAlive(true);
+            player.setHasBomb(false);
+            GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
+            player.removeCardFromHand(Integer.toString(DEFUSE_CARD_ID));
+            if(player.getPlayerTurns() == 0 && NetworkManager.isServer(networkManager)){
+                GameLogic.finishTurn(player,networkManager,1, turnManager);
+                int insertionIDX =  deck.addBombAtRandomIndex();
+                GameManager.sendDeckInsetCard(networkManager,BOMB_CARD_ID,insertionIDX);
+            }
+        }
+        discardPile.putCard(this);
+    }
+
 }

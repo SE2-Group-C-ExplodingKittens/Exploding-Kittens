@@ -8,6 +8,10 @@ import java.util.Enumeration;
 
 public class IPUtil {
 
+    private IPUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static short getSubnetMaskCidr()  {
         try{
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();

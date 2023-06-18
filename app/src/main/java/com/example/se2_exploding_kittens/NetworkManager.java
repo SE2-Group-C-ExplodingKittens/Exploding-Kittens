@@ -2,14 +2,17 @@ package com.example.se2_exploding_kittens;
 
 import com.example.se2_exploding_kittens.Network.ClientConnectedCallback;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
+import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
+import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.Network.TCP.MessageCallbackPair;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.Network.TCP.TCP;
 import com.example.se2_exploding_kittens.Network.TCP.TCPServer;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
+import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,8 +44,16 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         return networkManager;
     }
 
+    public static boolean isServer(NetworkManager networkManager) {
+        return networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER;
+    }
+
+    public static boolean isNotIdle(NetworkManager networkManager) {
+        return networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE;
+    }
+
     public void sendMessageFromTheClient(Message message) throws IllegalAccessException{
-        if(connection instanceof ClientTCP && connection != null){
+        if(connection instanceof ClientTCP){
             connection.addMessage(message);
         }else {
             throw new IllegalAccessException("This is a server connection");
@@ -73,7 +84,20 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         connectionRole = TypeOfConnectionRole.IDLE;
     }
 
+    private void clearAllCallbacks(){
+        for(int i = 0; i < connectedCallbacks.size(); i++){
+            connectedCallbacks.remove(0);
+        }
+        for(int i = 0; i < disconnectedCallback.size(); i++){
+            disconnectedCallback.remove(0);
+        }
+        for(int i = 0; i < subscribedCallbacks.size(); i++){
+            subscribedCallbacks.remove(0);
+        }
+    }
+
     public void runAsServer(int port){
+        clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.SERVER;
         server = new TCPServer(port,this);
         Thread thread = new Thread(server);
@@ -81,8 +105,10 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     public void runAsClient(String serverAddress, int port){
+        clearAllCallbacks();
         connectionRole = TypeOfConnectionRole.CLIENT;
         connection = new ClientTCP(serverAddress, port,this);
+        connection.setDisconnectCallback(this);
         Thread thread = new Thread((ClientTCP) connection);
         thread.start();
     }
@@ -117,7 +143,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
                 callbackAdded = true;
             }
         }
-        if(callbackAdded == false){
+        if(!callbackAdded){
             subscribedCallbacks.add(new MessageCallbackPair(callback, messageID));
         }
     }
@@ -165,6 +191,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     @Override
     public void clientConnected(ServerTCPSocket connection) {
         connection.setDefaultCallback(this);
+        connection.setDisconnectCallback(this);
         serverToClientConnections.add(connection);
         for(ClientConnectedCallback cb:connectedCallbacks){
             cb.clientConnected(connection);
@@ -189,5 +216,16 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     public void setConnectionRole(TypeOfConnectionRole connectionRole) {
         this.connectionRole = connectionRole;
+    }
+
+    public void sendCheckeCard(Card card) {
+        String cardId = Integer.toString(card.getCardID());
+        Message m = new Message(MessageType.CHECKED_DETAILS, GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD, cardId);
+
+        try {
+            networkManager.sendMessageBroadcast(m);
+        } catch (IllegalAccessException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
     }
 }

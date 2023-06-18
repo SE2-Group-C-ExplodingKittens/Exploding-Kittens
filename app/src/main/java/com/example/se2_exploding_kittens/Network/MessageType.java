@@ -4,7 +4,9 @@ public enum MessageType {
     MESSAGE("M"),
     REPLY("R"),
     UNKNOWN("U"),
-    ERROR("ERR");
+    ERROR("ERR"),
+
+    CHECKED_DETAILS("D");
 
     public final String value;
 

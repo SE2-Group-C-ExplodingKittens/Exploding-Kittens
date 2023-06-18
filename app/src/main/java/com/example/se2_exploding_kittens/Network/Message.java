@@ -15,7 +15,7 @@ public class Message {
 
     public static int parseAndExtractMessageID(String res){
         String [] sp = res.split("###");
-        if(sp.length == 3){
+        if(sp.length >= 2){
             try {
                 return Integer.parseInt(sp[1]);
             } catch (NumberFormatException e) {
@@ -28,7 +28,7 @@ public class Message {
 
     public static MessageType parseAndExtractMessageType(String res){
         String [] sp = res.split("###");
-        if(sp.length == 3){
+        if(sp.length >= 2){
             if(sp[0].equals(MessageType.MESSAGE.value))
                 return MessageType.MESSAGE;
             if(sp[0].equals(MessageType.REPLY.value))
@@ -54,8 +54,10 @@ public class Message {
                 return MessageType.ERROR.value + "ERR###"+ messageID +"###"+payload;
             case REPLY:
                 return MessageType.REPLY.value + "R###"+ messageID +"###"+payload;
+            case CHECKED_DETAILS:
+                return MessageType.CHECKED_DETAILS.value + "D###" + messageID + "###" + payload;
             default:
-                return MessageType.UNKNOWN.value + "###"+ messageID +"###"+payload;
+                return MessageType.UNKNOWN.value + "###"+ messageID +"###"+ payload;
         }
     }
 
