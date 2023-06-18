@@ -91,7 +91,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
 
     private void showPopUp(String playerOneID, String playerTwoID, String playerThreeID, String playerFourID, Context context) {
         ChoosePlayerViewHolder choosePlayerViewHolder = new ChoosePlayerViewHolder(LayoutInflater.from(context)
-                .inflate(R.layout.favor_card_choose_player_layout, null));
+                .inflate(R.layout.choose_player_layout, null));
 
         PopupWindow popupWindow = new PopupWindow(context);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

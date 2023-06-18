@@ -4,7 +4,7 @@ import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACT
 import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_SHOW_THREE_CARDS_ID;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
 import static com.example.se2_exploding_kittens.game_logic.PlayerMessageID.PLAYER_HAND_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_FAVOR_CARD_ID;
+import static com.example.se2_exploding_kittens.Activities.GameActivity.GAME_ACTIVITY_STEAL_CARD;
 
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.TurnManager;
@@ -43,7 +43,7 @@ public class GameManager implements MessageCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
-        this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_STEAL_CARD);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
@@ -224,9 +224,9 @@ public class GameManager implements MessageCallback {
     public static void sendGiveAwayCard(String fromPlayerIDToPlayerID, NetworkManager networkManager) {
         try {
             if (NetworkManager.isServer(networkManager)) {
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, fromPlayerIDToPlayerID));
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_STEAL_CARD, fromPlayerIDToPlayerID));
             } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_FAVOR_CARD_ID, fromPlayerIDToPlayerID));
+                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_STEAL_CARD, fromPlayerIDToPlayerID));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -351,7 +351,7 @@ public class GameManager implements MessageCallback {
     }
 
     private void handleFavorCardMessage(String text) {
-        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_FAVOR_CARD_ID) {
+        if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_STEAL_CARD) {
             String fromPlayerIDToPlayerID = Message.parseAndExtractPayload(text);
             if (NetworkManager.isServer(networkManager)) {
                 sendGiveAwayCard(fromPlayerIDToPlayerID, networkManager);

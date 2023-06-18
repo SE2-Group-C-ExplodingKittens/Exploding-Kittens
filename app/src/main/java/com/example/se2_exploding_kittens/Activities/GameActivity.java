@@ -55,7 +55,7 @@ import java.util.ArrayList;
 public class GameActivity extends AppCompatActivity implements MessageCallback, CardAdapter.HelpAskListener {
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
-    public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
+    public static final int GAME_ACTIVITY_STEAL_CARD = 1003;
 
     private CardAdapter adapter;
     private NetworkManager connection;
@@ -277,7 +277,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
-        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_STEAL_CARD);
         connection.subscribeCallbackToMessageID(this, GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
@@ -382,7 +382,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
         }
 
-        if (messageID == GAME_ACTIVITY_FAVOR_CARD_ID) {
+        if (messageID == GAME_ACTIVITY_STEAL_CARD) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             int playerID = Integer.parseInt(message[1]);
             if (playerID == localPlayer.getPlayerId()) {

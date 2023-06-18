@@ -65,6 +65,11 @@ public class Player implements MessageCallback {
     // if the client initalizes a player object, ID may NOT be known yet thus getter and setter may be needed
     public Player(int playerId) {
         this.playerId = playerId;
+        this.catOneCounter = 0;
+        this.catTwoCounter = 0;
+        this.catThreeCounter = 0;
+        this.catFourCounter = 0;
+        this.catFiveCounter = 0;
     }
 
     public Player() {
@@ -377,4 +382,40 @@ public class Player implements MessageCallback {
     public void increaseCatFiveCounter() {
         this.catFiveCounter++;
     }
+
+    public int getCatOneCounter() {
+        return catOneCounter;
+    }
+
+    public int getCatTwoCounter() {
+        return catTwoCounter;
+    }
+
+    public int getCatThreeCounter() {
+        return catThreeCounter;
+    }
+
+    public int getCatFourCounter() {
+        return catFourCounter;
+    }
+
+    public int getCatFiveCounter() {
+        return catFiveCounter;
+    }
+
+    public boolean isCatCounterThree(Card card){
+        if (card instanceof CatOneCard) {
+            return (getCatOneCounter() == 3);
+        } else if (card instanceof CatTwoCard) {
+            return (getCatTwoCounter() == 3);
+        } else if (card instanceof CatThreeCard) {
+            return (getCatThreeCounter() == 3);
+        } else if (card instanceof CatFourCard) {
+            return (getCatFourCounter() == 3);
+        } else if (card instanceof CatFiveCard) {
+            return (getCatFiveCounter() == 3);
+        }
+        return false;
+    }
+
 }
