@@ -17,7 +17,6 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
-import android.database.Observable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -55,7 +54,11 @@ public class Player implements MessageCallback {
     private int playerTurns;
     private static String DEBUG_TAG = "Player";
     public static final String PLAYER_CARD_HAND_REMOVED_PROPERTY = "handCardRemoved";
-
+    private int catOneCounter;
+    private int catTwoCounter;
+    private int catThreeCounter;
+    private int catFourCounter;
+    private int catFiveCounter;
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -353,5 +356,25 @@ public class Player implements MessageCallback {
             propertyChangeSupport.firePropertyChange("playerWon", -1, playerId);
         }
         this.hasWon = hasWon;
+    }
+
+    public void increaseCatOneCounter() {
+        this.catOneCounter++;
+    }
+
+    public void increaseCatTwoCounter() {
+        this.catTwoCounter++;
+    }
+
+    public void increaseCatThreeCounter() {
+        this.catThreeCounter++;
+    }
+
+    public void increaseCatFourCounter() {
+        this.catFourCounter++;
+    }
+
+    public void increaseCatFiveCounter() {
+        this.catFiveCounter++;
     }
 }

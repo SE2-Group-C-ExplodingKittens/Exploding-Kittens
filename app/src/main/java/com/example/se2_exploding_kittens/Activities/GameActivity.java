@@ -64,8 +64,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private TextView seeTheFutureCardTextView;
 
     private TextView stealRandomCardTextView;
-
-    private ImageView deckImage;
     private GameManager gameManager;
     private Player localPlayer;
 
@@ -114,24 +112,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     PropertyChangeListener cardStolenListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if("cardStolen".equals(evt.getPropertyName())){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                stealRandomCardTextView.setVisibility(View.VISIBLE);
-                            }
-                        });
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                // set invisible after 3 seconds
-                                stealRandomCardTextView.setVisibility(View.INVISIBLE);
-                            }
-                        }, 3000); // 3000 milliseconds = 3 seconds
-                    }
+            runOnUiThread(() -> {
+                if ("cardStolen".equals(evt.getPropertyName())) {
+                    stealRandomCardTextView.setVisibility(View.VISIBLE);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        // set invisible after 3 seconds
+                        stealRandomCardTextView.setVisibility(View.INVISIBLE);
+                    }, 3000); // 3000 milliseconds = 3 seconds
                 }
             });
         }
@@ -420,13 +407,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             seeTheFutureCardTextView.setText(txt);
             seeTheFutureCardTextView.setVisibility(View.VISIBLE);
         });
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // set invisible after 3 seconds
-                seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
-            }
-        }, 3000); // 3000 milliseconds = 3 seconds
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                seeTheFutureCardTextView.setVisibility(View.INVISIBLE), 3000); // 3000 milliseconds = 3 seconds
     }
 
 
