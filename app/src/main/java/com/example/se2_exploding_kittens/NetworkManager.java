@@ -133,9 +133,12 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             }
             server.terminateServer();
             connectionRole = TypeOfConnectionRole.IDLE;
+            clearAllCallbacks();
         }
         if(connectionRole == TypeOfConnectionRole.CLIENT){
             connection.endConnection();
+            connectionRole = TypeOfConnectionRole.IDLE;
+            clearAllCallbacks();
         }
     }
 

@@ -14,6 +14,8 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
+import android.util.Log;
+
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
@@ -234,6 +236,9 @@ public class Deck {
     public Card removeCard(int cardID) {
         if (cardDeck.size() > 0 && cardDeck.get(0).getCardID() == cardID) {
             return cardDeck.remove(0);
+        }
+        if ( cardDeck.get(0).getCardID() != cardID) {
+            Log.e("DECK", cardDeck.get(0).getCardID()+"CardMismatch"+cardID);
         }
         throw new IndexOutOfBoundsException("The deck is empty, or card mismatch!");
     }

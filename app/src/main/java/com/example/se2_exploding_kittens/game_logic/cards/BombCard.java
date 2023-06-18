@@ -33,16 +33,18 @@ public class BombCard implements Card {
         //2 deaktiviere nope
         //3 anderen mitteilen und karte setzen
         //4 überprüfen ob defuse existiert, wenn nicht -> ausscheiden
-        player.setHasBomb(true);
-        GameManager.sendNopeDisabled(networkManager);
-        GameManager.sendBombPulled(player.getPlayerId(), this, networkManager);
         discardPile.putCard(this);
-        if(player.getDefuse() == -1){
-            //no defuse existing player has lost
-            player.setAlive(false);
-            if(NetworkManager.isServer(networkManager)){
-                GameManager.sendPlayerLost(player.getPlayerId(),networkManager);
-                GameLogic.finishTurn(player,networkManager,1, turnManager);
+        if (player != null) {
+            player.setHasBomb(true);
+            GameManager.sendNopeDisabled(networkManager);
+            GameManager.sendBombPulled(player.getPlayerId(), this, networkManager);
+            if(player.getDefuse() == -1){
+                //no defuse existing player has lost
+                player.setAlive(false);
+                if(NetworkManager.isServer(networkManager)){
+                    GameManager.sendPlayerLost(player.getPlayerId(),networkManager);
+                    GameLogic.finishTurn(player,networkManager,1, turnManager);
+                }
             }
         }
     }

@@ -291,7 +291,7 @@ public class GameManager implements MessageCallback {
 
                     if (NetworkManager.isServer(networkManager)) {
                         //broadcast to other clients
-                        sendCardPlayed(playerID, playedCard, networkManager);
+                        //sendCardPlayed(playerID, playedCard, networkManager);
                         GameLogic.cardHasBeenPlayed(playerManager.getPlayer(playerID).getPlayer(), playedCard, networkManager, discardPile, turnManager, deck, null);
                     }
                 }
@@ -308,7 +308,7 @@ public class GameManager implements MessageCallback {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
                     if (NetworkManager.isServer(networkManager)) {
                         //broadcast to other clients
-                        sendBombPulled(playerID, removedCard, networkManager);
+                        //sendBombPulled(playerID, removedCard, networkManager);
                         GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(), removedCard, networkManager, discardPile, turnManager);
                         checkGameEnd();
                     }
@@ -326,7 +326,7 @@ public class GameManager implements MessageCallback {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
                     if (NetworkManager.isServer(networkManager)) {
                         //broadcast to other clients
-                        sendCardPulled(playerID, removedCard, networkManager);
+                        //sendCardPulled(playerID, removedCard, networkManager);
                         GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(), removedCard, networkManager, discardPile, turnManager);
                     }
                 }

@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens;
 
+import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
+import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.MessageType;
@@ -8,7 +10,7 @@ import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ServerTCPSocket;
 import com.example.se2_exploding_kittens.game_logic.Player;
 
-public class TurnManager implements MessageCallback {
+public class TurnManager implements MessageCallback, DisconnectedCallback {
     public static final int TURN_MANAGER_MESSAGE_ID = 300;
 
     public static final int LOCAL_TURN_MANAGER_TURN_FINISHED = 1;
@@ -16,8 +18,10 @@ public class TurnManager implements MessageCallback {
 
     private NetworkManager networkManager;
     private PlayerManager playerManager;
-    private int currentPlayerIndex;
-    private int previousPlayerIndex;
+    private int currentPlayerID;
+    private int currentPlayerIDX;
+    private int previousPlayerID;
+    private int previousPlayerIDX;
     private int currentPlayerTurns;
     private int previousPlayerTurns;
 
@@ -25,8 +29,9 @@ public class TurnManager implements MessageCallback {
         networkManager.subscribeCallbackToMessageID(this, TURN_MANAGER_MESSAGE_ID);
         this.playerManager = PlayerManager.getInstance();
         this.networkManager = networkManager;
+        networkManager.subscribeToDisconnectedCallback(this);
         this.currentPlayerTurns = 0;
-        this.currentPlayerIndex = 0;
+        this.currentPlayerID = 0;
     }
 
     public void startGame() {
@@ -34,8 +39,10 @@ public class TurnManager implements MessageCallback {
             shuffleOrder();
             currentPlayerTurns = 1;
             previousPlayerTurns = currentPlayerTurns;
-            currentPlayerIndex = 0;
-            previousPlayerIndex = 0;
+            currentPlayerIDX = 0;
+            currentPlayerID = getNextPlayerID();
+            previousPlayerID = currentPlayerID;
+            previousPlayerIDX = currentPlayerIDX;
             sendNextSateToPlayers();
         }
     }
@@ -59,8 +66,8 @@ public class TurnManager implements MessageCallback {
 
     public void sendNextSateToPlayers() {
         if(NetworkManager.isServer(networkManager)){
-            PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerIndex);
-            playerManager.getPlayer(currentPlayerIndex).getPlayer().setPlayerTurns(currentPlayerTurns);
+            PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerID);
+            playerManager.getPlayer(currentPlayerID).getPlayer().setPlayerTurns(currentPlayerTurns);
             //message will be = playerID:numberOfTurns
             String gameStateMessage = assembleGameStateMessage(LOCAL_TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
 
@@ -83,34 +90,41 @@ public class TurnManager implements MessageCallback {
         }
     }
 
+    private int getNextPlayerID(){
+        previousPlayerIDX = currentPlayerIDX;
+        currentPlayerIDX = (currentPlayerIDX + 1) % playerManager.getPlayerSize();
+        return playerManager.getPlayerByIndex(currentPlayerIDX).getPlayerID();
+    }
 
     public void gameStateNextTurn(int turns) {
         previousPlayerTurns = currentPlayerTurns;
         currentPlayerTurns = turns;
-        previousPlayerIndex = currentPlayerIndex;
+        previousPlayerID = currentPlayerID;
         if(playerManager.getPlayerSize() > 1){
-            currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
+            currentPlayerID = getNextPlayerID();
             int counter = playerManager.getPlayerSize();
-            while(!playerManager.getPlayer(currentPlayerIndex).getPlayer().isAlive() && counter > 0){
-                currentPlayerIndex = (currentPlayerIndex + 1) % playerManager.getPlayerSize();
+            while(!playerManager.getPlayer(currentPlayerID).getPlayer().isAlive() && counter > 0){
+                currentPlayerID = getNextPlayerID();
                 counter--;
             }
         }
         sendNextSateToPlayers();
     }
 
-    private void resumePreviousGameState() {
-        int tempPlayerIndex = currentPlayerIndex;
-        currentPlayerIndex = previousPlayerIndex;
-        previousPlayerIndex = tempPlayerIndex;
+    public void resumePreviousGameState() {
+        int tempPlayerIndex = currentPlayerID;
+        currentPlayerID = previousPlayerID;
+        previousPlayerID = tempPlayerIndex;
         int tempTurns = currentPlayerTurns;
         currentPlayerTurns = previousPlayerTurns;
         previousPlayerTurns = tempTurns;
         sendNextSateToPlayers();
     }
 
+
+
     public void handlePlayerAction(int playerID, int message) {
-        if (currentPlayerIndex != playerID) {
+        if (currentPlayerID != playerID) {
             //provisional error message
             sendErrorMessageToPlayer(playerID, "It's not your turn.");
             return;
@@ -121,7 +135,7 @@ public class TurnManager implements MessageCallback {
     }
 
     public int getPlayerTurns(int playerID) {
-        if (playerID == currentPlayerIndex) {
+        if (playerID == currentPlayerID) {
             return currentPlayerTurns;
         } else {
             return 0;
@@ -187,7 +201,41 @@ public class TurnManager implements MessageCallback {
         return PlayerManager.getInstance().getPlayerSize();
     }
 
-    public int getCurrentPlayerIndex() {
-        return currentPlayerIndex;
+    public int getCurrentPlayerID() {
+        return currentPlayerID;
+    }
+
+    private void playerDisconnected(ServerTCPSocket connection) {
+        int playerID = playerManager.getPlayerIDByConnection(connection);
+        if(playerID != -1){
+            //a duplicate call shouldn't matter
+            playerManager.connectionDisconnected(connection);
+        }
+        //disable nope, since it can get confused when a player leaves
+        GameManager.sendNopeDisabled(networkManager);
+
+        //go to the next player
+        if(playerID == -1 || playerID == currentPlayerID){
+            previousPlayerTurns = 1;
+            currentPlayerTurns = 1;
+            if(playerManager.getPlayerSize() > 1){
+                currentPlayerID = getNextPlayerID();
+                previousPlayerID = currentPlayerID;
+                int counter = playerManager.getPlayerSize();
+                while(!playerManager.getPlayer(currentPlayerID).getPlayer().isAlive() && counter > 0){
+                    currentPlayerID = getNextPlayerID();
+                    counter--;
+                }
+            }
+            sendNextSateToPlayers();
+        }
+
+    }
+
+    @Override
+    public void connectionDisconnected(Object connection) {
+        if (connection instanceof ServerTCPSocket) {
+            playerDisconnected((ServerTCPSocket) connection);
+        }
     }
 }

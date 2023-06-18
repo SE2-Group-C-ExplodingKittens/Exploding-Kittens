@@ -60,6 +60,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
                 this.networkManager.unsubscribeToClientConnectedCallback(this);
 
             }
+            this.networkManager = null;
         }
         nextPlayerID = 0;
         this.playerConnections = new ArrayList<>();
@@ -110,6 +111,13 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             return getPlayer(0).getPlayer();
         }
         return null; // player not found i.e. not properly initialized
+    }
+
+    public PlayerConnection getPlayerByIndex(int playerIdx) {
+        if(playerIdx < playerConnections.size()){
+            return playerConnections.get(playerIdx);
+        }
+        return null; // player not found
     }
 
     public PlayerConnection getPlayer(int playerId) {
@@ -174,6 +182,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     private void playerDisconnected(ServerTCPSocket connection) {
         playerConnections.remove(getPlayer(getPlayerIDByConnection(connection)));
+
     }
 
     @Override

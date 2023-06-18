@@ -142,7 +142,24 @@ public class ServerTCPSocket implements Runnable, TCP{
                         disconnectedCallback.connectionDisconnected(this);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                connState = ConnectionState.DISCONNECTED;
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    connection.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                if(disconnectedCallback != null)
+                    disconnectedCallback.connectionDisconnected(this);
             }
         }
     }

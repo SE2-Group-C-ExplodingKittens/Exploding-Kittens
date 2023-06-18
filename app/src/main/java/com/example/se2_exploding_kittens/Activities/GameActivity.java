@@ -57,24 +57,20 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
     public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
 
-    private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
-    private TextView yourTurnTextView;
-    private TextView seeTheFutureCardTextView;
-
-    private TextView stealRandomCardTextView;
-
     private GameManager gameManager;
     private Player localPlayer;
-
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
+
+    private CardAdapter adapter;
+    private TextView yourTurnTextView;
+    private TextView seeTheFutureCardTextView;
+    private TextView stealRandomCardTextView;
     private View discardPileView;
-
     private Vibrator vibrator;
-
     private ConstraintLayout hintLayout;
 
     PropertyChangeListener cardPileChangeListener = event -> runOnUiThread(() -> {
@@ -237,6 +233,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
         if (gameManager != null){
             gameManager.reset();
+            gameManager = null;
         }
         if (connection != null) {
             if (NetworkManager.isNotIdle(connection)) {
@@ -244,6 +241,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
             connection = null;
         }
+        localPlayer = null;
+        deck = null;
+        discardPile = null;
+        gameClient = null;
     }
 
     @Override

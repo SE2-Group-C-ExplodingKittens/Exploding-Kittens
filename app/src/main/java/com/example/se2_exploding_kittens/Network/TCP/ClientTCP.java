@@ -152,7 +152,24 @@ public class ClientTCP implements Runnable, TCP{
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                connState = ConnectionState.DISCONNECTED;
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    clientSocket.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                if(disconnectedCallback != null)
+                    disconnectedCallback.connectionDisconnected(this);
             }
         }
     }
