@@ -35,7 +35,6 @@ public class GameLogic {
     public static Card lastCardPlayedExceptNope;
 
     public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
-        playerIDList = new ArrayList<>();
         initPlayers(numOfPlayers);
         this.idOfLocalPlayer = idOfLocalPlayer;
         this.deck = deck;
