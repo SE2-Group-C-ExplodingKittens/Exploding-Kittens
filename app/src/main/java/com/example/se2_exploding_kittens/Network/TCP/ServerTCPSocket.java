@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServerTCPSocket implements Runnable, TCP{
 
@@ -27,7 +28,7 @@ public class ServerTCPSocket implements Runnable, TCP{
     private MessageCallback defaultCallback = null;
     private DisconnectedCallback disconnectedCallback = null;
     private ConnectionState connState = ConnectionState.IDLE;
-    private ArrayList<Message> messages = new ArrayList<Message>();
+    private CopyOnWriteArrayList<Message> messages = new CopyOnWriteArrayList<Message>();
 
     public ServerTCPSocket(Socket connection){
         this.connection = connection;
@@ -142,7 +143,24 @@ public class ServerTCPSocket implements Runnable, TCP{
                         disconnectedCallback.connectionDisconnected(this);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                connState = ConnectionState.DISCONNECTED;
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    connection.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                if(disconnectedCallback != null)
+                    disconnectedCallback.connectionDisconnected(this);
             }
         }
     }

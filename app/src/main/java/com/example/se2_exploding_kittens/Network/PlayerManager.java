@@ -8,6 +8,7 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlayerManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback {
 
@@ -15,14 +16,14 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     //payload has the pattern TYPE:DATA
 
     private static PlayerManager instance = null;
-    private ArrayList<PlayerConnection> playerConnections;
+    private CopyOnWriteArrayList<PlayerConnection> playerConnections;
     private int nextPlayerID;
     private NetworkManager networkManager;
 
     public static final int PLAYER_MANAGER_MESSAGE_ID = 400;
-    public static final int PLAYER_MANAGER_ID_ASSIGNED = 1;
-    public static final int PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
-    public static final int PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID = 705;
+    public static final int LOCAL_PLAYER_MANAGER_ID_ASSIGNED = 1;
+    public static final int LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT = 99;
+    public static final int LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID = 705;
 
     public static PlayerManager getInstance() {
         if (instance == null) {
@@ -32,15 +33,15 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     private PlayerManager() {
-        this.playerConnections = new ArrayList<>();
+        this.playerConnections = new CopyOnWriteArrayList<>();
         this.nextPlayerID = 0;
     }
 
     //Initalize as host, as the host assigns player numbers
-    public void initializeAsHost(ArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
+    public void initializeAsHost(CopyOnWriteArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
         if (NetworkManager.isServer(networkManager)) {
             nextPlayerID = 0;
-            this.playerConnections = new ArrayList<>();
+            this.playerConnections = new CopyOnWriteArrayList<>();
             // selfassign
             assignPlayerID(null);
             this.networkManager = networkManager;
@@ -53,16 +54,17 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public void reset() {
-        if (NetworkManager.isNotIdle(networkManager)) {
+        if (networkManager != null && NetworkManager.isNotIdle(networkManager)) {
             this.networkManager.unsubscribeCallbackFromMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
             this.networkManager.unsubscribeToDisconnectedCallback(this);
-            if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+            if (NetworkManager.isClient(networkManager)) {
                 this.networkManager.unsubscribeToClientConnectedCallback(this);
 
             }
+            this.networkManager = null;
         }
         nextPlayerID = 0;
-        this.playerConnections = new ArrayList<>();
+        this.playerConnections = new CopyOnWriteArrayList<>();
     }
 
 
@@ -97,8 +99,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         playerConnections.add(playerConnection);
         if (networkManager != null) {
             try {
-                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
+                networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -112,6 +114,13 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         return null; // player not found i.e. not properly initialized
     }
 
+    public PlayerConnection getPlayerByIndex(int playerIdx) {
+        if(playerIdx < playerConnections.size()){
+            return playerConnections.get(playerIdx);
+        }
+        return null; // player not found
+    }
+
     public PlayerConnection getPlayer(int playerId) {
         for (PlayerConnection playerConnection : playerConnections) {
             if (playerConnection.getPlayerID() == playerId) {
@@ -121,7 +130,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         return null; // player not found
     }
 
-    public ArrayList<PlayerConnection> getPlayers() {
+    public CopyOnWriteArrayList<PlayerConnection> getPlayers() {
         return playerConnections;
     }
 
@@ -164,8 +173,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     public void removePlayer(PlayerConnection player) {
         if (playerConnections.contains(player) && networkManager != null && NetworkManager.isServer(networkManager)) {
             try {
-                networkManager.sendMessageFromTheSever(createMessage(PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
+                networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
+                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -174,6 +183,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
 
     private void playerDisconnected(ServerTCPSocket connection) {
         playerConnections.remove(getPlayer(getPlayerIDByConnection(connection)));
+
     }
 
     @Override

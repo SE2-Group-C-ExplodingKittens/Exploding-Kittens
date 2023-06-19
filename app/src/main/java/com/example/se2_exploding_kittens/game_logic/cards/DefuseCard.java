@@ -39,7 +39,7 @@ public class DefuseCard implements Card {
             player.removeCardFromHand(Integer.toString(DEFUSE_CARD_ID));
             if(player.getPlayerTurns() == 0 && NetworkManager.isServer(networkManager)){
                 GameLogic.finishTurn(player,networkManager,1, turnManager);
-                int insertionIDX =  deck.addBombAtRandomIndex();
+                int insertionIDX = deck.addBombAtRandomIndex();
                 GameManager.sendDeckInsetCard(networkManager,BOMB_CARD_ID,insertionIDX);
             }
         }

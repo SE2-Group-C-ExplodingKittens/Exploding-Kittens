@@ -16,6 +16,7 @@ import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NetworkManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback, Serializable {
 
@@ -29,12 +30,12 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     private TypeOfConnectionRole connectionRole;
 
     //Contains client connections
-    private ArrayList <ServerTCPSocket> serverToClientConnections = new ArrayList<ServerTCPSocket>();
-    private ArrayList <MessageCallbackPair> subscribedCallbacks = new ArrayList<MessageCallbackPair>();
+    private CopyOnWriteArrayList <ServerTCPSocket> serverToClientConnections = new CopyOnWriteArrayList<ServerTCPSocket>();
+    private CopyOnWriteArrayList <MessageCallbackPair> subscribedCallbacks = new CopyOnWriteArrayList<MessageCallbackPair>();
 
-    private ArrayList <ClientConnectedCallback> connectedCallbacks = new ArrayList<ClientConnectedCallback>();
+    private CopyOnWriteArrayList <ClientConnectedCallback> connectedCallbacks = new CopyOnWriteArrayList<ClientConnectedCallback>();
 
-    private ArrayList <DisconnectedCallback> disconnectedCallback = new ArrayList<DisconnectedCallback>();
+    private CopyOnWriteArrayList <DisconnectedCallback> disconnectedCallback = new CopyOnWriteArrayList<DisconnectedCallback>();
 
     public static synchronized NetworkManager getInstance()
     {
@@ -45,10 +46,23 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     public static boolean isServer(NetworkManager networkManager) {
+        if(networkManager == null){
+            return false;
+        }
         return networkManager.getConnectionRole() == TypeOfConnectionRole.SERVER;
     }
 
+    public static boolean isClient(NetworkManager networkManager) {
+        if(networkManager == null){
+            return false;
+        }
+        return networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT;
+    }
+
     public static boolean isNotIdle(NetworkManager networkManager) {
+        if(networkManager == null){
+            return false;
+        }
         return networkManager.getConnectionRole() != TypeOfConnectionRole.IDLE;
     }
 
@@ -120,9 +134,12 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             }
             server.terminateServer();
             connectionRole = TypeOfConnectionRole.IDLE;
+            clearAllCallbacks();
         }
         if(connectionRole == TypeOfConnectionRole.CLIENT){
             connection.endConnection();
+            connectionRole = TypeOfConnectionRole.IDLE;
+            clearAllCallbacks();
         }
     }
 
@@ -131,7 +148,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         serverToClientConnections.add(connection);
     }
 
-    public ArrayList <ServerTCPSocket> getServerConnections(){
+    public CopyOnWriteArrayList <ServerTCPSocket> getServerConnections(){
         return serverToClientConnections;
     }
 

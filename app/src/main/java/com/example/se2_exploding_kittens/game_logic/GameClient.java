@@ -9,13 +9,17 @@ import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_PLAYER_LOST_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_PLAYER_WON_ID;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_ASSIGNED;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_ID_ASSIGNED;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT;
 import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.Network.PlayerManager.PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
-import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_ASSIGN_TURNS;
+import static com.example.se2_exploding_kittens.Network.PlayerManager.LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID;
+import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_ASSIGN_TURNS;
 import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_MESSAGE_ID;
-import static com.example.se2_exploding_kittens.TurnManager.TURN_MANAGER_TURN_FINISHED;
+import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_TURN_FINISHED;
+
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
 
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
@@ -49,7 +53,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_WON_ID);
-        this.networkManager.subscribeCallbackToMessageID(this, PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_DISCARD_PILE_PULLED_ID);
     }
 
@@ -60,7 +64,6 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     public Deck getDeck() {
         return this.deck;
     }
-
     public void setDeck(Deck deck) {
         this.deck = deck;
     }
@@ -73,27 +76,34 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         return this.networkManager;
     }
 
-    public void blockUntilReady() {
-        while (player.getPlayerId() == -1) {
+    public void blockUntilReady(Activity activity) {
+        double timeout = 60000; // 1minute timeout
+        while (player.getPlayerId() == -1 && timeout > 0) {
             try {
                 Thread.sleep(20);
+                timeout-=20;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        while (deck == null) {
+        while (deck == null && timeout > 0) {
             try {
                 Thread.sleep(20);
+                timeout-=20;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        while (player.getHand().size() == 0) {
+        while (player.getHand().size() == 0 && timeout > 0) {
             try {
                 Thread.sleep(20);
+                timeout-=20;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+        }
+        if(timeout <= 0){
+            activity.finish();
         }
     }
 
@@ -103,7 +113,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     }
 
     public void sendTurnFinished() {
-        String gameStateMessage = TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
+        String gameStateMessage = LOCAL_TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
         try {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageFromTheClient(m);
@@ -113,7 +123,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     }
 
     public void sendCardPulled() {
-        String gameStateMessage = TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
+        String gameStateMessage = LOCAL_TURN_MANAGER_TURN_FINISHED + ":" + player.getPlayerId();
         try {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageFromTheClient(m);
@@ -124,12 +134,12 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
 
     private void handleTurnManagerMessage(int messageType, int turns, int playerID) {
         switch (messageType) {
-            case TURN_MANAGER_TURN_FINISHED:
+            case LOCAL_TURN_MANAGER_TURN_FINISHED:
                 if (playerID == player.getPlayerId()) {
                     player.setPlayerTurns(0);
                 }
                 break;
-            case TURN_MANAGER_ASSIGN_TURNS:
+            case LOCAL_TURN_MANAGER_ASSIGN_TURNS:
                 if (player.getPlayerId() == playerID) {
                     player.setPlayerTurns(turns);
                 }
@@ -166,7 +176,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID) {
                 GameLogic.nopeEnabled = false;
             }
-            if (Message.parseAndExtractMessageID(text) == PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID) {
+            if (Message.parseAndExtractMessageID(text) == LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID) {
                 String playerIDs = Message.parseAndExtractPayload(text);
                 GameLogic.setPlayerIDList(playerIDs);
             }
@@ -185,17 +195,18 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         }
     }
 
-        private void handleCardPlayedFromGameManagerMessage (String text){
-            if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PLAYED_ID) {
-                String[] message = Message.parseAndExtractPayload(text).split(":");
-                if (message.length == 2) {
-                    int playerID = Integer.parseInt(message[1]);
-                    if (playerID != player.getPlayerId()) {
-                        GameLogic.cardHasBeenPlayed(null, Deck.getCardByID(Integer.parseInt(message[0])), networkManager, discardPile, null, deck, null);
-                    }
+    private void handleCardPlayedFromGameManagerMessage(String text) {
+        if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PLAYED_ID){
+            String[] message = Message.parseAndExtractPayload(text).split(":");
+            if (message.length == 2){
+                Log.v("GameClient", "Cardplayed"+message[0]+" player "+message[1]);
+                int playerID = Integer.parseInt(message[1]);
+                if(playerID != player.getPlayerId()){
+                    GameLogic.cardHasBeenPlayed(null,Deck.getCardByID(Integer.parseInt(message[0])),networkManager,discardPile,null, deck, null);
                 }
             }
         }
+    }
 
         private void handleBombPulledFromGameManagerMessage (String text){
             if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_BOMB_PULLED_ID) {
@@ -210,17 +221,17 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             }
         }
 
-        private void handleCardPulledFromGameManagerMessage (String text){
-            if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PULLED_ID) {
-                String[] message = Message.parseAndExtractPayload(text).split(":");
-                if (message.length == 2) {
-                    int playerID = Integer.parseInt(message[1]);
-                    if (playerID != player.getPlayerId()) {
-                        deck.removeCard(Integer.parseInt(message[0]));
-                    }
+    private void handleCardPulledFromGameManagerMessage(String text) {
+        if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PULLED_ID){
+            String[] message = Message.parseAndExtractPayload(text).split(":");
+            if (message.length == 2){
+                int playerID = Integer.parseInt(message[1]);
+                if(playerID != player.getPlayerId()){
+                    deck.removeCard(Integer.parseInt(message[0]));
                 }
             }
         }
+    }
 
         private void handleTurnManagerMessage (String text, Object sender){
             if (Message.parseAndExtractMessageID(text) == TURN_MANAGER_MESSAGE_ID && sender instanceof ClientTCP) {
@@ -253,23 +264,23 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             }
         }
 
-        private void handlePlayerManagerMessages (String text){
-            if (PLAYER_MANAGER_MESSAGE_ID == Message.parseAndExtractMessageID(text)) {
-                int playerID = -1;
-                switch (PlayerManager.parseTypeFromPayload(Message.parseAndExtractPayload(text))) {
-                    case PLAYER_MANAGER_ID_ASSIGNED:
-                        playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
-                        if (playerID != -1) {
-                            player.setPlayerId(playerID);
-                        }
-                        break;
-                    case PLAYER_MANAGER_ID_PLAYER_DISCONNECT:
-                        playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
-                        if (playerID == player.getPlayerId()) {
-                            networkManager.terminateConnection();
-                        }
-                        break;
-                }
+    private void handlePlayerManagerMessages(String text) {
+        if(PLAYER_MANAGER_MESSAGE_ID == Message.parseAndExtractMessageID(text)){
+            int playerID = -1;
+            switch (PlayerManager.parseTypeFromPayload(Message.parseAndExtractPayload(text))){
+                case LOCAL_PLAYER_MANAGER_ID_ASSIGNED:
+                    playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
+                    if(playerID != -1){
+                        player.setPlayerId(playerID);
+                    }
+                    break;
+                case LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT:
+                    playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
+                    if(playerID == player.getPlayerId()){
+                        networkManager.terminateConnection();
+                    }
+                    break;
             }
         }
     }
+}
