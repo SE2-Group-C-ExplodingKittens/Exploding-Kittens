@@ -10,7 +10,7 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class AttackCard implements Card {
 
-    public static final int ATTACK_CARD_ID = 1;
+    public static final int ATTACK_CARD_ID = 0;
 
     public AttackCard() {
         //This class in itself is a datatype, so we don't need to initialize anything else here.

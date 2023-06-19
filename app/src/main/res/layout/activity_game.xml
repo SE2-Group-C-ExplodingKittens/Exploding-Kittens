@@ -129,7 +129,7 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
-        android:text="Get card from discard pile!"
+        android:text="Get random (non bomb) Card!"
         android:textSize="12sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

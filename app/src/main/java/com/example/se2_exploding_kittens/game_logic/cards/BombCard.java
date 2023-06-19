@@ -11,7 +11,7 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class BombCard implements Card {
 
-    public static final int BOMB_CARD_ID = 2;
+    public static final int BOMB_CARD_ID = 1;
 
     public BombCard() {
         //This class in itself is a datatype, so we don't need to initialize anything else here.

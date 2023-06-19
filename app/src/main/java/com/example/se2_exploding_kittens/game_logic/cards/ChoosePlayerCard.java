@@ -122,26 +122,30 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
         return this.networkManager;
     }
 
-    public void checkCounterAndSetupButtons(View buttonTwoCats, View buttonThreeCats, Player player, NetworkManager networkManager, Context context, DiscardPile discardPile, Card card) {
+    public void checkCounterAndSetupButtons(View buttonTwoCats, View buttonThreeCats, Player player, NetworkManager networkManager, Context context, Card card) {
         if (player.isCatCounter(card, 2) && (context != null)) {
+            // if catcounter is two set Button visible
             buttonTwoCats.setVisibility(View.VISIBLE);
+
             buttonTwoCats.setOnClickListener(v -> {
                 buttonTwoCats.setVisibility(View.INVISIBLE);
-                player.resetOneCatCounter(card);
-                int removeIndex = discardPile.getRandomCardIndex();
-                Card removedCard = discardPile.getCardPile().get(removeIndex);
-                discardPile.pullCard(removeIndex);
-                player.addCardToHand(Integer.toString(removedCard.getCardID()));
+                player.resetOneCatCounter(card); //reset this one counter
+                Random random = new Random();
+                int randomCardID = random.nextInt(12) + 2; // random number between 2 and 13 (one is bomb therefore we can't get it)
+                player.addCardToHand(Integer.toString(randomCardID));
                 player.updateHandVisually();
-                GameManager.sendDiscardPileCardPulled(playerID, removeIndex, networkManager);
+
             });
         } else if (player.isCatCounter(card, 3) && (context != null)) {
+            // if catcounter is three set Button visible and button for two cats invisible
             buttonTwoCats.setVisibility(View.INVISIBLE);
             buttonThreeCats.setVisibility(View.VISIBLE);
-            player.resetOneCatCounter(card);
+
             buttonThreeCats.setOnClickListener(v -> {
+                player.resetOneCatCounter(card); //reset this one counter
                 buttonThreeCats.setVisibility(View.INVISIBLE);
                 showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
+
             });
         } else {
             buttonTwoCats.setVisibility(View.INVISIBLE);

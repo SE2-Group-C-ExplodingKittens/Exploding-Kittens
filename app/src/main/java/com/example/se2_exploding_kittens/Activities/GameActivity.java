@@ -252,8 +252,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                     }
                     adapter.notifyDataSetChanged();
                 }
-                System.out.println(discardPile.pileToString());
-
             } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
                 Toast.makeText(GameActivity.this, "The deck is empty!", Toast.LENGTH_SHORT).show();
             }

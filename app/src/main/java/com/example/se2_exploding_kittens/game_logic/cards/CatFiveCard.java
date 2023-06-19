@@ -37,7 +37,7 @@ public class CatFiveCard extends ChoosePlayerCard {
                 GameActivity gameActivity = (GameActivity) context;
                 Button buttonTwoCats = gameActivity.findViewById(R.id.buttonTwoCats);
                 Button buttonThreeCats = gameActivity.findViewById(R.id.buttonThreeCats);
-                checkCounterAndSetupButtons(buttonTwoCats, buttonThreeCats, player, networkManager, context, discardPile, this);
+                checkCounterAndSetupButtons(buttonTwoCats, buttonThreeCats, player, networkManager, context, this);
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(CAT_FIVE_CARD_ID));

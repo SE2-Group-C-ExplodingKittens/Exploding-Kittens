@@ -147,18 +147,6 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    public static void sendDiscardPileCardPulled(int playerID, int removeIndex, NetworkManager networkManager) {
-        try {
-            if (NetworkManager.isServer(networkManager)) {
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_DISCARD_PILE_PULLED_ID, removeIndex + ":" + playerID));
-            } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
-                networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_DISCARD_PILE_PULLED_ID, removeIndex + ":" + playerID));
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void sendPlayerWon(int playerID, NetworkManager networkManager) {
         try {
             if (NetworkManager.isServer(networkManager)) {
@@ -270,7 +258,6 @@ public class GameManager implements MessageCallback {
         handleFavorCardMessage(text);
         handleShowThreeCardsMessage(text);
         handleRecieveCard(text);
-        handleDiscardPilePulledMessage(text);
     }
 
     private void handleNopeDisabledMessage(String text) {
@@ -310,23 +297,6 @@ public class GameManager implements MessageCallback {
         }
     }
 
-    private void handleDiscardPilePulledMessage(String text) {
-        if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_DISCARD_PILE_PULLED_ID) {
-            String[] message = Message.parseAndExtractPayload(text).split(":");
-            if (message.length == 2) {
-                int playerID = Integer.parseInt(message[1]);
-                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
-                    if (NetworkManager.isServer(networkManager)) {
-                        //broadcast to other clients
-                        sendDiscardPileCardPulled(playerID, Integer.parseInt(message[0]), networkManager);
-                        discardPile.pullCard(Integer.parseInt(message[0]));
-                    }
-                }
-            }
-        }
-    }
-
-
     private void handleBombPulledMessage(String text) {
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_BOMB_PULLED_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
@@ -361,9 +331,6 @@ public class GameManager implements MessageCallback {
             }
         }
     }
-
-
-
 
     private void handleDistributeDeckMessage(String text) {
         if (Message.parseAndExtractMessageID(text) == GAME_ACTIVITY_DECK_MESSAGE_ID) {
