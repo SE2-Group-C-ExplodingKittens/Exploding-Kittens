@@ -29,7 +29,7 @@ public class GameLogic {
 
     public static boolean nopeEnabled = false;
     ArrayList<Player> playerList = new ArrayList<>();
-    private static final ArrayList<String> playerIDList = new ArrayList<>();
+    private static ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
     public static Card lastCardPlayedExceptNope;
@@ -43,6 +43,8 @@ public class GameLogic {
 
     public static void setPlayerIDList(String text) {
         String[] playerList = text.split(":");
+        //this should prevent, that artifacts form previous games persist
+        playerIDList = new ArrayList<>();
         playerIDList.addAll(Arrays.asList(playerList));
         while (playerIDList.size() < 5) {
             playerIDList.add(null);
