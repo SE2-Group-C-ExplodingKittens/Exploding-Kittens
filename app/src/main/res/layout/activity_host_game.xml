@@ -20,6 +20,18 @@
         app:layout_constraintVertical_bias="0.496"
         app:srcCompat="@drawable/logo" />
 
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintHorizontal_bias="0.625"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.069" />
+
     <EditText
         android:id="@+id/editTextLobbyName"
         android:layout_width="wrap_content"

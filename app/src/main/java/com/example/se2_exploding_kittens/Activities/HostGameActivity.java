@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.se2_exploding_kittens.Network.IPUtil;
@@ -44,6 +46,7 @@ public class HostGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Button buttonStartHosting;
         Button buttonStartGame;
+        ImageView backButton;
         EditText editTextLobbyName;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_game);
@@ -53,6 +56,8 @@ public class HostGameActivity extends AppCompatActivity {
         buttonStartGame.setEnabled(false);
         buttonStartGame.setAlpha(0.5f);
         editTextLobbyName = findViewById(R.id.editTextLobbyName);
+
+        backButton = findViewById(R.id.backButton);
 
         buttonStartHosting.setOnClickListener(v -> {
             String lobbyName = editTextLobbyName.getText().toString().trim();
@@ -79,6 +84,10 @@ public class HostGameActivity extends AppCompatActivity {
             lb.terminateBroadcasting();
             Intent intent = new Intent(HostGameActivity.this, GameActivity.class);
             startActivity(intent);
+        });
+
+        backButton.setOnClickListener(v -> {
+            onBackPressed(); // Call onBackPressed() when the back button is clicked
         });
     }
 }
