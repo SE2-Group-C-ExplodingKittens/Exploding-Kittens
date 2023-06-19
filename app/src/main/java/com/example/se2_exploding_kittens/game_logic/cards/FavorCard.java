@@ -58,7 +58,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(FAVOR_CARD_ID));
-            GameManager.sendNopeEnabled(networkManager);
+//            GameManager.sendNopeEnabled(networkManager);
         }
         discardPile.putCard(this);
     }
