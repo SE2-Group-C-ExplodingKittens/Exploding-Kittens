@@ -57,46 +57,35 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
     public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
 
-    private CardAdapter adapter;
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
-    private TextView yourTurnTextView;
-    private TextView seeTheFutureCardTextView;
-
-    private TextView stealRandomCardTextView;
-
-    private ImageView deckImage;
     private GameManager gameManager;
     private Player localPlayer;
-
     private Deck deck;
     private DiscardPile discardPile;
     private GameClient gameClient;
+
+    private CardAdapter adapter;
+    private TextView yourTurnTextView;
+    private TextView seeTheFutureCardTextView;
+    private TextView stealRandomCardTextView;
     private View discardPileView;
-
     private Vibrator vibrator;
-
     private ConstraintLayout hintLayout;
 
-    PropertyChangeListener cardPileChangeListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent event) {
-            runOnUiThread(() -> {
-                if ("discardPile".equals(event.getPropertyName())) {
+    PropertyChangeListener cardPileChangeListener = event -> runOnUiThread(() -> {
+        if ("discardPile".equals(event.getPropertyName())) {
 
-                    ImageView discardedCard = new ImageView(GameActivity.this);
-                    discardedCard.setImageResource(discardPile.getCardPile().get(0).getImageResource());
+            ImageView discardedCard = new ImageView(GameActivity.this);
+            discardedCard.setImageResource(discardPile.getCardPile().get(0).getImageResource());
 
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    discardedCard.setLayoutParams(params);
-                    ((ViewGroup) discardPileView).addView(discardedCard);
-                    ImageView discardImage = findViewById(R.id.discard_pile_image);
-                    discardImage.setVisibility(View.INVISIBLE);
-                }
-            });
-
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            discardedCard.setLayoutParams(params);
+            ((ViewGroup) discardPileView).addView(discardedCard);
+            ImageView discardImage = findViewById(R.id.discard_pile_image);
+            discardImage.setVisibility(View.INVISIBLE);
         }
-    };
+    });
 
     PropertyChangeListener playerWonChangeListener = event -> runOnUiThread(() -> {
         if ("playerWon".equals(event.getPropertyName())) {
@@ -111,100 +100,75 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
     });
 
-    PropertyChangeListener cardStolenListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if("cardStolen".equals(evt.getPropertyName())){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                stealRandomCardTextView.setVisibility(View.VISIBLE);
-                            }
-                        });
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                // set invisible after 3 seconds
-                                stealRandomCardTextView.setVisibility(View.INVISIBLE);
-                            }
-                        }, 3000); // 3000 milliseconds = 3 seconds
-                    }
-                }
-            });
+    PropertyChangeListener cardStolenListener = event -> runOnUiThread(() -> {
+        if("cardStolen".equals(event.getPropertyName())){
+            runOnUiThread(() -> stealRandomCardTextView.setVisibility(View.VISIBLE));
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                // set invisible after 3 seconds
+                stealRandomCardTextView.setVisibility(View.INVISIBLE);
+            }, 3000); // 3000 milliseconds = 3 seconds
         }
-    };
+    });
 
-    PropertyChangeListener yourTurnListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(() -> {
-                    if (evt.getNewValue() instanceof Integer) {
-                        if ("yourTurn".equals(evt.getPropertyName())) {
-                            //check if the local player caused this event
-                            if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                yourTurnTextView.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }
-            });
+    PropertyChangeListener yourTurnListener = event -> runOnUiThread(() -> {
+        if (event.getNewValue() instanceof Integer && ("yourTurn".equals(event.getPropertyName()))) {
+            //check if the local player caused this event
+            if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
+                yourTurnTextView.setVisibility(View.VISIBLE);
+            }
         }
-    };
+    });
 
-    PropertyChangeListener notYourTurnListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(() -> {
-                if (evt.getNewValue() instanceof Integer) {
-                    if ("notYourTurn".equals(evt.getPropertyName())) {
-                        //check if the local player caused this event
-                        if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                            yourTurnTextView.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }
+    PropertyChangeListener notYourTurnListener = event -> runOnUiThread(() -> {
+        if (event.getNewValue() instanceof Integer && ("notYourTurn".equals(event.getPropertyName()) && localPlayer.getPlayerId() == (int) event.getNewValue())) {
+                //check if the local player caused this event
+                yourTurnTextView.setVisibility(View.INVISIBLE);
 
-            });
         }
-    };
+    });
 
-
-    //hand over the player that plays over on the device
-    private void guiInit(Player currentPlayer) {
-        // Implement onDragListener for the discard pile view
+    private void initDiscardPile(DiscardPile discardPile, Player currentPlayer, PropertyChangeListener cardPileChangeListener){
         discardPileView = findViewById(R.id.discardPile);
         discardPileView.setOnDragListener((view, event) -> {
-            if (event.getAction() == DragEvent.ACTION_DROP) {
-                if (vibrator.hasVibrator()) {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        vibrator.vibrate(
-                                VibrationEffect.createOneShot(
-                                        50,
-                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                )
-                        );
-                    } else {
-                        vibrator.vibrate(50);
-                    }
+            discardPileHandleDropAction(discardPile, currentPlayer, event);
+            return true;
+        });
+        discardPile.addPropertyChangeListener(cardPileChangeListener);
+    }
+
+    private void discardPileHandleDropAction(DiscardPile discardPile, Player currentPlayer, DragEvent event) {
+        if (event.getAction() == DragEvent.ACTION_DROP) {
+            if (vibrator.hasVibrator()) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    vibrator.vibrate(
+                            VibrationEffect.createOneShot(
+                                    50,
+                                    VibrationEffect.DEFAULT_AMPLITUDE
+                            )
+                    );
+                } else {
+                    vibrator.vibrate(50);
                 }
+            }
 
-                Card selectedCard = adapter.getSelectedCard((int) event.getLocalState());
+            Card selectedCard = adapter.getSelectedCard((int) event.getLocalState());
 
-                // Had to remove, doesn't allow to play card
-                if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                //adapter.removeCard((int) event.getLocalState());
-                if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+            // Had to remove, doesn't allow to play card
+            if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
+                if (NetworkManager.isServer(connection)) {
                     GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
                 } else {
                     GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
                 }
-                }
             }
-            return true;
-        });
-        discardPile.addPropertyChangeListener(cardPileChangeListener);
+        }
+    }
+
+    //hand over the player that plays over on the device
+    private void guiInit(Player currentPlayer) {
+        // Implement onDragListener for the discard pile view
+
+        initDiscardPile(discardPile, currentPlayer, cardPileChangeListener);
 
         playerHandInit(currentPlayer);
         winLossMessagesInit(currentPlayer);
@@ -268,6 +232,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
         if (gameManager != null){
             gameManager.reset();
+            gameManager = null;
         }
         if (connection != null) {
             if (NetworkManager.isNotIdle(connection)) {
@@ -275,13 +240,17 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
             connection = null;
         }
+        localPlayer = null;
+        deck = null;
+        discardPile = null;
+        gameClient = null;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
+        localPlayer = null;
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         yourTurnTextView = findViewById(R.id.textViewYourTurn);
@@ -305,15 +274,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.getLocalSelf().addPropertyChangeListener(cardStolenListener);
             localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
-        } else if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+        } else if (NetworkManager.isClient(connection)) {
             deck = null;
             localPlayer = new Player();
             localPlayer.subscribePlayerToCardEvents(connection);
             localPlayer.addPropertyChangeListener(yourTurnListener);
             localPlayer.addPropertyChangeListener(notYourTurnListener);
             localPlayer.addPropertyChangeListener(cardStolenListener);
-            //playerManager.initializeAsClient(localClientPlayer,connection);
-            //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);
 
             Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
@@ -321,7 +288,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             toast.setGravity(Gravity.BOTTOM, 0, 100);
             toast.show();
 
-            gameClient.blockUntilReady();
+            gameClient.blockUntilReady(this);
 
 
             toast = Toast.makeText(this, "You're Player" + localPlayer.getPlayerId(), Toast.LENGTH_SHORT);
@@ -331,7 +298,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             guiInit(localPlayer);
 
 
-        } else if (connection.getConnectionRole() == TypeOfConnectionRole.IDLE) {
+        } else if (!NetworkManager.isNotIdle(connection)) {
             //this case just for local testing presumably no connection has ever been established
             //Add players to the player's list
             ArrayList<Player> players = new ArrayList<>();
@@ -379,13 +346,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     public void responseReceived(String text, Object sender) {
         Log.v("GameActivity", text);
         int messageID = Message.parseAndExtractMessageID(text);
-        if (sender instanceof ClientTCP) {
-            if (messageID == GAME_ACTIVITY_DECK_MESSAGE_ID) {
+        if (sender instanceof ClientTCP && (messageID == GAME_ACTIVITY_DECK_MESSAGE_ID)) {
                 deck = new Deck(Message.parseAndExtractPayload(text));
-                if (connection.getConnectionRole() == TypeOfConnectionRole.CLIENT && gameClient != null) {
+                if (NetworkManager.isClient(connection) && gameClient != null) {
                     gameClient.setDeck(deck);
                 }
-            }
+
         }
 
         if (messageID == GAME_ACTIVITY_SHOW_THREE_CARDS_ID) {
@@ -420,12 +386,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             seeTheFutureCardTextView.setText(txt);
             seeTheFutureCardTextView.setVisibility(View.VISIBLE);
         });
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // set invisible after 3 seconds
-                seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
-            }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            // set invisible after 3 seconds
+            seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
         }, 3000); // 3000 milliseconds = 3 seconds
     }
 
