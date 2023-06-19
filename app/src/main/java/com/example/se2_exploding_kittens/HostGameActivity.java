@@ -2,10 +2,12 @@ package com.example.se2_exploding_kittens;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -53,6 +55,7 @@ public class HostGameActivity extends AppCompatActivity {
         buttonStartHosting = findViewById(R.id.buttonStartHosting);
         buttonStartGame = findViewById(R.id.buttonStartGame);
         buttonStartGame.setEnabled(false);
+        buttonStartGame.setAlpha(0.5f);
         editTextLobbyName = findViewById(R.id.editTextLobbyName);
 
         buttonStartHosting.setOnClickListener(v -> {
@@ -69,7 +72,9 @@ public class HostGameActivity extends AppCompatActivity {
                     hostLobby("Lobby");
                 }
                 buttonStartHosting.setEnabled(false);
+                buttonStartHosting.setAlpha(0.5f);
                 buttonStartGame.setEnabled(true);
+                buttonStartGame.setAlpha(1.0f);
             }
 
         });
