@@ -51,6 +51,7 @@ public class HostGameActivity extends AppCompatActivity {
         buttonStartHosting = findViewById(R.id.buttonStartHosting);
         buttonStartGame = findViewById(R.id.buttonStartGame);
         buttonStartGame.setEnabled(false);
+        buttonStartGame.setAlpha(0.5f);
         editTextLobbyName = findViewById(R.id.editTextLobbyName);
 
         buttonStartHosting.setOnClickListener(v -> {
@@ -67,7 +68,9 @@ public class HostGameActivity extends AppCompatActivity {
                     hostLobby("Lobby");
                 }
                 buttonStartHosting.setEnabled(false);
+                buttonStartHosting.setAlpha(0.5f);
                 buttonStartGame.setEnabled(true);
+                buttonStartGame.setAlpha(1.0f);
             }
 
         });
