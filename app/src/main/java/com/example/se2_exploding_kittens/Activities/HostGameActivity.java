@@ -2,10 +2,19 @@ package com.example.se2_exploding_kittens.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -74,8 +83,10 @@ public class HostGameActivity extends AppCompatActivity {
                 }
                 buttonStartHosting.setEnabled(false);
                 buttonStartHosting.setAlpha(0.5f);
-                buttonStartGame.setEnabled(true);
-                buttonStartGame.setAlpha(1.0f);
+
+                //  Start the pulsating animation of the button
+                enableStartButton(buttonStartGame);
+
             }
 
         });
@@ -87,7 +98,36 @@ public class HostGameActivity extends AppCompatActivity {
         });
 
         backButton.setOnClickListener(v -> {
-            onBackPressed(); // Call onBackPressed() when the back button is clicked
+            // Go back to previous screen
+            onBackPressed();
         });
     }
+
+    public void enableStartButton(Button startButton){
+
+        startButton.setEnabled(true);
+        startButton.setAlpha(1.0f);
+
+        AnimationSet animationSet = new AnimationSet(true);
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.5f);
+        alphaAnimation.setDuration(1000);
+        alphaAnimation.setRepeatCount(Animation.INFINITE);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(1000);
+        scaleAnimation.setRepeatCount(Animation.INFINITE);
+        scaleAnimation.setRepeatMode(Animation.REVERSE);
+
+        animationSet.addAnimation(alphaAnimation);
+        animationSet.addAnimation(scaleAnimation);
+
+        startButton.startAnimation(animationSet);
+    }
+
+
+
+
 }
