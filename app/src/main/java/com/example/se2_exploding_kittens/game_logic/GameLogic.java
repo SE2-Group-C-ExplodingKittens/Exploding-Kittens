@@ -27,17 +27,41 @@ public class GameLogic {
     private static final ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
-    public static Card lastCardPlayedExceptNope;
 
-    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
-        initPlayers(numOfPlayers);
-        this.idOfLocalPlayer = idOfLocalPlayer;
-        this.deck = deck;
-        deck.dealCards(playerList);
+    int numOfPlayer;
+
+    public int getIdOfLocalPlayer() {
+        return idOfLocalPlayer;
     }
 
-    public static void setPlayerIDList(String text) {
+    public int getNumOfPlayer() {
+        return numOfPlayer;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public static Card lastCardPlayedExceptNope;
+
+    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) throws IllegalArgumentException {
+        if (numOfPlayers < 2 || numOfPlayers > 5 || idOfLocalPlayer < 0 || idOfLocalPlayer >= numOfPlayers) {
+            throw new IllegalArgumentException();
+        } else {
+            this.numOfPlayer = numOfPlayers;
+            initPlayers(numOfPlayers);
+            this.idOfLocalPlayer = idOfLocalPlayer;
+            this.deck = deck;
+            deck.dealCards(playerList);
+        }
+    }
+
+    public static void setPlayerIDList(String text) throws IllegalArgumentException {
         String[] playerList = text.split(":");
+        if (playerList.length < 2 || playerList.length > 5 || text.matches(".*::.*") || text.matches(":.*") || text.matches(".*:")) {
+            throw new IllegalArgumentException();
+        }
+        playerIDList.clear();
         playerIDList.addAll(Arrays.asList(playerList));
         while (playerIDList.size() < 5) {
             playerIDList.add(null);
@@ -54,36 +78,34 @@ public class GameLogic {
         }
     }
 
-    public static boolean canCardBePlayed(Player player, Card card){
+    public static boolean canCardBePlayed(Player player, Card card) {
         //defuse can be played even if turns are 0
-        if(!player.isAlive()){
+        if (!player.isAlive()) {
             return false;
         }
-        if(player.isHasWon()){
+        if (player.isHasWon()) {
             return false;
         }
-        if(player.isHasBomb() && card instanceof DefuseCard){
+        if (player.isHasBomb() && card instanceof DefuseCard) {
             return true;
-        }else if(!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)){
+        } else if (!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)) {
 
-            if(player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard)){
+            if (player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard)) {
                 return true;
             }
             //nope is only affected if nopeEnabled == true, the turns of the player don't affect it
-            if(nopeEnabled && card instanceof NopeCard){
-                return true;
-            }
+            return nopeEnabled && card instanceof NopeCard;
         }
         return false;
     }
 
     public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck, Context context) {
-        if(card instanceof SkipCard){
+        if (card instanceof SkipCard) {
             lastCardPlayedExceptNope = card;
-            ((SkipCard) card).handleActions(player,networkManager,discardPile,turnManager);
-        }else if(card instanceof DefuseCard){
+            ((SkipCard) card).handleActions(player, networkManager, discardPile, turnManager);
+        } else if (card instanceof DefuseCard) {
             lastCardPlayedExceptNope = card;
-            ((DefuseCard) card).handleActions(player,networkManager,discardPile,turnManager, deck);
+            ((DefuseCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
         } else if (card instanceof ShuffleCard) {
             lastCardPlayedExceptNope = card;
             ((ShuffleCard) card).handleActions(player, networkManager, discardPile, deck);
@@ -99,58 +121,58 @@ public class GameLogic {
         } else if (card instanceof NopeCard) {
             // the lastCardPlayed is not updated, since the NopeCard acts on the previous cards played
             ((NopeCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
-        }  else {
+        } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
             }
         }
     }
 
-    public static boolean canCardBePulled(Player player){
-        if(!player.isAlive()){
+    public static boolean canCardBePulled(Player player) {
+        if (!player.isAlive()) {
             return false;
         }
-        if(player.isHasWon()){
+        if (player.isHasWon()) {
             return false;
         }
         return player.getPlayerTurns() > 0;
     }
 
-    public static int checkForWinner(PlayerManager playerManager){
-        if(playerManager.getPlayerSize() == 1){
+    public static int checkForWinner(PlayerManager playerManager) {
+        if (playerManager.getPlayerSize() == 1) {
             return playerManager.getPlayers().get(0).getPlayerID();
-        }else{
+        } else {
             int alivePlayers = 0;
             int winner = -1;
-            for (PlayerConnection pc: playerManager.getPlayers()) {
+            for (PlayerConnection pc : playerManager.getPlayers()) {
                 Player p = pc.getPlayer();
-                if(p.isAlive()){
+                if (p.isAlive()) {
                     winner = p.getPlayerId();
                     alivePlayers++;
                 }
             }
-            if (alivePlayers == 1){
+            if (alivePlayers == 1) {
                 return winner;
             }
         }
         return -1;
     }
 
-    public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager){
+    public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager) {
         //den zug beenden
         // teile dem vorherigen zu, dass der zug beebdet wurde
         // teile dem nächsten spieler die truns zu
-        if(NetworkManager.isServer(networkManager) && turnManager != null){
-            TurnManager.broadcastTurnFinished(player,networkManager);
+        if (NetworkManager.isServer(networkManager) && turnManager != null) {
+            TurnManager.broadcastTurnFinished(player, networkManager);
             turnManager.gameStateNextTurn(futureTurns);
         }
     }
 
-    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager){
-        player.setPlayerTurns(player.getPlayerTurns()-1);
-        if(card instanceof BombCard){
-            ((BombCard) card).handleActions(player,networkManager,discardPile,turnManager);
-        }else{
+    public static void cardHasBeenPulled(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager) {
+        player.setPlayerTurns(player.getPlayerTurns() - 1);
+        if (card instanceof BombCard) {
+            ((BombCard) card).handleActions(player, networkManager, discardPile, turnManager);
+        } else {
             player.getHand().add(card);
             GameManager.sendCardPulled(player.getPlayerId(), card, networkManager);
             GameManager.sendNopeDisabled(networkManager);
