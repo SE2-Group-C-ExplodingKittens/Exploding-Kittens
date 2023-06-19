@@ -283,7 +283,7 @@ public class GameManager implements MessageCallback {
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PLAYED_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
-                Log.v("GameManager", "Cardplayed"+message[0]+" player "+message[1]);
+                //Log.v("GameManager", "Cardplayed"+message[0]+" player "+message[1]);
                 int playerID = Integer.parseInt(message[1]);
                 if (playerID != playerManager.getLocalSelf().getPlayerId()) {
 
@@ -304,6 +304,7 @@ public class GameManager implements MessageCallback {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
                 int playerID = Integer.parseInt(message[1]);
+                //Log.v("GameManager", "Bombpulled player "+message[1]);
                 if (playerID != playerManager.getLocalSelf().getPlayerId()) {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
                     if (NetworkManager.isServer(networkManager)) {
@@ -321,6 +322,7 @@ public class GameManager implements MessageCallback {
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PULLED_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
+                //Log.v("GameManager", "Cardpulled"+message[0]+" player "+message[1]);
                 int playerID = Integer.parseInt(message[1]);
                 if (playerID != playerManager.getLocalSelf().getPlayerId()) {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));

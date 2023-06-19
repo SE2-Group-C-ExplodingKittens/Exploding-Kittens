@@ -10,12 +10,13 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientTCP implements Runnable, TCP{
 
     private String serverAddress;
     private int serverPort;
-    private ArrayList <Message> messages = new ArrayList<Message>();
+    private CopyOnWriteArrayList <Message> messages = new CopyOnWriteArrayList<Message>();
 
     private MessageCallback defaultCallback = null;
     private DisconnectedCallback disconnectedCallback = null;

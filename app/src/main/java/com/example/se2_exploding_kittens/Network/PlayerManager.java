@@ -8,6 +8,7 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlayerManager implements MessageCallback, ClientConnectedCallback, DisconnectedCallback {
 
@@ -37,7 +38,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     //Initalize as host, as the host assigns player numbers
-    public void initializeAsHost(ArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
+    public void initializeAsHost(CopyOnWriteArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
         if (NetworkManager.isServer(networkManager)) {
             nextPlayerID = 0;
             this.playerConnections = new ArrayList<>();
