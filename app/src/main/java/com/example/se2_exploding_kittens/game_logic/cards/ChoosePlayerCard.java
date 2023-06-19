@@ -135,6 +135,7 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
                 player.addCardToHand(Integer.toString(randomCardID));
                 player.updateHandVisually();
                 GameManager.updatePlayerHand(playerID, networkManager, player.handToString());
+                GameManager.sendNopeEnabled(networkManager);
             });
         } else if ((player.isCatCounter(card, 3) || (player.isCatCounter(card, 4))) && (context != null)) {
             // if catcounter is three set Button visible and button for two cats invisible
@@ -146,6 +147,7 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
                 buttonThreeCats.setVisibility(View.INVISIBLE);
                 showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
                 GameManager.updatePlayerHand(playerID, networkManager, player.handToString());
+                GameManager.sendNopeEnabled(networkManager);
             });
         } else {
             buttonTwoCats.setVisibility(View.INVISIBLE);

@@ -41,7 +41,6 @@ public class CatOneCard extends ChoosePlayerCard {
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(CAT_ONE_CARD_ID));
-            GameManager.sendNopeEnabled(networkManager);
         }
         discardPile.putCard(this);
     }
