@@ -1,14 +1,47 @@
 package com.example.se2_exploding_kittens;
 
+import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.KeyEvent;
 
-public class CheatFunction {
+import com.example.se2_exploding_kittens.Activities.GameActivity;
+
+public class CheatFunction extends Activity {
 
     String lightValueString;
     double lightValue;
+    int counter = 0;
+    private GameActivity gameActivity;
+
+//    @Override
+//    public boolean dispatchKeyEvent(KeyEvent event) {
+//        int action = event.getAction();
+//        int keyCode = event.getKeyCode();
+//        switch (keyCode) {
+//            case KeyEvent.KEYCODE_VOLUME_UP: {
+//                if (KeyEvent.ACTION_UP == action) {
+//                    System.out.println("UP");
+//                    counter++;
+//                }
+//            }
+//                case KeyEvent.KEYCODE_VOLUME_DOWN: {
+//                    if (action == KeyEvent.ACTION_DOWN) {
+//                        System.out.println("DOWN");
+//                        counter--;
+//                    }
+//                }
+//        }
+//        return super.dispatchKeyEvent(event);
+//    }
+
+
+
+
+
+
 
     private SensorEventListener lightSensorListener = new SensorEventListener() {
         @Override
@@ -16,11 +49,11 @@ public class CheatFunction {
             lightValueString = String.valueOf(event.values[0]);
             lightValue = Double.parseDouble(lightValueString);
 
-//                if (lightValue.equals("400.0")) {
+                if (lightValue>=3.4 && GameActivity.counter == 5) {
             System.out.println("Cheat detected");
             System.out.println(lightValue);
         }
-//            }
+            }
 
 
         @Override
@@ -34,20 +67,6 @@ public class CheatFunction {
         lightValueString = "";
     }
 
-
-//    @Override
-//    public void onSensorChanged(SensorEvent sensorEvent) {
-//        if (sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
-//            if (sensorEvent.values[0] < 0.002) {
-//                System.out.println("Cheat detected");
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void onAccuracyChanged(Sensor sensor, int i) {
-//
-//    }
 
 
 }

@@ -16,9 +16,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -79,6 +81,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private Vibrator vibrator;
 
     private ConstraintLayout hintLayout;
+    public static int counter;
 
     PropertyChangeListener cardPileChangeListener = new PropertyChangeListener() {
         @Override
@@ -538,5 +541,33 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                         "nothing. Ignore the instructions on the cards\n" +
                         "when you play a combo.\n";
         }
+    }
+
+        @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP: {
+                if (KeyEvent.ACTION_UP == action) {
+                    System.out.println("UP");
+                    counter++;
+                }
+            }
+            break;
+                case KeyEvent.KEYCODE_VOLUME_DOWN: {
+                    if (KeyEvent.ACTION_DOWN == action) {
+                        System.out.println("DOWN");
+                        if (counter > 0) {
+                            counter--;
+                        }
+                    }
+                }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    public int getCounter() {
+        return counter;
     }
 }
