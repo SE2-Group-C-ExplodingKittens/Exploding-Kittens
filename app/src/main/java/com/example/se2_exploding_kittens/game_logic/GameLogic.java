@@ -71,7 +71,8 @@ public class GameLogic {
             return true;
         }else if(!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)){
 
-            if(player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard)){
+            if(player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard
+            || card instanceof CatOneCard || card instanceof CatTwoCard || card instanceof CatThreeCard || card instanceof CatFourCard || card instanceof CatFiveCard)){
                 return true;
             }
             //nope is only affected if nopeEnabled == true, the turns of the player don't affect it
@@ -103,14 +104,19 @@ public class GameLogic {
             lastCardPlayedExceptNope = card;
             ((FavorCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof CatOneCard) {
+            lastCardPlayedExceptNope = card;
             ((CatOneCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof CatTwoCard) {
+            lastCardPlayedExceptNope = card;
             ((CatTwoCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof CatThreeCard) {
+            lastCardPlayedExceptNope = card;
             ((CatThreeCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof CatFourCard) {
+            lastCardPlayedExceptNope = card;
             ((CatFourCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof CatFiveCard) {
+            lastCardPlayedExceptNope = card;
             ((CatFiveCard) card).handleActions(player, networkManager, discardPile, context);
         } else {
             if (player != null) {
@@ -147,6 +153,10 @@ public class GameLogic {
             }
         }
         return -1;
+    }
+
+    public static void updatePlayerHand(Player player, String playerHand){
+        player.setHandFromString(playerHand);
     }
 
     public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager) {

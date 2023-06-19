@@ -131,10 +131,10 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
                 buttonTwoCats.setVisibility(View.INVISIBLE);
                 player.resetOneCatCounter(card); //reset this one counter
                 Random random = new Random();
-                int randomCardID = random.nextInt(12) + 2; // random number between 2 and 13 (one is bomb therefore we can't get it)
+                int randomCardID = random.nextInt(13) + 1; // random number between 2 and 13 (one is bomb therefore we can't get it)
                 player.addCardToHand(Integer.toString(randomCardID));
                 player.updateHandVisually();
-
+                GameManager.updatePlayerHand(playerID, networkManager, player.handToString());
             });
         } else if (player.isCatCounter(card, 3) && (context != null)) {
             // if catcounter is three set Button visible and button for two cats invisible
@@ -145,7 +145,7 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
                 player.resetOneCatCounter(card); //reset this one counter
                 buttonThreeCats.setVisibility(View.INVISIBLE);
                 showChoosePlayerLayout(player.getPlayerId(), networkManager, context);
-
+                GameManager.updatePlayerHand(playerID, networkManager, player.handToString());
             });
         } else {
             buttonTwoCats.setVisibility(View.INVISIBLE);

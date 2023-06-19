@@ -1,7 +1,6 @@
 package com.example.se2_exploding_kittens.game_logic.cards;
 
 import com.example.se2_exploding_kittens.Network.GameManager;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.R;
 import com.example.se2_exploding_kittens.TurnManager;
@@ -11,7 +10,7 @@ import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class BombCard implements Card {
 
-    public static final int BOMB_CARD_ID = 1;
+    public static final int BOMB_CARD_ID = 0;
 
     public BombCard() {
         //This class in itself is a datatype, so we don't need to initialize anything else here.
