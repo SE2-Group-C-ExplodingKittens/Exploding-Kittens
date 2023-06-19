@@ -24,6 +24,6 @@ Jede Spielkarte hat einen anderen Effekt.
 - **See The Future**: Der Spieler bekommt die ersten drei Karten des Decks zu sehen.
 - **Shuffle**: Das Deck wird gemischt.
 - **Skip**: Diese Karte beendet einen Zug des Spielers.
-- **Kitten**: Es gibt verschiedene Arten von Kittenkarten. Eine Karte einer Art allein hat keinen Effekt. Sammelt ein Spieler jedoch 3 Karten einer Art und spielt diese nacheinander aus, so kann er einen Spieler aussuchen, von dem er eine zufällige Karte aus der Hand stiehlt.
+- **Kitten**: Es gibt fünf verschiedene Arten von Kittenkarten: **Uglykitten**, **Funnypingo**, **Apple**, **Nachos** sowie **Car**. Eine Kittenkarte einer Art allein hat keinen Effekt. Sammelt ein Spieler jedoch 2 Karten einer Art und spielt diese nacheinander aus, so bekommt er eine zufällige Karte auf die Hand (kann keine Bombe sein!). Spielt ein Spieler drei Kittenkarten einer Art aus, so kann er sich einen anderen Spieler aussuchen, dem er eine zufällige Karte aus der Hand stiehlt. 
 - **Defuse**: Diese Karte kann nur gespielt werden, wenn ein Spieler eine Bombe gezogen hat.
 - **Exploding Kitten/Bomb**: Wird diese Karte gezogen und hat ein Spieler keine Defuse-Karte auf der Hand, so scheidet der Spieler aus.
