@@ -4,6 +4,7 @@ import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PLAYED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_CARD_PULLED_ID;
+import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_SEND_CARD_TO_PLAYER_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID;
 import static com.example.se2_exploding_kittens.Network.GameManager.GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID;
@@ -54,6 +55,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_PLAYER_WON_ID);
         this.networkManager.subscribeCallbackToMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID);
+        this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_SEND_CARD_TO_PLAYER_ID);
     }
 
     public Player getPlayer() {
@@ -168,6 +170,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             handleCardPlayedFromGameManagerMessage(text);
 
             handleCardInsertedFromGameManagerMessage(text);
+            handleSendCardToPlayerMessage(text);
 
             if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID) {
                 GameLogic.nopeEnabled = true;
@@ -190,6 +193,18 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                 int cardID = Integer.parseInt(message[0]);
                 int idx = Integer.parseInt(message[1]);
                 deck.insertCard(cardID, idx);
+            }
+        }
+    }
+
+    private void handleSendCardToPlayerMessage(String text){
+        if(Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_SEND_CARD_TO_PLAYER_ID){
+            String[] message = Message.parseAndExtractPayload(text).split(":");
+            if (message.length == 2){
+                int playerID = Integer.parseInt(message[0]);
+                if(playerID == player.getPlayerId()){
+                    GameLogic.addCardToHand(player, networkManager, message[1]);
+                }
             }
         }
     }

@@ -17,8 +17,6 @@ import static com.example.se2_exploding_kittens.game_logic.cards.SeeTheFutureCar
 import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHUFFLE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.example.se2_exploding_kittens.Network.Message;
@@ -41,7 +39,6 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -329,7 +326,6 @@ public class Player implements MessageCallback {
                 CopyOnWriteArrayList <Card> oldHand = new CopyOnWriteArrayList <Card>(hand);
                 if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
-                    new Handler(Looper.getMainLooper()).post(() -> propertyChangeSupport.firePropertyChange("hand", oldHand, hand));
                 } else if (messageID == PlayerMessageID.PLAYER_CARD_REMOVED_MESSAGE_ID.id) {
                     removeCardFromHand(parseDataFromPayload(payload));
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);

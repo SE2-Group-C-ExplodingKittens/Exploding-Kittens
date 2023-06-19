@@ -390,6 +390,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                 // steal a random Card and display text
                 Card card = localPlayer.removeRandomCardFromHand();
                 //send card to stealer
+                GameManager.updatePlayerHand(localPlayer.getPlayerId(), connection, localPlayer.handToString());
                 GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
             }
         } else if (messageID == GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD) {

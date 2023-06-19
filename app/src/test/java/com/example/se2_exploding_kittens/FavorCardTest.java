@@ -33,8 +33,6 @@ public class FavorCardTest {
         player.addCardToHand(String.valueOf(FAVOR_CARD_ID));
         player.addCardToHand(String.valueOf(DEFUSE_CARD_ID));
 
-        Deck deck = new Deck(1);
-
         FavorCard fc = new FavorCard();
         fc.handleActions(player, networkManager, discardPile, null);
 

@@ -69,14 +69,14 @@ public class GameLogic {
         }
         if (player.isHasBomb() && card instanceof DefuseCard) {
             return true;
-        }else if(!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)){
+        } else if (!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)) {
 
-            if(player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard
-            || card instanceof CatOneCard || card instanceof CatTwoCard || card instanceof CatThreeCard || card instanceof CatFourCard || card instanceof CatFiveCard)){
+            if (player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard
+                    || card instanceof CatOneCard || card instanceof CatTwoCard || card instanceof CatThreeCard || card instanceof CatFourCard || card instanceof CatFiveCard)) {
                 return true;
             }
             //nope is only affected if nopeEnabled == true, the turns of the player don't affect it
-            if(nopeEnabled && card instanceof NopeCard){
+            if (nopeEnabled && card instanceof NopeCard) {
                 return true;
             }
         }
@@ -85,12 +85,12 @@ public class GameLogic {
     }
 
     public static void cardHasBeenPlayed(Player player, Card card, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck, Context context) {
-        if(card instanceof SkipCard){
+        if (card instanceof SkipCard) {
             lastCardPlayedExceptNope = card;
-            ((SkipCard) card).handleActions(player,networkManager,discardPile,turnManager);
-        }else if(card instanceof DefuseCard){
+            ((SkipCard) card).handleActions(player, networkManager, discardPile, turnManager);
+        } else if (card instanceof DefuseCard) {
             lastCardPlayedExceptNope = card;
-            ((DefuseCard) card).handleActions(player,networkManager,discardPile,turnManager, deck);
+            ((DefuseCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
         } else if (card instanceof ShuffleCard) {
             lastCardPlayedExceptNope = card;
             ((ShuffleCard) card).handleActions(player, networkManager, discardPile, deck);
@@ -155,7 +155,7 @@ public class GameLogic {
         return -1;
     }
 
-    public static void updatePlayerHand(Player player, String playerHand){
+    public static void updatePlayerHand(Player player, String playerHand) {
         player.setHandFromString(playerHand);
     }
 
@@ -203,6 +203,9 @@ public class GameLogic {
         }
     }
 
-
-
+    public static void addCardToHand(Player player, NetworkManager networkManager, String cardID) {
+        player.addCardToHand(cardID);
+        player.updateHandVisually();
+        GameManager.updatePlayerHand(player.getPlayerId(), networkManager, player.handToString());
+    }
 }

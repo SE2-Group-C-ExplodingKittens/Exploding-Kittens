@@ -42,13 +42,13 @@ public class Deck {
     Random random;
 
     public Deck(long seed) {
-        //initAttackCard();
+        initAttackCard();
         initCatCards();
-        //initFavorCard();
-        //initNopeCard();
-        //initShuffleCard();
-        //initSkipCard();
-        //initSeeTheFutureCard();
+        initFavorCard();
+        initNopeCard();
+        initShuffleCard();
+        initSkipCard();
+        initSeeTheFutureCard();
         this.random = new Random(seed);
         shuffleDeck();
     }
