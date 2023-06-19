@@ -193,9 +193,7 @@ public class DiscardPile {
         }
 
         Random random = new Random();
-        int test = random.nextInt(cardPile.size());
-        System.out.println(test);
-        return test;
+        return random.nextInt(cardPile.size());
     }
 
 }

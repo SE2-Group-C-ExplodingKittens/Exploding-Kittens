@@ -159,7 +159,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             handleCardPlayedFromGameManagerMessage(text);
 
             handleCardInsertedFromGameManagerMessage(text);
-            handleDiscardPileMessage(text);
+            handleDiscardPileFromGameManagerMessage(text);
 
             if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID) {
                 GameLogic.nopeEnabled = true;
@@ -186,12 +186,13 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         }
     }
 
-    private void handleDiscardPileMessage(String text) {
+    private void handleDiscardPileFromGameManagerMessage(String text) {
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_DISCARD_PILE_PULLED_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
                 int playerID = Integer.parseInt(message[1]);
                 if (playerID != player.getPlayerId()) {
+                    System.out.println(discardPile.pileToString());
                     discardPile.pullCard(Integer.parseInt(message[0]));
                 }
             }
