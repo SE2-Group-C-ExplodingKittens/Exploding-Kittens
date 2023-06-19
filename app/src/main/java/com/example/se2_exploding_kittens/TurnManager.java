@@ -25,6 +25,7 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
     private int currentPlayerTurns;
     private int previousPlayerTurns;
 
+
     public TurnManager(NetworkManager networkManager) {
         networkManager.subscribeCallbackToMessageID(this, TURN_MANAGER_MESSAGE_ID);
         this.playerManager = PlayerManager.getInstance();
@@ -43,7 +44,11 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
             currentPlayerID = getNextPlayerID();
             previousPlayerID = currentPlayerID;
             previousPlayerIDX = currentPlayerIDX;
-            sendNextSateToPlayers();
+            int maxTries = 5;
+            while (!sendNextSateToPlayers() && maxTries > 0){
+                currentPlayerID = getNextPlayerID();
+                maxTries--;
+            }
         }
     }
 
@@ -64,20 +69,24 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         return messageType + ":" + turns + ":" + playerID;
     }
 
-    public void sendNextSateToPlayers() {
+    public boolean sendNextSateToPlayers() {
         if(NetworkManager.isServer(networkManager)){
             PlayerConnection currentPlayerConnection = playerManager.getPlayer(currentPlayerID);
-            playerManager.getPlayer(currentPlayerID).getPlayer().setPlayerTurns(currentPlayerTurns);
-            //message will be = playerID:numberOfTurns
-            String gameStateMessage = assembleGameStateMessage(LOCAL_TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
+            if(currentPlayerConnection != null){
+                currentPlayerConnection.getPlayer().setPlayerTurns(currentPlayerTurns);
+                String gameStateMessage = assembleGameStateMessage(LOCAL_TURN_MANAGER_ASSIGN_TURNS, currentPlayerTurns, currentPlayerConnection.getPlayerID());
 
-            try {
-                Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
-                networkManager.sendMessageBroadcast(m);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                try {
+                    Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
+                    networkManager.sendMessageBroadcast(m);
+                    return true;
+                } catch (IllegalAccessException e) {
+                    return false;
+                }
             }
+            //message will be = playerID:numberOfTurns
         }
+        return false;
     }
 
     public static void broadcastTurnFinished(Player player, NetworkManager networkManager) {
@@ -108,7 +117,11 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
                 counter--;
             }
         }
-        sendNextSateToPlayers();
+        int maxTries = 5;
+        while (!sendNextSateToPlayers() && maxTries > 0){
+            currentPlayerID = getNextPlayerID();
+            maxTries--;
+        }
     }
 
     public void resumePreviousGameState() {
@@ -118,20 +131,11 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         int tempTurns = currentPlayerTurns;
         currentPlayerTurns = previousPlayerTurns;
         previousPlayerTurns = tempTurns;
-        sendNextSateToPlayers();
-    }
-
-
-
-    public void handlePlayerAction(int playerID, int message) {
-        if (currentPlayerID != playerID) {
-            //provisional error message
-            sendErrorMessageToPlayer(playerID, "It's not your turn.");
-            return;
+        int maxTries = 5;
+        while (!sendNextSateToPlayers() && maxTries > 0){
+            currentPlayerID = getNextPlayerID();
+            maxTries--;
         }
-
-        gameStateNextTurn(1);
-        sendNextSateToPlayers();
     }
 
     public int getPlayerTurns(int playerID) {
@@ -227,7 +231,11 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
                     counter--;
                 }
             }
-            sendNextSateToPlayers();
+            int maxTries = 5;
+            while (!sendNextSateToPlayers() && maxTries > 0){
+                currentPlayerID = getNextPlayerID();
+                maxTries--;
+            }
         }
 
     }
