@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AttackCardTest {
+class AttackCardTest {
     NetworkManager networkManager;
     DiscardPile discardPile;
 

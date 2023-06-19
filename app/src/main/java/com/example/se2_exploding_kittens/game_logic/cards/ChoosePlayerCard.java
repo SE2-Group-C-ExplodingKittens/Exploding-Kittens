@@ -29,10 +29,6 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
     private NetworkManager networkManager;
     private int playerID;
 
-    public abstract int getCardID();
-
-    public abstract int getImageResource();
-
     public abstract void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Context context);
 
     private int getPlayerID() {

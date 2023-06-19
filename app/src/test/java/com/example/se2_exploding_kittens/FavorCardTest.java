@@ -4,7 +4,6 @@ import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFU
 import static com.example.se2_exploding_kittens.game_logic.cards.FavorCard.FAVOR_CARD_ID;
 import static org.mockito.Mockito.mock;
 
-import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
@@ -14,7 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class FavorCardTest {
+class FavorCardTest {
     NetworkManager networkManager;
     DiscardPile discardPile;
 

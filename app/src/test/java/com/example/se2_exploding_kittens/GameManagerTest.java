@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class GameManagerTest {
+class GameManagerTest {
 
     NetworkManager networkManager;
     DiscardPile discardPile;

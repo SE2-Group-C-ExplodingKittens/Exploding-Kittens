@@ -322,10 +322,8 @@ public class GameManager implements MessageCallback {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
                 int playerID = Integer.parseInt(message[0]);
-                if (playerID != playerManager.getLocalSelf().getPlayerId()) {
-                    if (NetworkManager.isServer(networkManager)) {
-                        GameLogic.updatePlayerHand(playerManager.getPlayer(playerID).getPlayer(), message[1]);
-                    }
+                if (playerID != playerManager.getLocalSelf().getPlayerId() && NetworkManager.isServer(networkManager)) {
+                    GameLogic.updatePlayerHand(playerManager.getPlayer(playerID).getPlayer(), message[1]);
                 }
             }
         }
@@ -400,7 +398,7 @@ public class GameManager implements MessageCallback {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             int playerID = Integer.parseInt(message[0]);
             Card playedCard = Deck.getCardByID(Integer.parseInt(message[1]));
-            if(playerID == playerManager.getLocalSelf().getPlayerId()){
+            if (playerID == playerManager.getLocalSelf().getPlayerId()) {
                 GameLogic.addCardToHand(playerManager.getLocalSelf(), networkManager, message[1]);
                 if (NetworkManager.isServer(networkManager)) {
                     sendCardTo(playerID, networkManager, playedCard);
