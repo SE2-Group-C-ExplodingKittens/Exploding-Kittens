@@ -155,7 +155,7 @@ public class GameManagerTest {
                     Assert.assertEquals(1, turnManager.getCurrentPlayerID());
                 }*/
                 //check if the cards are on the hand
-                ArrayList<Card> hand = playerManager.getPlayer(prevPlayer).getPlayer().getHand();
+                CopyOnWriteArrayList <Card> hand = playerManager.getPlayer(prevPlayer).getPlayer().getHand();
                 Assert.assertEquals(card, hand.get(hand.size()-1));
                 Assert.assertEquals(0, playerManager.getPlayer(prevPlayer).getPlayer().getPlayerTurns());
                 Assert.assertEquals(1, playerManager.getPlayer(turnManager.getCurrentPlayerID()).getPlayer().getPlayerTurns());

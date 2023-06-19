@@ -44,6 +44,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Player implements MessageCallback {
 
@@ -76,7 +77,7 @@ public class Player implements MessageCallback {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    private ArrayList<Card> hand = new ArrayList<>();
+    private CopyOnWriteArrayList<Card> hand = new CopyOnWriteArrayList <>();
 
     public int getDefuse() {
         for (int i = 0; i < hand.size(); i++) {
@@ -87,7 +88,7 @@ public class Player implements MessageCallback {
         return -1;
     }
 
-    public ArrayList<Card> getHand() {
+    public CopyOnWriteArrayList <Card> getHand() {
         return hand;
     }
 
@@ -125,7 +126,7 @@ public class Player implements MessageCallback {
 
     public void setHandFromString(String exportString) {
         if (exportString != null) {
-            hand = new ArrayList<>();
+            hand = new CopyOnWriteArrayList <>();
             String[] arr = exportString.split("-");
             for (String s : arr) {
                 addCardToHand(s);
@@ -190,7 +191,7 @@ public class Player implements MessageCallback {
         }
     }
 
-    private void searchInHandAndRemove(ArrayList<Card> hand, int cardID) {
+    private void searchInHandAndRemove(CopyOnWriteArrayList <Card> hand, int cardID) {
         for (Card c : hand) {
             if (c.getCardID() == cardID) {
                 propertyChangeSupport.firePropertyChange(PLAYER_CARD_HAND_REMOVED_PROPERTY, null, hand.indexOf(c));
@@ -316,7 +317,7 @@ public class Player implements MessageCallback {
             int messageID = Message.parseAndExtractMessageID(text);
             String payload = Message.parseAndExtractPayload(text);
             if (playerId == getAddressedPlayerFromPayload(payload)) {
-                ArrayList<Card> oldHand = new ArrayList<>(hand);
+                CopyOnWriteArrayList <Card> oldHand = new CopyOnWriteArrayList <Card>(hand);
                 if (messageID == PlayerMessageID.PLAYER_CARD_ADDED_MESSAGE_ID.id) {
                     addCardToHand(parseDataFromPayload(payload));
                     new Handler(Looper.getMainLooper()).post(new Runnable() {

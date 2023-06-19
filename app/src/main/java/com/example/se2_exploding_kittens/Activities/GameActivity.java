@@ -112,11 +112,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
     PropertyChangeListener yourTurnListener = event -> runOnUiThread(() -> {
         if (event.getNewValue() instanceof Integer && ("yourTurn".equals(event.getPropertyName()))) {
-                //check if the local player caused this event
-                if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
-                    yourTurnTextView.setVisibility(View.VISIBLE);
-                }
-
+            //check if the local player caused this event
+            if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
+                yourTurnTextView.setVisibility(View.VISIBLE);
+            }
         }
     });
 

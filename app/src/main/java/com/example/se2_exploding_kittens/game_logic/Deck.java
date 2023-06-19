@@ -34,10 +34,11 @@ import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Deck {
-    ArrayList<Card> cardDeck = new ArrayList<>();
-    ArrayList<Card> cardDeckOld = new ArrayList<>();
+    CopyOnWriteArrayList<Card> cardDeck = new CopyOnWriteArrayList<>();
+    CopyOnWriteArrayList<Card> cardDeckOld = new CopyOnWriteArrayList<>();
     Random random;
 
     public Deck(long seed) {
@@ -128,7 +129,7 @@ public class Deck {
 
     public ArrayList<Integer> getNextThreeCardResources() {
         ArrayList<Integer> threeCards = new ArrayList<>();
-        ArrayList<Card> tempDeck = (ArrayList<Card>) cardDeck.clone();
+        CopyOnWriteArrayList<Card> tempDeck = (CopyOnWriteArrayList<Card>) cardDeck.clone();
         for (int i = 0; i < 3; i++) {
             if (!tempDeck.isEmpty()) {
                 threeCards.add(tempDeck.remove(0).getImageResource());
@@ -141,12 +142,17 @@ public class Deck {
     }
 
     public void insertCard(int cardID,int index) {
-        cardDeck.add(index,getCardByID(cardID));
-        cardDeckOld = (ArrayList<Card>) cardDeck.clone();
+        if(index >= cardDeck.size()){
+            Log.v("DECK", "Cardinsert"+cardID+" index "+index + " of" + (cardDeck.size()-1));
+        }else {
+            cardDeck.add(index,getCardByID(cardID));
+            cardDeckOld = (CopyOnWriteArrayList<Card>) cardDeck.clone();
+        }
+
     }
 
     public void undoShuffle() {
-        ArrayList<Card> tempDeck = cardDeck;
+        CopyOnWriteArrayList<Card> tempDeck = cardDeck;
         cardDeck = cardDeckOld;
         cardDeckOld = tempDeck;
     }
@@ -229,7 +235,7 @@ public class Deck {
         throw new IndexOutOfBoundsException("The deck is empty!");
     }
 
-    public ArrayList<Card> getCards() {
+    public CopyOnWriteArrayList<Card> getCards() {
         return cardDeck;
     }
 

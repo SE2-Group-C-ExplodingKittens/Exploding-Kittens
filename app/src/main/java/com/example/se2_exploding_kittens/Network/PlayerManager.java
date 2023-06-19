@@ -16,7 +16,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     //payload has the pattern TYPE:DATA
 
     private static PlayerManager instance = null;
-    private ArrayList<PlayerConnection> playerConnections;
+    private CopyOnWriteArrayList<PlayerConnection> playerConnections;
     private int nextPlayerID;
     private NetworkManager networkManager;
 
@@ -33,7 +33,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     private PlayerManager() {
-        this.playerConnections = new ArrayList<>();
+        this.playerConnections = new CopyOnWriteArrayList<>();
         this.nextPlayerID = 0;
     }
 
@@ -41,7 +41,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     public void initializeAsHost(CopyOnWriteArrayList<ServerTCPSocket> connections, NetworkManager networkManager) {
         if (NetworkManager.isServer(networkManager)) {
             nextPlayerID = 0;
-            this.playerConnections = new ArrayList<>();
+            this.playerConnections = new CopyOnWriteArrayList<>();
             // selfassign
             assignPlayerID(null);
             this.networkManager = networkManager;
@@ -64,7 +64,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             this.networkManager = null;
         }
         nextPlayerID = 0;
-        this.playerConnections = new ArrayList<>();
+        this.playerConnections = new CopyOnWriteArrayList<>();
     }
 
 
@@ -130,7 +130,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         return null; // player not found
     }
 
-    public ArrayList<PlayerConnection> getPlayers() {
+    public CopyOnWriteArrayList<PlayerConnection> getPlayers() {
         return playerConnections;
     }
 

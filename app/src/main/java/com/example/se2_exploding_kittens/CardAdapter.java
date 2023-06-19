@@ -18,13 +18,14 @@ import com.example.se2_exploding_kittens.game_logic.cards.Card;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> implements PropertyChangeListener {
 
-    private final ArrayList<Card> cards; // List of cards to display
+    private final CopyOnWriteArrayList<Card> cards; // List of cards to display
     private final HelpAskListener helpAskListener;
 
-    public CardAdapter(ArrayList<Card> cards, HelpAskListener helpAskListener) {
+    public CardAdapter(CopyOnWriteArrayList<Card> cards, HelpAskListener helpAskListener) {
         this.cards = cards;
         this.helpAskListener = helpAskListener;
     }
