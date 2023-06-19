@@ -137,6 +137,7 @@ public class Player extends Observable implements MessageCallback {
             switch (Integer.parseInt(cardID)){
                 case ATTACK_CARD_ID:
                     hand.add(new AttackCard());
+                    //property change card added -
                     break;
                 case BOMB_CARD_ID:
                     hand.add(new BombCard());

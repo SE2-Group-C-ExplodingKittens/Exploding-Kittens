@@ -222,7 +222,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback {
                             GameLogic.cardHasBeenPulled(currentPlayer, nextCard, connection, discardPile, null);
                         }
                         // Notify the adapter that the data has changed
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged(); //
                     }
 
                 } catch (IndexOutOfBoundsException indexOutOfBoundsException) {

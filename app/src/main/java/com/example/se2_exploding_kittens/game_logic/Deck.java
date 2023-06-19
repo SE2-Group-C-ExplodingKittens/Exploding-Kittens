@@ -158,9 +158,9 @@ public class Deck {
         for (int i = 0; i < 4; i++) {
             cardDeck.add(new CatOneCard());
             cardDeck.add(new CatTwoCard());
-            cardDeck.add(new CatThreeCard());
-            cardDeck.add(new CatFourCard());
-            cardDeck.add(new CatFiveCard());
+//            cardDeck.add(new CatThreeCard());
+//            cardDeck.add(new CatFourCard());
+//            cardDeck.add(new CatFiveCard());
         }
     }
 
