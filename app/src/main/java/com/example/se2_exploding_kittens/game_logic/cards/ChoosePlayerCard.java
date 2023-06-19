@@ -136,7 +136,7 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
                 player.updateHandVisually();
                 GameManager.updatePlayerHand(playerID, networkManager, player.handToString());
             });
-        } else if (player.isCatCounter(card, 3) && (context != null)) {
+        } else if ((player.isCatCounter(card, 3) || (player.isCatCounter(card, 4))) && (context != null)) {
             // if catcounter is three set Button visible and button for two cats invisible
             buttonTwoCats.setVisibility(View.INVISIBLE);
             buttonThreeCats.setVisibility(View.VISIBLE);
