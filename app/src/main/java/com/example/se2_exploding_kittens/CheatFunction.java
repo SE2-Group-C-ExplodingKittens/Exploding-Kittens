@@ -38,22 +38,17 @@ public class CheatFunction extends Activity {
 //    }
 
 
-
-
-
-
-
     private SensorEventListener lightSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
             lightValueString = String.valueOf(event.values[0]);
             lightValue = Double.parseDouble(lightValueString);
 
-                if (lightValue>=3.4 && GameActivity.counter == 5) {
-            System.out.println("Cheat detected");
-            System.out.println(lightValue);
-        }
+            if (lightValue >= 3.4 && GameActivity.counter == 5) {
+                System.out.println("Cheat detected");
+                System.out.println(lightValue);
             }
+        }
 
 
         @Override
@@ -66,7 +61,6 @@ public class CheatFunction extends Activity {
         sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         lightValueString = "";
     }
-
 
 
 }

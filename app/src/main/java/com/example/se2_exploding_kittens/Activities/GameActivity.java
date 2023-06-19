@@ -122,7 +122,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if("cardStolen".equals(evt.getPropertyName())){
+                    if ("cardStolen".equals(evt.getPropertyName())) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -146,14 +146,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             runOnUiThread(() -> {
-                    if (evt.getNewValue() instanceof Integer) {
-                        if ("yourTurn".equals(evt.getPropertyName())) {
-                            //check if the local player caused this event
-                            if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
-                                yourTurnTextView.setVisibility(View.VISIBLE);
-                            }
+                if (evt.getNewValue() instanceof Integer) {
+                    if ("yourTurn".equals(evt.getPropertyName())) {
+                        //check if the local player caused this event
+                        if (localPlayer.getPlayerId() == (int) evt.getNewValue()) {
+                            yourTurnTextView.setVisibility(View.VISIBLE);
                         }
                     }
+                }
             });
         }
     };
@@ -199,12 +199,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
                 // Had to remove, doesn't allow to play card
                 if (GameLogic.canCardBePlayed(currentPlayer, selectedCard)) {
-                //adapter.removeCard((int) event.getLocalState());
-                if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
-                    GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
-                } else {
-                    GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
-                }
+                    //adapter.removeCard((int) event.getLocalState());
+                    if (connection.getConnectionRole() == TypeOfConnectionRole.SERVER) {
+                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, gameManager.getTurnManage(), deck, GameActivity.this);
+                    } else {
+                        GameLogic.cardHasBeenPlayed(currentPlayer, selectedCard, connection, discardPile, null, deck, GameActivity.this);
+                    }
                 }
             }
             return true;
@@ -271,7 +271,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.reset();
             playerManager = null;
         }
-        if (gameManager != null){
+        if (gameManager != null) {
             gameManager.reset();
         }
         if (connection != null) {
@@ -543,7 +543,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
     }
 
-        @Override
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         int action = event.getAction();
         int keyCode = event.getKeyCode();
@@ -555,14 +555,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                 }
             }
             break;
-                case KeyEvent.KEYCODE_VOLUME_DOWN: {
-                    if (KeyEvent.ACTION_DOWN == action) {
-                        System.out.println("DOWN");
-                        if (counter > 0) {
-                            counter--;
-                        }
+            case KeyEvent.KEYCODE_VOLUME_DOWN: {
+                if (KeyEvent.ACTION_DOWN == action) {
+                    System.out.println("DOWN");
+                    if (counter > 0) {
+                        counter--;
                     }
                 }
+            }
         }
         return super.dispatchKeyEvent(event);
     }
