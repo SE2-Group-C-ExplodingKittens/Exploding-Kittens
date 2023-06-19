@@ -40,8 +40,14 @@ public class Deck {
     CopyOnWriteArrayList<Card> cardDeck = new CopyOnWriteArrayList<>();
     CopyOnWriteArrayList<Card> cardDeckOld = new CopyOnWriteArrayList<>();
     Random random;
+    long seed;
+
+    public long getSeed(){
+        return this.seed;
+    }
 
     public Deck(long seed) {
+        this.seed = seed;
         initAttackCard();
         initCatCards();
         initFavorCard();
@@ -56,7 +62,7 @@ public class Deck {
     public Deck(String exportString) {
         if (exportString != null) {
             String[] arr = exportString.split("-");
-            Card card = null;
+            Card card;
             for (String s : arr) {
                 card = getCardByID(Integer.parseInt(s));
                 if (card != null) {
@@ -115,16 +121,20 @@ public class Deck {
     }
 
     public String deckToString() {
-        String export = "";
+        StringBuilder export = new StringBuilder();
         for (Card c : cardDeck) {
-            export = export + c.getCardID() + "-";
+            export.append(c.getCardID()).append("-");
         }
-        return export;
+        return export.toString();
     }
 
     public void shuffleDeck() {
-        cardDeckOld = cardDeck;
-        Collections.shuffle(cardDeck);
+        ArrayList<Card> tempDeck = new ArrayList<>();
+        while (!cardDeck.isEmpty()){
+            tempDeck.add(cardDeck.remove(random.nextInt(cardDeck.size())));
+        }
+        cardDeck = new CopyOnWriteArrayList<>(tempDeck);
+
     }
 
     public ArrayList<Integer> getNextThreeCardResources() {
@@ -149,12 +159,6 @@ public class Deck {
             cardDeckOld = (CopyOnWriteArrayList<Card>) cardDeck.clone();
         }
 
-    }
-
-    public void undoShuffle() {
-        CopyOnWriteArrayList<Card> tempDeck = cardDeck;
-        cardDeck = cardDeckOld;
-        cardDeckOld = tempDeck;
     }
 
     private void initAttackCard() {
@@ -228,7 +232,7 @@ public class Deck {
         shuffleDeck();
     }
 
-    public Card getNextCard() {
+    public Card getNextCard() throws IndexOutOfBoundsException{
         if (cardDeck.size() > 0) {
             return cardDeck.remove(0);
         }
