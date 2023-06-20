@@ -54,6 +54,7 @@ import com.example.se2_exploding_kittens.game_logic.GameLogic;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
@@ -78,8 +79,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
 
     private ImageView signYourTurn;
-    private TextView seeTheFutureCardTextView;
-    private TextView stealRandomCardTextView;
+
 
     private View discardPileView;
     private Button buttonTwoCats;
