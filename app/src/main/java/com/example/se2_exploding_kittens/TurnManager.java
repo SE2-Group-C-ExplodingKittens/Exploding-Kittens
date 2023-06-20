@@ -105,10 +105,19 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         return playerManager.getPlayerByIndex(currentPlayerIDX).getPlayerID();
     }
 
+    //this method is needed, so when going to the previous state, the old one gets set to zero
+    private void setPreviousPlayerToZero(){
+        if(NetworkManager.isServer(networkManager)){
+            PlayerConnection previousPlayerConnection = playerManager.getPlayer(previousPlayerID);
+            if(previousPlayerConnection != null){
+                previousPlayerConnection.getPlayer().setPlayerTurns(0);
+            }
+        }
+    }
+
     public void gameStateNextTurn(int turns) {
         previousPlayerTurns = currentPlayerTurns;
         currentPlayerTurns = turns;
-        previousPlayerID = currentPlayerID;
         if(playerManager.getPlayerSize() > 1){
             currentPlayerID = getNextPlayerID();
             int counter = playerManager.getPlayerSize();
@@ -131,10 +140,8 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         int tempTurns = currentPlayerTurns;
         currentPlayerTurns = previousPlayerTurns;
         previousPlayerTurns = tempTurns;
-        int maxTries = 5;
-        while (!sendNextSateToPlayers() && maxTries > 0){
-            currentPlayerID = getNextPlayerID();
-            maxTries--;
+        if(sendNextSateToPlayers()){
+            setPreviousPlayerToZero();
         }
     }
 
@@ -146,13 +153,6 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         }
     }
 
-    private void sendErrorMessageToPlayer(int playerID, String errorMessage) {
-        try {
-            networkManager.sendMessageFromTheSever(new Message(MessageType.ERROR, TURN_MANAGER_MESSAGE_ID, errorMessage), playerManager.getPlayer(playerID).getConnection());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void handleMessage(int messageType, int turns, int playerID) {
         switch (messageType) {

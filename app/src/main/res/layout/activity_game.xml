@@ -100,13 +100,13 @@
         android:id="@+id/textViewSeeTheFutureCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="24sp"
+        android:layout_marginTop="50dp"
         android:gravity="center"
+        android:text=""
         android:textColor="@color/white"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:visibility="invisible"
-        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -115,13 +115,13 @@
         android:id="@+id/textViewStealRandomCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You have been chosen and a random card got stolen from your hand!"
+        android:layout_marginTop="50dp"
         android:gravity="center"
-        android:textSize="24sp"
+        android:text="@string/you_have_been_chosen_and_a_random_card_got_stolen_from_your_hand"
         android:textColor="@color/white"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:visibility="invisible"
-        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -140,5 +140,36 @@
         app:layout_constraintVertical_bias="0.041"
         app:srcCompat="@drawable/yourturnsign"
         android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/buttonTwoCats"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/get_random_non_bomb_card"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/buttonThreeCats"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:text="Steal random card from a player!"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
