@@ -158,6 +158,12 @@ public class Deck {
 
     }
 
+    public void undoShuffle() {
+        CopyOnWriteArrayList<Card> tempDeck = cardDeck;
+        cardDeck = cardDeckOld;
+        cardDeckOld = tempDeck;
+    }
+
     private void initAttackCard() {
         for (int i = 0; i < 4; i++) {
             cardDeck.add(new AttackCard());
