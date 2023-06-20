@@ -22,6 +22,7 @@ public class CatTwoCard extends ChoosePlayerCard {
     @Override
     public int getImageResource() {
         return R.drawable.funnypingo;
+        
     }
 
     @Override

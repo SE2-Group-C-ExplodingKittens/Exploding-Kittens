@@ -4,41 +4,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.HostGameActivity">
+    tools:context=".Activities.HostGameActivity"
+    android:background="@drawable/background">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="241dp"
+        android:layout_height="274dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonStartHosting"
+        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.496"
+        app:srcCompat="@drawable/logo" />
+
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintHorizontal_bias="0.625"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.069" />
 
     <EditText
         android:id="@+id/editTextLobbyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="33dp"
-        android:layout_marginBottom="18dp"
-        android:ems="10"
+        android:background="@drawable/orangeline"
+        android:ems="12"
         android:inputType="textPersonName"
+        android:paddingBottom="5dp"
         android:text="LobbyName"
+        android:textColor="#B5B5B5"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonStartHosting"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.804"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonStartHosting"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="19dp"
-        android:text="Start Hosting"
+        android:layout_width="290dp"
+        android:layout_height="60dp"
+        android:background="@drawable/buttonhostthegame"
         app:layout_constraintBottom_toTopOf="@+id/buttonStartGame"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextLobbyName" />
+        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/editTextLobbyName"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/buttonStartGame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Game"
+        android:layout_width="276dp"
+        android:layout_height="62dp"
+        android:background="@drawable/buttonstartgame"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.455"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/buttonStartHosting" />
 </androidx.constraintlayout.widget.ConstraintLayout>

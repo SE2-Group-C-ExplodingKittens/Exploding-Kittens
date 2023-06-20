@@ -4,14 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.JoinGameActivity">
+    tools:context=".Activities.JoinGameActivity"
+    android:background="@drawable/background">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="241dp"
+        android:layout_height="274dp"
+        android:layout_marginEnd="129dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/lobbyView"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.496"
+        app:srcCompat="@drawable/logo" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lobbyView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="234dp"
+        android:layout_height="250dp"
+        android:background="@drawable/lobbylistbg"
+        android:paddingLeft="30dp"
+        android:paddingTop="30dp"
+        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
