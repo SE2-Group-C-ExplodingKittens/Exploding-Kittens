@@ -151,7 +151,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     PropertyChangeListener notYourTurnListener = event -> runOnUiThread(() -> {
         if (event.getNewValue() instanceof Integer && ("notYourTurn".equals(event.getPropertyName()) && localPlayer.getPlayerId() == (int) event.getNewValue())) {
                 //check if the local player caused this event
-                signYourTurn.setVisibility(View.INVISIBLE);
+            // Stop the animation
+            signYourTurn.clearAnimation();
+            signYourTurn.setVisibility(View.INVISIBLE);
 
         }
     });
