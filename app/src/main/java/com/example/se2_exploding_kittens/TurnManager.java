@@ -118,7 +118,6 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
     public void gameStateNextTurn(int turns) {
         previousPlayerTurns = currentPlayerTurns;
         currentPlayerTurns = turns;
-        previousPlayerID = currentPlayerID;
         if(playerManager.getPlayerSize() > 1){
             currentPlayerID = getNextPlayerID();
             int counter = playerManager.getPlayerSize();

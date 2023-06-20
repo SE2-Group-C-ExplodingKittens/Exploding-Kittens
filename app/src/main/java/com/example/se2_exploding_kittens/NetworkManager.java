@@ -99,14 +99,14 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     private void clearAllCallbacks(){
-        for(int i = 0; i < connectedCallbacks.size(); i++){
-            connectedCallbacks.remove(0);
+        if (connectedCallbacks.size() > 0) {
+            connectedCallbacks.subList(0, connectedCallbacks.size()).clear();
         }
-        for(int i = 0; i < disconnectedCallback.size(); i++){
-            disconnectedCallback.remove(0);
+        if (disconnectedCallback.size() > 0) {
+            disconnectedCallback.subList(0, disconnectedCallback.size()).clear();
         }
-        for(int i = 0; i < subscribedCallbacks.size(); i++){
-            subscribedCallbacks.remove(0);
+        if (subscribedCallbacks.size() > 0) {
+            subscribedCallbacks.subList(0, subscribedCallbacks.size()).clear();
         }
     }
 

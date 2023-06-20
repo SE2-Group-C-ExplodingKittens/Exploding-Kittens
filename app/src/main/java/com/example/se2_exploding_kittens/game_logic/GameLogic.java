@@ -136,6 +136,9 @@ public class GameLogic {
         if (player.isHasWon()) {
             return false;
         }
+        if (player.isHasBomb()) {
+            return false;
+        }
         return player.getPlayerTurns() > 0;
     }
 
