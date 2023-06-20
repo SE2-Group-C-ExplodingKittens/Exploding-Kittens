@@ -10,6 +10,11 @@ import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.cards.AttackCard;
 import com.example.se2_exploding_kittens.game_logic.cards.BombCard;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
+import com.example.se2_exploding_kittens.game_logic.cards.CatFiveCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatFourCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatOneCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatThreeCard;
+import com.example.se2_exploding_kittens.game_logic.cards.CatTwoCard;
 import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
 import com.example.se2_exploding_kittens.game_logic.cards.FavorCard;
 import com.example.se2_exploding_kittens.game_logic.cards.NopeCard;
@@ -24,7 +29,7 @@ public class GameLogic {
 
     public static boolean nopeEnabled = false;
     ArrayList<Player> playerList = new ArrayList<>();
-    private static final ArrayList<String> playerIDList = new ArrayList<>();
+    private static ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
 
@@ -58,10 +63,13 @@ public class GameLogic {
 
     public static void setPlayerIDList(String text) throws IllegalArgumentException {
         String[] playerList = text.split(":");
+      
         if (playerList.length < 2 || playerList.length > 5 || text.matches(".*::.*") || text.matches(":.*") || text.matches(".*:")) {
             throw new IllegalArgumentException();
         }
+        //this should prevent, that artifacts form previous games persist
         playerIDList.clear();
+
         playerIDList.addAll(Arrays.asList(playerList));
         while (playerIDList.size() < 5) {
             playerIDList.add(null);
@@ -90,12 +98,16 @@ public class GameLogic {
             return true;
         } else if (!player.isHasBomb() && (player.getPlayerTurns() > 0 || nopeEnabled && card instanceof NopeCard)) {
 
-            if (player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard)) {
+            if (player.getPlayerTurns() > 0 && (card instanceof SkipCard || card instanceof ShuffleCard || card instanceof AttackCard || card instanceof SeeTheFutureCard || card instanceof FavorCard
+                    || card instanceof CatOneCard || card instanceof CatTwoCard || card instanceof CatThreeCard || card instanceof CatFourCard || card instanceof CatFiveCard)) {
                 return true;
             }
             //nope is only affected if nopeEnabled == true, the turns of the player don't affect it
-            return nopeEnabled && card instanceof NopeCard;
+            if (nopeEnabled && card instanceof NopeCard) {
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -118,6 +130,21 @@ public class GameLogic {
         } else if (card instanceof FavorCard) {
             lastCardPlayedExceptNope = card;
             ((FavorCard) card).handleActions(player, networkManager, discardPile, context);
+        } else if (card instanceof CatOneCard) {
+            lastCardPlayedExceptNope = card;
+            ((CatOneCard) card).handleActions(player, networkManager, discardPile, context);
+        } else if (card instanceof CatTwoCard) {
+            lastCardPlayedExceptNope = card;
+            ((CatTwoCard) card).handleActions(player, networkManager, discardPile, context);
+        } else if (card instanceof CatThreeCard) {
+            lastCardPlayedExceptNope = card;
+            ((CatThreeCard) card).handleActions(player, networkManager, discardPile, context);
+        } else if (card instanceof CatFourCard) {
+            lastCardPlayedExceptNope = card;
+            ((CatFourCard) card).handleActions(player, networkManager, discardPile, context);
+        } else if (card instanceof CatFiveCard) {
+            lastCardPlayedExceptNope = card;
+            ((CatFiveCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof NopeCard) {
             // the lastCardPlayed is not updated, since the NopeCard acts on the previous cards played
             ((NopeCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
@@ -158,6 +185,10 @@ public class GameLogic {
         return -1;
     }
 
+    public static void updatePlayerHand(Player player, String playerHand) {
+        player.setHandFromString(playerHand);
+    }
+
     public static void finishTurn(Player player, NetworkManager networkManager, int futureTurns, TurnManager turnManager) {
         //den zug beenden
         // teile dem vorherigen zu, dass der zug beebdet wurde
@@ -186,5 +217,25 @@ public class GameLogic {
         if (card != null) {
             GameManager.sendCardTo(playerID, networkManager, card);
         }
+    }
+
+    public static void increaseCatCounter(Player player, Card card) {
+        if (card instanceof CatOneCard) {
+            player.increaseCatOneCounter();
+        } else if (card instanceof CatTwoCard) {
+            player.increaseCatTwoCounter();
+        } else if (card instanceof CatThreeCard) {
+            player.increaseCatThreeCounter();
+        } else if (card instanceof CatFourCard) {
+            player.increaseCatFourCounter();
+        } else if (card instanceof CatFiveCard) {
+            player.increaseCatFiveCounter();
+        }
+    }
+
+    public static void addCardToHand(Player player, NetworkManager networkManager, String cardID) {
+        player.addCardToHand(cardID);
+        player.updateHandVisually();
+        GameManager.updatePlayerHand(player.getPlayerId(), networkManager, player.handToString());
     }
 }
