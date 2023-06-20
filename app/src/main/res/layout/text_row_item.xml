@@ -9,10 +9,10 @@
 
     <Button
         android:id="@+id/buttonJoinLobby"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="39dp"
+        android:layout_height="29dp"
         android:layout_weight="1"
-        android:text="Join Lobby"
+        android:background="@drawable/buttonjoin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,6 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textColor="@color/grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/textViewAddress"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="1dp"
+        android:textColor="@color/grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/buttonJoinLobby"
         app:layout_constraintStart_toEndOf="@id/textViewName"

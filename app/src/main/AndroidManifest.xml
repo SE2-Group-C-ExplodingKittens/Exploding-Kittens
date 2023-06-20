@@ -36,17 +36,22 @@
         </activity>
         <activity
             android:name=".Activities.HostGameActivity"
-            android:exported="false">
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".Activities.JoinGameActivity"
-            android:exported="false">
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation">
             <meta-data
                 android:name="android.app.lib_name"
-                android:value="" />
+                android:value=""
+                />
         </activity>
         <activity
             android:name=".Activities.GameActivity"

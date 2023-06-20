@@ -1,0 +1,10 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="-2dp" android:left="-2dp" android:right="-2dp">
+        <shape>
+            <solid android:color="@android:color/transparent" /> <!-- Set the background color to transparent -->
+            <stroke
+                android:color="#FFA500"
+                android:width="2dp" /> <!-- Set the width of the line, e.g., 2dp -->
+        </shape>
+    </item>
+</layer-list>

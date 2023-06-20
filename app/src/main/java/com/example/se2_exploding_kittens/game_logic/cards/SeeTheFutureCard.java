@@ -49,7 +49,6 @@ public class SeeTheFutureCard implements Card {
             GameManager.showTopThreeCards(player.getPlayerId(), networkManager);
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(SEE_THE_FUTURE_CARD_ID));
-//            GameManager.sendNopeEnabled(networkManager);
         }
         discardPile.putCard(this);
     }

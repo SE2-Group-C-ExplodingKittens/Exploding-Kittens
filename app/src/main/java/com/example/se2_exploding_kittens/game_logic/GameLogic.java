@@ -143,7 +143,6 @@ public class GameLogic {
             lastCardPlayedExceptNope = card;
             ((CatFiveCard) card).handleActions(player, networkManager, discardPile, context);
         } else if (card instanceof NopeCard) {
-            // the lastCardPlayed is not updated, since the NopeCard acts on the previous cards played
             ((NopeCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
         } else {
             if (player != null) {
@@ -157,6 +156,9 @@ public class GameLogic {
             return false;
         }
         if (player.isHasWon()) {
+            return false;
+        }
+        if (player.isHasBomb()) {
             return false;
         }
         return player.getPlayerTurns() > 0;

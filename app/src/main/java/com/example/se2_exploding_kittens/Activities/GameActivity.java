@@ -107,13 +107,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     PropertyChangeListener playerWonChangeListener = event -> runOnUiThread(() -> {
         if ("playerWon".equals(event.getPropertyName())) {
             //check if the local player caused this event
-            Toast.makeText(GameActivity.this, "You " + event.getNewValue() + " won!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GameActivity.this, "You won!", Toast.LENGTH_SHORT).show();
         }
     });
 
     PropertyChangeListener playerLostChangeListener = event -> runOnUiThread(() -> {
         if ("playerLost".equals(event.getPropertyName())) {
-            Toast.makeText(GameActivity.this, "Player " + event.getNewValue() + " lost!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GameActivity.this, "Player lost!", Toast.LENGTH_SHORT).show();
         }
     });
 
