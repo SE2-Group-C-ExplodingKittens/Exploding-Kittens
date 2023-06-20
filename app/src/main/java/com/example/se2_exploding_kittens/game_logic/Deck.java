@@ -131,7 +131,7 @@ public class Deck {
     public void shuffleDeck() {
         //this must be cloned, otherwise cardDeckOld only holds the reference to cardDeck and is no longer reversible
         cardDeckOld = (CopyOnWriteArrayList<Card>) cardDeck.clone();
-        Collections.shuffle(cardDeck);
+        Collections.shuffle(cardDeck, random);
     }
 
     public ArrayList<Integer> getNextThreeCardResources() {
