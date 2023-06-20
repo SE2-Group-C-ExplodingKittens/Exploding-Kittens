@@ -134,11 +134,29 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             }
             server.terminateServer();
             connectionRole = TypeOfConnectionRole.IDLE;
+            int timeout = 250; // 250ms timeout
+            while (serverToClientConnections. size() > 0 && timeout > 0) {
+                try {
+                    Thread.sleep(20);
+                    timeout-=20;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             clearAllCallbacks();
         }
         if(connectionRole == TypeOfConnectionRole.CLIENT){
             connection.endConnection();
             connectionRole = TypeOfConnectionRole.IDLE;
+            int timeout = 250; // 250ms timeout
+            while (connection != null && timeout > 0) {
+                try {
+                    Thread.sleep(20);
+                    timeout-=20;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             clearAllCallbacks();
         }
     }
