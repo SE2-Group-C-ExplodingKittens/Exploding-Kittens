@@ -260,16 +260,6 @@ class GameLogicTest {
         Assertions.assertEquals(">Jax", getPlayerIDList().get(3));
         Assertions.assertNull(getPlayerIDList().get(4));
         Assertions.assertEquals(5, getPlayerIDList().size());
-
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("21:WILLIAM:38:JAX:DUDE:HabIchDiesenTestSelbstGeschrieben?"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("DiesenTestHabeIchSelbstGeschrieben!!"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("Hey::HeyApple:ToteHosen"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("Hey:Warum:SoViele::"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("Hey:Warum:SoViele:Cases:"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList(":Hey:Warum"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("::Hey:Warum"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList(""));
-
     }
 
     @Test

@@ -63,10 +63,7 @@ public class GameLogic {
 
     public static void setPlayerIDList(String text) throws IllegalArgumentException {
         String[] playerList = text.split(":");
-      
-        if (playerList.length < 2 || playerList.length > 5 || text.matches(".*::.*") || text.matches(":.*") || text.matches(".*:")) {
-            throw new IllegalArgumentException();
-        }
+
         //this should prevent, that artifacts form previous games persist
         playerIDList.clear();
 

@@ -143,6 +143,8 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             case LOCAL_TURN_MANAGER_ASSIGN_TURNS:
                 if (player.getPlayerId() == playerID) {
                     player.setPlayerTurns(turns);
+                }else{
+                    player.setPlayerTurns(0);
                 }
                 break;
             default:

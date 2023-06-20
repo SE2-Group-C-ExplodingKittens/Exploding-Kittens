@@ -129,12 +129,9 @@ public class Deck {
     }
 
     public void shuffleDeck() {
-        ArrayList<Card> tempDeck = new ArrayList<>();
-        while (!cardDeck.isEmpty()){
-            tempDeck.add(cardDeck.remove(random.nextInt(cardDeck.size())));
-        }
-        cardDeck = new CopyOnWriteArrayList<>(tempDeck);
-
+        //this must be cloned, otherwise cardDeckOld only holds the reference to cardDeck and is no longer reversible
+        cardDeckOld = (CopyOnWriteArrayList<Card>) cardDeck.clone();
+        Collections.shuffle(cardDeck, random);
     }
 
     public ArrayList<Integer> getNextThreeCardResources() {
@@ -159,6 +156,12 @@ public class Deck {
             cardDeckOld = (CopyOnWriteArrayList<Card>) cardDeck.clone();
         }
 
+    }
+
+    public void undoShuffle() {
+        CopyOnWriteArrayList<Card> tempDeck = cardDeck;
+        cardDeck = cardDeckOld;
+        cardDeckOld = tempDeck;
     }
 
     private void initAttackCard() {

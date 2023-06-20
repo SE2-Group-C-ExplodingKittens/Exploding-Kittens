@@ -40,7 +40,7 @@ public class FavorCard extends ChoosePlayerCard {
             }
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(FAVOR_CARD_ID));
-            GameManager.sendNopeEnabled(networkManager);
+//            GameManager.sendNopeEnabled(networkManager);
         }
         discardPile.putCard(this);
     }
