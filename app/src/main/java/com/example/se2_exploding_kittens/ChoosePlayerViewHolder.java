@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class ChoosePlayerViewHolder extends RecyclerView.ViewHolder {
 
     private final LinearLayout playerButtonContainer;

@@ -40,8 +40,14 @@ public class Deck {
     CopyOnWriteArrayList<Card> cardDeck = new CopyOnWriteArrayList<>();
     CopyOnWriteArrayList<Card> cardDeckOld = new CopyOnWriteArrayList<>();
     Random random;
+    long seed;
+
+    public long getSeed(){
+        return this.seed;
+    }
 
     public Deck(long seed) {
+        this.seed = seed;
         initAttackCard();
         initCatCards();
         initFavorCard();
@@ -56,7 +62,7 @@ public class Deck {
     public Deck(String exportString) {
         if (exportString != null) {
             String[] arr = exportString.split("-");
-            Card card = null;
+            Card card;
             for (String s : arr) {
                 card = getCardByID(Integer.parseInt(s));
                 if (card != null) {
@@ -115,16 +121,17 @@ public class Deck {
     }
 
     public String deckToString() {
-        String export = "";
+        StringBuilder export = new StringBuilder();
         for (Card c : cardDeck) {
-            export = export + c.getCardID() + "-";
+            export.append(c.getCardID()).append("-");
         }
-        return export;
+        return export.toString();
     }
 
     public void shuffleDeck() {
-        cardDeckOld = cardDeck;
-        Collections.shuffle(cardDeck);
+        //this must be cloned, otherwise cardDeckOld only holds the reference to cardDeck and is no longer reversible
+        cardDeckOld = (CopyOnWriteArrayList<Card>) cardDeck.clone();
+        Collections.shuffle(cardDeck, random);
     }
 
     public ArrayList<Integer> getNextThreeCardResources() {
@@ -228,7 +235,7 @@ public class Deck {
         shuffleDeck();
     }
 
-    public Card getNextCard() {
+    public Card getNextCard() throws IndexOutOfBoundsException{
         if (cardDeck.size() > 0) {
             return cardDeck.remove(0);
         }

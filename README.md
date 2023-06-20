@@ -20,7 +20,7 @@ Jede Spielkarte hat einen anderen Effekt.
 
 - **Attack**: Diese Karte beendet alle Züge eines Spielers und gibt die Anzahl der eigenen Züge an den nächsten Spieler weiter. Außerdem muss der nächste Spieler neben den Zügen seines Vorgängers, auch noch seinen regulären Zug ausführen.
 - **Favor**: Der Spieler kann sich einen anderen Spieler aussuchen, von dem er eine zufällige Karte aus der Hand stiehlt.
-- **Nope**: Die Nope-Karte annulliert den Spieleffekt der zuletzt gespielten Karte (funktioniert nicht bei Bomben oder Defuse-Karten).
+- **Nope**: Die Nope-Karte annulliert den Spieleffekt der Karten Shuffle, Attack und Skip.
 - **See The Future**: Der Spieler bekommt die ersten drei Karten des Decks zu sehen.
 - **Shuffle**: Das Deck wird gemischt.
 - **Skip**: Diese Karte beendet einen Zug des Spielers.

@@ -3,34 +3,23 @@ package com.example.se2_exploding_kittens;
 import static com.example.se2_exploding_kittens.game_logic.cards.DefuseCard.DEFUSE_CARD_ID;
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import com.example.se2_exploding_kittens.Network.PlayerConnection;
-import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.Player;
 import com.example.se2_exploding_kittens.game_logic.cards.DefuseCard;
 import com.example.se2_exploding_kittens.game_logic.cards.SkipCard;
 
-import com.example.se2_exploding_kittens.Network.GameManager;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 class SkipCardTest {
     NetworkManager networkManager;
     DiscardPile discardPile;
 
-
     @BeforeEach
     public void setupUpTest() {
         networkManager = mock(NetworkManager.class);
         discardPile = new DiscardPile();
-
     }
 
     @Test

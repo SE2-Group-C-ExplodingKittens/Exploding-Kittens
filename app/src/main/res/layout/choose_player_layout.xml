@@ -9,7 +9,7 @@
         android:id="@+id/textViewChoosePlayer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a player you want to steal a card from!"
+        android:text="@string/choose_a_player_you_want_to_steal_a_card_from"
         android:textSize="24sp"
         android:textColor="@color/white"
         android:textStyle="bold"
