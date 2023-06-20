@@ -20,6 +20,12 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
+
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -70,6 +76,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private GameClient gameClient;
 
     private CardAdapter adapter;
+
+
+    private ImageView signYourTurn;
+
+
     private View discardPileView;
     private Button buttonTwoCats;
     private Button buttonThreeCats;
@@ -131,15 +142,18 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         if (event.getNewValue() instanceof Integer && ("yourTurn".equals(event.getPropertyName()))) {
             //check if the local player caused this event
             if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
-                yourTurnTextView.setVisibility(View.VISIBLE);
+                signYourTurn.setVisibility(View.VISIBLE);
+                yourSignAnimation(signYourTurn);
             }
         }
     });
 
     PropertyChangeListener notYourTurnListener = event -> runOnUiThread(() -> {
         if (event.getNewValue() instanceof Integer && ("notYourTurn".equals(event.getPropertyName()) && localPlayer.getPlayerId() == (int) event.getNewValue())) {
-            //check if the local player caused this event
-            yourTurnTextView.setVisibility(View.INVISIBLE);
+                //check if the local player caused this event
+            // Stop the animation
+            signYourTurn.clearAnimation();
+            signYourTurn.setVisibility(View.INVISIBLE);
 
         }
     });
@@ -238,6 +252,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     }
 
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -269,7 +285,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         localPlayer = null;
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        yourTurnTextView = findViewById(R.id.textViewYourTurn);
+        signYourTurn = findViewById(R.id.yourTurnSign);
         seeTheFutureCardTextView = findViewById(R.id.textViewSeeTheFutureCard);
         stealRandomCardTextView = findViewById(R.id.textViewStealRandomCard);
         buttonTwoCats = findViewById(R.id.buttonTwoCats);
@@ -348,6 +364,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
     }
+
+
 
     private void prepareGame(long seed) {
         deck = new Deck(seed);
@@ -516,5 +534,29 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                         "nothing. Ignore the instructions on the cards\n" +
                         "when you play a combo.\n";
         }
+    }
+    // Animation method for yourTurnSign
+    public void yourSignAnimation(ImageView turnSign){
+
+        turnSign.setEnabled(true);
+        turnSign.setAlpha(1.0f);
+
+        AnimationSet animationSet = new AnimationSet(true);
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.5f);
+        alphaAnimation.setDuration(1000);
+        alphaAnimation.setRepeatCount(Animation.INFINITE);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(1000);
+        scaleAnimation.setRepeatCount(Animation.INFINITE);
+        scaleAnimation.setRepeatMode(Animation.REVERSE);
+
+        animationSet.addAnimation(alphaAnimation);
+        animationSet.addAnimation(scaleAnimation);
+
+        turnSign.startAnimation(animationSet);
     }
 }
