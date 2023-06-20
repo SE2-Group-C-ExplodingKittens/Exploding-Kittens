@@ -32,19 +32,41 @@ public class GameLogic {
     private static ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
-    public static Card lastCardPlayedExceptNope;
 
-    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) {
-        initPlayers(numOfPlayers);
-        this.idOfLocalPlayer = idOfLocalPlayer;
-        this.deck = deck;
-        deck.dealCards(playerList);
+    int numOfPlayer;
+
+    public int getIdOfLocalPlayer() {
+        return idOfLocalPlayer;
     }
 
-    public static void setPlayerIDList(String text) {
+    public int getNumOfPlayer() {
+        return numOfPlayer;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public static Card lastCardPlayedExceptNope;
+
+    public GameLogic(int numOfPlayers, int idOfLocalPlayer, Deck deck) throws IllegalArgumentException {
+        if (numOfPlayers < 2 || numOfPlayers > 5 || idOfLocalPlayer < 0 || idOfLocalPlayer >= numOfPlayers) {
+            throw new IllegalArgumentException();
+        } else {
+            this.numOfPlayer = numOfPlayers;
+            initPlayers(numOfPlayers);
+            this.idOfLocalPlayer = idOfLocalPlayer;
+            this.deck = deck;
+            deck.dealCards(playerList);
+        }
+    }
+
+    public static void setPlayerIDList(String text) throws IllegalArgumentException {
         String[] playerList = text.split(":");
+
         //this should prevent, that artifacts form previous games persist
-        playerIDList = new ArrayList<>();
+        playerIDList.clear();
+
         playerIDList.addAll(Arrays.asList(playerList));
         while (playerIDList.size() < 5) {
             playerIDList.add(null);
@@ -120,7 +142,7 @@ public class GameLogic {
         } else if (card instanceof CatFiveCard) {
             lastCardPlayedExceptNope = card;
             ((CatFiveCard) card).handleActions(player, networkManager, discardPile, context);
-        }else if (card instanceof NopeCard) {
+        } else if (card instanceof NopeCard) {
             ((NopeCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
         } else {
             if (player != null) {
