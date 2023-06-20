@@ -120,6 +120,8 @@ public class GameLogic {
         } else if (card instanceof CatFiveCard) {
             lastCardPlayedExceptNope = card;
             ((CatFiveCard) card).handleActions(player, networkManager, discardPile, context);
+        }else if (card instanceof NopeCard) {
+            ((NopeCard) card).handleActions(player, networkManager, discardPile, turnManager, deck);
         } else {
             if (player != null) {
                 GameManager.sendCardPlayed(player.getPlayerId(), card, networkManager);
