@@ -146,13 +146,6 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         }
     }
 
-    private void sendErrorMessageToPlayer(int playerID, String errorMessage) {
-        try {
-            networkManager.sendMessageFromTheSever(new Message(MessageType.ERROR, TURN_MANAGER_MESSAGE_ID, errorMessage), playerManager.getPlayer(playerID).getConnection());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void handleMessage(int messageType, int turns, int playerID) {
         switch (messageType) {
