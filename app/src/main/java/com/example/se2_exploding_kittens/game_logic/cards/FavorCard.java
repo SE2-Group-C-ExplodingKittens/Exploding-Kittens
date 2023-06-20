@@ -74,7 +74,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
     private void showChoosePlayerLayout(int playerID, NetworkManager networkManager, Context context) {
         if (NetworkManager.isServer(networkManager)) {
             playerIDs = PlayerManager.getInstance().getPlayersIDs();
-        } else if (networkManager.getConnectionRole() == TypeOfConnectionRole.CLIENT) {
+        } else if (NetworkManager.isClient(networkManager)) {
             playerIDs = GameLogic.getPlayerIDList();
         }
 
@@ -122,9 +122,9 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
     private String getRandomPlayer(ArrayList<String> playerIDs) {
         // remove null values
         ArrayList<String> nonNullPlayers = new ArrayList<>();
-        for (String playerID : playerIDs) {
-            if (playerID != null) {
-                nonNullPlayers.add(playerID);
+        for (String pID : playerIDs) {
+            if (pID != null) {
+                nonNullPlayers.add(pID);
             }
         }
 
@@ -133,7 +133,7 @@ public class FavorCard implements Card, ChoosePlayerViewHolder.OnPlayerSelectedL
         }
 
         // get random index of non null players
-        Random random = new Random();
+        Random random = new Random(System.currentTimeMillis());
         int randomIndex = random.nextInt(nonNullPlayers.size());
 
         return nonNullPlayers.get(randomIndex);

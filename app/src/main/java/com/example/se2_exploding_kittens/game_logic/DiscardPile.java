@@ -33,11 +33,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DiscardPile {
 
-    private ArrayList<Card> cardPile = new ArrayList<>();
-    private ArrayList<Card> cardPileOld = new ArrayList<>();
+    private CopyOnWriteArrayList <Card> cardPile = new CopyOnWriteArrayList <>();
+    private CopyOnWriteArrayList<Card> cardPileOld = new CopyOnWriteArrayList <>();
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     public static final String DISCARD_PILE_PROPERTY = "discardPile";
 
@@ -45,7 +46,7 @@ public class DiscardPile {
 
     }
 
-    public ArrayList<Card> getCardPile(){
+    public CopyOnWriteArrayList <Card> getCardPile(){
         return cardPile;
     }
 
@@ -117,13 +118,13 @@ public class DiscardPile {
     }
 
     public void putCard(Card card) {
-        cardPileOld = (ArrayList<Card>) cardPile.clone();
+        cardPileOld = (CopyOnWriteArrayList <Card>) cardPile.clone();
         cardPile.add(0, card);
         propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);
     }
 
     public Card putCard(int cardID) {
-        cardPileOld = (ArrayList<Card>) cardPile.clone();
+        cardPileOld = (CopyOnWriteArrayList <Card>) cardPile.clone();
         switch (cardID){
             case ATTACK_CARD_ID:
                 cardPile.add(0,new AttackCard());
@@ -172,7 +173,7 @@ public class DiscardPile {
     }
 
     public void revertPile() {
-        ArrayList<Card> tempPile = (ArrayList<Card>) cardPile.clone();
+        CopyOnWriteArrayList <Card> tempPile = (CopyOnWriteArrayList <Card>) cardPile.clone();
         cardPile = cardPileOld;
         cardPileOld = tempPile;
         propertyChangeSupport.firePropertyChange(DISCARD_PILE_PROPERTY,cardPileOld,cardPile);

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 class GameLogicTest {
@@ -32,7 +33,7 @@ class GameLogicTest {
     PlayerConnection pCon1;
     PlayerConnection pCon2;
     PlayerConnection pCon3;
-    ArrayList<PlayerConnection> pcList;
+    CopyOnWriteArrayList<PlayerConnection> pcList;
 
 
     @BeforeEach
@@ -42,7 +43,7 @@ class GameLogicTest {
         pCon1 = new PlayerConnection(null,1);
         pCon2 = new PlayerConnection(null,2);
         pCon3 = new PlayerConnection(null,3);
-        pcList = new ArrayList<PlayerConnection>();
+        pcList = new CopyOnWriteArrayList<PlayerConnection>();
 
     }
 

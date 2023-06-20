@@ -42,13 +42,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".Activities.JoiningGameActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".Activities.JoinGameActivity"
             android:exported="false">
             <meta-data
