@@ -102,7 +102,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
                 networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                //this was called without proper network initialisation
             }
         }
     }
@@ -176,7 +176,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
                 networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                //this was called without proper network initialisation
             }
         }
     }

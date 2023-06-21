@@ -53,11 +53,11 @@ public class LobbyBroadcaster implements Runnable{
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            if(socket != null)
+                socket.close();
         } catch (InterruptedException e) {
             //Sonar Cloud: Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.
             Thread.currentThread().interrupt();
-            e.printStackTrace();
         }finally {
             // Close the socket when we're done sending packets
             if(socket != null)

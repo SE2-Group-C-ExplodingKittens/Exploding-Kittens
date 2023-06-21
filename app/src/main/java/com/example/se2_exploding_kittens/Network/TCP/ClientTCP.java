@@ -61,7 +61,7 @@ public class ClientTCP implements Runnable, TCP{
             connState = ConnectionState.CONNECTED;
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            connState = ConnectionState.IDLE;
             return false;
         }
     }
@@ -91,11 +91,17 @@ public class ClientTCP implements Runnable, TCP{
     public void endConnection(){
         connState = ConnectionState.DISCONNECTING;
         try {
-            out.close();
-            in.close();
-            clientSocket.close();
+            if(out != null){
+                out.close();
+            }
+            if(in != null){
+                in.close();
+            }
+            if(clientSocket != null){
+                clientSocket.close();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            //could not close resources
         }
     }
 

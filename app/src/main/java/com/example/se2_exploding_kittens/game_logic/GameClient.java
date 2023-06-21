@@ -119,7 +119,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageFromTheClient(m);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -129,7 +129,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageFromTheClient(m);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 

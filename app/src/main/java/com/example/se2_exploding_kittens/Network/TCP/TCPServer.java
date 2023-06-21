@@ -37,7 +37,7 @@ public class TCPServer implements Runnable{
             try {
                 serverSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                //could not close resources
             }
         }
     }
@@ -55,7 +55,8 @@ public class TCPServer implements Runnable{
                 thread.start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            //deinitalize resources
+            terminateServer();
         }
     }
 }

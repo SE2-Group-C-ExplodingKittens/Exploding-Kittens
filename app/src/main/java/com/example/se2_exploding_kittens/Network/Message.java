@@ -19,7 +19,6 @@ public class Message {
             try {
                 return Integer.parseInt(sp[1]);
             } catch (NumberFormatException e) {
-                e.printStackTrace();
                 return -1;
             }
         }
