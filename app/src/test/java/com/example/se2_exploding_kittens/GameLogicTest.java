@@ -244,7 +244,7 @@ class GameLogicTest {
     }
 
     @Test
-    void testsetPlayerIDList() {
+    void testSetPlayerIDList() {
         setPlayerIDList("21:WILLIAM:38:JAX");
         Assertions.assertEquals("21", getPlayerIDList().get(0));
         Assertions.assertEquals("WILLIAM", getPlayerIDList().get(1));
@@ -260,6 +260,15 @@ class GameLogicTest {
         Assertions.assertEquals(">Jax", getPlayerIDList().get(3));
         Assertions.assertNull(getPlayerIDList().get(4));
         Assertions.assertEquals(5, getPlayerIDList().size());
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("21:WILLIAM:38:JAX:DUDE:HabIchDiesenTestSelbstGeschrieben?"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("DiesenTestHabeIchSelbstGeschrieben!!"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("Hey::HeyApple:ToteHosen"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("Hey:Warum:SoViele::"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("Hey:Warum:SoViele:Cases:"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList(":Hey:Warum"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList("::Hey:Warum"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> setPlayerIDList(""));
     }
 
     @Test
@@ -267,7 +276,7 @@ class GameLogicTest {
         Deck test1 = new Deck(42042069);
         Deck test2 = new Deck(42042069);
 
-        for (int i = 0; i < 46; i++){
+        for (int i = 0; i < 46; i++) {
             Assertions.assertEquals(test1.getNextCard().getCardID(), test2.getNextCard().getCardID());
         }
         Assertions.assertThrows(IndexOutOfBoundsException.class, test1::getNextCard);
@@ -279,7 +288,7 @@ class GameLogicTest {
         Deck testDeck1 = new Deck(4444);
         Deck testDeck2 = new Deck(5555);
 
-        for(int i = 0; i < 46; i++){
+        for (int i = 0; i < 46; i++) {
             test3.add(testDeck1.getNextCard().getCardID());
             test4.add(testDeck2.getNextCard().getCardID());
         }
@@ -289,7 +298,7 @@ class GameLogicTest {
     }
 
     @Test
-    void testDealCards(){
+    void testDealCards() {
         Deck test1 = new Deck(5545);
         ArrayList<Player> player = new ArrayList<>();
         player.add(new Player());
@@ -297,22 +306,22 @@ class GameLogicTest {
 
         test1.dealCards(player);
 
-        Assertions.assertEquals(8,( (Player) player.get(0)).getHand().size());
-        Assertions.assertEquals(8,( (Player) player.get(1)).getHand().size());
+        Assertions.assertEquals(8, player.get(0).getHand().size());
+        Assertions.assertEquals(8, player.get(1).getHand().size());
 
-        Assertions.assertEquals(((Player) player.get(0)).getHand().get(0).getCardID(), DefuseCard.DEFUSE_CARD_ID);
-        Assertions.assertEquals(((Player) player.get(1)).getHand().get(0).getCardID(), DefuseCard.DEFUSE_CARD_ID);
+        Assertions.assertEquals(player.get(0).getHand().get(0).getCardID(), DefuseCard.DEFUSE_CARD_ID);
+        Assertions.assertEquals(player.get(1).getHand().get(0).getCardID(), DefuseCard.DEFUSE_CARD_ID);
 
         ArrayList<Integer> array = new ArrayList<>();
-        for (int i = 0; i < 37; i++){
+        for (int i = 0; i < 37; i++) {
             array.add(test1.getNextCard().getCardID());
         }
 
         Assertions.assertThrows(IndexOutOfBoundsException.class, test1::getNextCard);
 
-        for(int i = 0; i < 8; i++){
-            array.add(((Player) player.get(0)).getHand().get(i).getCardID());
-            array.add(((Player) player.get(1)).getHand().get(i).getCardID());
+        for (int i = 0; i < 8; i++) {
+            array.add(player.get(0).getHand().get(i).getCardID());
+            array.add(player.get(1).getHand().get(i).getCardID());
         }
 
         int amountBomb = 0;
@@ -329,8 +338,8 @@ class GameLogicTest {
         int amountDefuse = 0;
         int amountAttack = 0;
 
-        for(int i = 0; i < array.size(); i++){
-            switch (array.get(i)){
+        for (int i = 0; i < array.size(); i++) {
+            switch (array.get(i)) {
                 case BombCard.BOMB_CARD_ID:
                     amountBomb++;
                     break;
@@ -356,8 +365,8 @@ class GameLogicTest {
                     amountCatCard5++;
                     break;
                 case NopeCard.NOPE_CARD_ID:
-                     amountNope++;
-                     break;
+                    amountNope++;
+                    break;
                 case SeeTheFutureCard.SEE_THE_FUTURE_CARD_ID:
                     amountFuture++;
                     break;
@@ -371,19 +380,19 @@ class GameLogicTest {
                     amountAttack++;
             }
         }
-        Assertions.assertEquals(1,amountBomb);
-        Assertions.assertEquals(4,amountAttack);
-        Assertions.assertEquals(4,amountCatCard1);
-        Assertions.assertEquals(4,amountCatCard2);
-        Assertions.assertEquals(4,amountCatCard3);
-        Assertions.assertEquals(4,amountCatCard4);
-        Assertions.assertEquals(4,amountCatCard5);
-        Assertions.assertEquals(6,amountDefuse);
-        Assertions.assertEquals(4,amountFavour);
-        Assertions.assertEquals(5,amountNope);
-        Assertions.assertEquals(4,amountShuffle);
-        Assertions.assertEquals(4,amountSkip);
-        Assertions.assertEquals(5,amountFuture);
+        Assertions.assertEquals(1, amountBomb);
+        Assertions.assertEquals(4, amountAttack);
+        Assertions.assertEquals(4, amountCatCard1);
+        Assertions.assertEquals(4, amountCatCard2);
+        Assertions.assertEquals(4, amountCatCard3);
+        Assertions.assertEquals(4, amountCatCard4);
+        Assertions.assertEquals(4, amountCatCard5);
+        Assertions.assertEquals(6, amountDefuse);
+        Assertions.assertEquals(4, amountFavour);
+        Assertions.assertEquals(5, amountNope);
+        Assertions.assertEquals(4, amountShuffle);
+        Assertions.assertEquals(4, amountSkip);
+        Assertions.assertEquals(5, amountFuture);
     }
 
 }
