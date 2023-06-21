@@ -38,6 +38,7 @@
         android:layout_weight="1"
         android:layout_marginStart="1dp"
         android:textColor="@color/grey"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/buttonJoinLobby"
         app:layout_constraintStart_toEndOf="@id/textViewName"
