@@ -78,6 +78,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private ConstraintLayout hintLayout;
     public static int counter;
 
+    private boolean justCheated = false;
+
     PropertyChangeListener cardPileChangeListener = event -> runOnUiThread(() -> {
         if ("discardPile".equals(event.getPropertyName())) {
 
@@ -208,7 +210,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         deckImage.setOnClickListener(v -> {
             // Get the next card from the deck
             try {
-
+                if (GameLogic.canCardBePulled(currentPlayer) && CheatFunction.cheatEnabled) {
+                    deck.addDefuseCardFromCheating();
+                    justCheated = true;
+                }
+                if (GameLogic.canCardBePulled(currentPlayer) && !CheatFunction.cheatEnabled && justCheated) {
+                    deck.removeCard(DEFUSE_CARD_ID);
+                    justCheated = false;
+                }
                 if (GameLogic.canCardBePulled(currentPlayer)) {
                     Card nextCard = deck.getNextCard();
                     if (NetworkManager.isServer(connection)) {
@@ -530,7 +539,4 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         return super.dispatchKeyEvent(event);
     }
 
-    public int getCounter() {
-        return counter;
-    }
 }

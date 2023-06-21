@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, JoinGameActivity.class);
                 startActivity(intent);
             }
+        });
         joinGameButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, JoinGameActivity.class);
             startActivity(intent);

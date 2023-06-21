@@ -2,6 +2,7 @@ package com.example.se2_exploding_kittens.game_logic.cards;
 
 import static com.example.se2_exploding_kittens.game_logic.cards.BombCard.BOMB_CARD_ID;
 
+import com.example.se2_exploding_kittens.CheatFunction;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -31,6 +32,10 @@ public class DefuseCard implements Card {
     }
 
     public void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, TurnManager turnManager, Deck deck){
+//        if (player!= null && CheatFunction.cheatEnabled) {
+//            int insertionIDX = deck.addDefuseCardFromCheating();
+//            GameManager.sendDeckInsetCard(networkManager,DEFUSE_CARD_ID,insertionIDX);
+//        }
         if(player != null){
             //player is null if this card is played on another client, on the local client or the sever this contains the respective object
             player.setAlive(true);

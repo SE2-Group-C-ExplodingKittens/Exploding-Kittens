@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.view.KeyEvent;
 
 import com.example.se2_exploding_kittens.Activities.GameActivity;
+import com.example.se2_exploding_kittens.game_logic.Player;
 
 public class CheatFunction extends Activity {
 
@@ -15,6 +16,8 @@ public class CheatFunction extends Activity {
     double lightValue;
     int counter = 0;
     private GameActivity gameActivity;
+    Player player;
+    public static boolean cheatEnabled = false;
 
 //    @Override
 //    public boolean dispatchKeyEvent(KeyEvent event) {
@@ -44,9 +47,12 @@ public class CheatFunction extends Activity {
             lightValueString = String.valueOf(event.values[0]);
             lightValue = Double.parseDouble(lightValueString);
 
-            if (lightValue >= 3.4 && GameActivity.counter == 5) {
+            if (GameActivity.counter == 5 && lightValue >= 3.4) {
                 System.out.println("Cheat detected");
                 System.out.println(lightValue);
+                cheatEnabled = true;
+            } else {
+                cheatEnabled = false;
             }
         }
 

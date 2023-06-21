@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.example.se2_exploding_kittens.CheatFunction;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.NetworkManager;
@@ -77,7 +78,7 @@ public class Player implements MessageCallback {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    private CopyOnWriteArrayList<Card> hand = new CopyOnWriteArrayList <>();
+    private CopyOnWriteArrayList<Card>  hand = new CopyOnWriteArrayList <>();
 
     public int getDefuse() {
         for (int i = 0; i < hand.size(); i++) {
