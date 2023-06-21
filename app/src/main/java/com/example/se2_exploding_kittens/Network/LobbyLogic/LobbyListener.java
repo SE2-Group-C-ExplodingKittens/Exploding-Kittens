@@ -43,7 +43,9 @@ public class LobbyListener implements Runnable {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            if (socket != null){
+                socket.close();
+            }
         }finally {
             if (socket != null){
                 socket.close();
