@@ -352,6 +352,8 @@ public class Player implements MessageCallback {
     public void setHasWon(boolean hasWon) {
         if (!this.hasWon && hasWon) {
             propertyChangeSupport.firePropertyChange("playerWon", -1, playerId);
+            propertyChangeSupport.firePropertyChange("BombVibrate", -1, playerId);
+
         }
         this.hasWon = hasWon;
     }

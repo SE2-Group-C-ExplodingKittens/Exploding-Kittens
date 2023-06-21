@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SE2_Exploding-Kittens</string>
+    <string name="app_name">Exploding Kittens</string>
     <string name="element_text" />
     <string name="first_image_of_card">First Image of Card</string>
     <string name="second_image_of_card">Second Image of Card</string>

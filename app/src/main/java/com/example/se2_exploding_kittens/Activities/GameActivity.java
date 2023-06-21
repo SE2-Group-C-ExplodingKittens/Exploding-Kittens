@@ -121,6 +121,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             Toast.makeText(GameActivity.this, "You won!", Toast.LENGTH_SHORT).show();
         }
     });
+    PropertyChangeListener bombDefuseListener = event -> runOnUiThread(() -> {
+        if ("BombVibrate".equals(event.getPropertyName())) {
+            //check if the local player caused this event
+            Toast.makeText(GameActivity.this, "You won!", Toast.LENGTH_SHORT).show();
+        }
+    });
 
     PropertyChangeListener playerLostChangeListener = event -> runOnUiThread(() -> {
         if ("playerLost".equals(event.getPropertyName())) {
@@ -307,6 +313,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(cardStolenListener);
             playerManager.getLocalSelf().addPropertyChangeListener(catButtonsInvisibleListener);
+            playerManager.getLocalSelf().addPropertyChangeListener(bombDefuseListener);
             localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
         } else if (NetworkManager.isClient(connection)) {
@@ -317,6 +324,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             localPlayer.addPropertyChangeListener(notYourTurnListener);
             localPlayer.addPropertyChangeListener(cardStolenListener);
             localPlayer.addPropertyChangeListener(catButtonsInvisibleListener);
+            localPlayer.addPropertyChangeListener(bombDefuseListener);
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);
