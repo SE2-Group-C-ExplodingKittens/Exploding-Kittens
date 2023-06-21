@@ -58,11 +58,11 @@ public class GameManager implements MessageCallback {
             this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
             this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
             this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_STEAL_CARD);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_ACTIVITY_STEAL_CARD);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID);
             this.networkManager = null;
         }
         this.playerManager = null;

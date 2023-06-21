@@ -112,6 +112,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     public void runAsServer(int port){
         clearAllCallbacks();
+        connection = null;
         connectionRole = TypeOfConnectionRole.SERVER;
         server = new TCPServer(port,this);
         Thread thread = new Thread(server);

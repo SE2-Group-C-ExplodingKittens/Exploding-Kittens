@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.Network.TCP;
 
+import android.util.Log;
+
 import com.example.se2_exploding_kittens.Network.ConnectionState;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
@@ -78,6 +80,7 @@ public class ClientTCP implements Runnable, TCP{
     private void listenForMessages(BufferedReader in) throws IOException {
         String response = null;
         response = in.readLine();
+        Log.v("GameActivity", response);
         if(response == null){
             //EOF sent
             connState = ConnectionState.DISCONNECTING;
@@ -91,15 +94,9 @@ public class ClientTCP implements Runnable, TCP{
     public void endConnection(){
         connState = ConnectionState.DISCONNECTING;
         try {
-            if(out != null){
                 out.close();
-            }
-            if(in != null){
                 in.close();
-            }
-            if(clientSocket != null){
                 clientSocket.close();
-            }
         } catch (IOException e) {
             //could not close resources
         }
