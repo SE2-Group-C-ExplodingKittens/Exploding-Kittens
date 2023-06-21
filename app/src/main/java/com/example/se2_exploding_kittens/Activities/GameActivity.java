@@ -23,6 +23,13 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
+
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,7 +48,6 @@ import com.example.se2_exploding_kittens.Network.MessageCallback;
 import com.example.se2_exploding_kittens.Network.PlayerConnection;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
-import com.example.se2_exploding_kittens.Network.TypeOfConnectionRole;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.OverlapDecoration;
 import com.example.se2_exploding_kittens.R;
@@ -59,10 +65,14 @@ import java.util.ArrayList;
 public class GameActivity extends AppCompatActivity implements MessageCallback, CardAdapter.HelpAskListener {
     public static final int GAME_ACTIVITY_DECK_MESSAGE_ID = 1001;
     public static final int GAME_ACTIVITY_SHOW_THREE_CARDS_ID = 1002;
-    public static final int GAME_ACTIVITY_FAVOR_CARD_ID = 1003;
+    public static final int GAME_ACTIVITY_STEAL_CARD = 1003;
 
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
+    private TextView yourTurnTextView;
+    private TextView seeTheFutureCardTextView;
+
+    private TextView stealRandomCardTextView;
     private GameManager gameManager;
     private Player localPlayer;
     private Deck deck;
@@ -70,10 +80,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private GameClient gameClient;
 
     private CardAdapter adapter;
-    private TextView yourTurnTextView;
-    private TextView seeTheFutureCardTextView;
-    private TextView stealRandomCardTextView;
+
+
+    private ImageView signYourTurn;
+
+
     private View discardPileView;
+    private Button buttonTwoCats;
+    private Button buttonThreeCats;
+
     private Vibrator vibrator;
     private ConstraintLayout hintLayout;
     public static int counter;
@@ -94,21 +109,34 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
     });
 
+    PropertyChangeListener catButtonsInvisibleListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            runOnUiThread(() -> {
+                if ("setCatButtonsInvisible".equals(evt.getPropertyName())) {
+                    buttonTwoCats.setVisibility(View.INVISIBLE);
+                    buttonThreeCats.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+    };
+
+
     PropertyChangeListener playerWonChangeListener = event -> runOnUiThread(() -> {
         if ("playerWon".equals(event.getPropertyName())) {
             //check if the local player caused this event
-            Toast.makeText(GameActivity.this, "You " + event.getNewValue() + " won!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GameActivity.this, "You won!", Toast.LENGTH_SHORT).show();
         }
     });
 
     PropertyChangeListener playerLostChangeListener = event -> runOnUiThread(() -> {
         if ("playerLost".equals(event.getPropertyName())) {
-            Toast.makeText(GameActivity.this, "Player " + event.getNewValue() + " lost!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GameActivity.this, "Player lost!", Toast.LENGTH_SHORT).show();
         }
     });
 
     PropertyChangeListener cardStolenListener = event -> runOnUiThread(() -> {
-        if("cardStolen".equals(event.getPropertyName())){
+        if ("cardStolen".equals(event.getPropertyName())) {
             runOnUiThread(() -> stealRandomCardTextView.setVisibility(View.VISIBLE));
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 // set invisible after 3 seconds
@@ -121,7 +149,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         if (event.getNewValue() instanceof Integer && ("yourTurn".equals(event.getPropertyName()))) {
             //check if the local player caused this event
             if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
-                yourTurnTextView.setVisibility(View.VISIBLE);
+                signYourTurn.setVisibility(View.VISIBLE);
+                yourSignAnimation(signYourTurn);
             }
         }
     });
@@ -129,12 +158,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     PropertyChangeListener notYourTurnListener = event -> runOnUiThread(() -> {
         if (event.getNewValue() instanceof Integer && ("notYourTurn".equals(event.getPropertyName()) && localPlayer.getPlayerId() == (int) event.getNewValue())) {
                 //check if the local player caused this event
-                yourTurnTextView.setVisibility(View.INVISIBLE);
+            // Stop the animation
+            signYourTurn.clearAnimation();
+            signYourTurn.setVisibility(View.INVISIBLE);
 
         }
     });
 
-    private void initDiscardPile(DiscardPile discardPile, Player currentPlayer, PropertyChangeListener cardPileChangeListener){
+    private void initDiscardPile(DiscardPile discardPile, Player currentPlayer, PropertyChangeListener cardPileChangeListener) {
         discardPileView = findViewById(R.id.discardPile);
         discardPileView.setOnDragListener((view, event) -> {
             discardPileHandleDropAction(discardPile, currentPlayer, event);
@@ -228,12 +259,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                     }
                     adapter.notifyDataSetChanged();
                 }
-
             } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
                 Toast.makeText(GameActivity.this, "The deck is empty!", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+
 
 
     @Override
@@ -267,13 +299,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         localPlayer = null;
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        yourTurnTextView = findViewById(R.id.textViewYourTurn);
+        signYourTurn = findViewById(R.id.yourTurnSign);
         seeTheFutureCardTextView = findViewById(R.id.textViewSeeTheFutureCard);
         stealRandomCardTextView = findViewById(R.id.textViewStealRandomCard);
+        buttonTwoCats = findViewById(R.id.buttonTwoCats);
+        buttonThreeCats = findViewById(R.id.buttonThreeCats);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
-        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_FAVOR_CARD_ID);
+        connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_STEAL_CARD);
         connection.subscribeCallbackToMessageID(this, GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD);
         long seed = System.currentTimeMillis();
         discardPile = new DiscardPile();
@@ -286,6 +320,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             playerManager.getLocalSelf().addPropertyChangeListener(yourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(notYourTurnListener);
             playerManager.getLocalSelf().addPropertyChangeListener(cardStolenListener);
+            playerManager.getLocalSelf().addPropertyChangeListener(catButtonsInvisibleListener);
             localPlayer = playerManager.getLocalSelf();
             gameManager.startGame();
         } else if (NetworkManager.isClient(connection)) {
@@ -295,6 +330,9 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             localPlayer.addPropertyChangeListener(yourTurnListener);
             localPlayer.addPropertyChangeListener(notYourTurnListener);
             localPlayer.addPropertyChangeListener(cardStolenListener);
+            localPlayer.addPropertyChangeListener(catButtonsInvisibleListener);
+            //playerManager.initializeAsClient(localClientPlayer,connection);
+            //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);
 
             Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
@@ -345,6 +383,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
     }
 
+
+
     private void prepareGame(long seed) {
         deck = new Deck(seed);
         playerManager.initializeAsHost(connection.getServerConnections(), connection);
@@ -365,10 +405,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         Log.v("GameActivity", text);
         int messageID = Message.parseAndExtractMessageID(text);
         if (sender instanceof ClientTCP && (messageID == GAME_ACTIVITY_DECK_MESSAGE_ID)) {
-                deck = new Deck(Message.parseAndExtractPayload(text));
-                if (NetworkManager.isClient(connection) && gameClient != null) {
-                    gameClient.setDeck(deck);
-                }
+            deck = new Deck(Message.parseAndExtractPayload(text));
+            if (NetworkManager.isClient(connection) && gameClient != null) {
+                gameClient.setDeck(deck);
+            }
 
         }
 
@@ -379,13 +419,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
         }
 
-        if (messageID == GAME_ACTIVITY_FAVOR_CARD_ID) {
+        if (messageID == GAME_ACTIVITY_STEAL_CARD) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             int playerID = Integer.parseInt(message[1]);
             if (playerID == localPlayer.getPlayerId()) {
                 // steal a random Card and display text
                 Card card = localPlayer.removeRandomCardFromHand();
                 //send card to stealer
+                GameManager.updatePlayerHand(localPlayer.getPlayerId(), connection, localPlayer.handToString());
                 GameLogic.cardHasBeenGiven(Integer.parseInt(message[0]), connection, card);
             }
         } else if (messageID == GameManager.GAME_MANAGER_MESSAGE_CHECKED_CARD) {
@@ -404,10 +445,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             seeTheFutureCardTextView.setText(txt);
             seeTheFutureCardTextView.setVisibility(View.VISIBLE);
         });
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // set invisible after 3 seconds
-            seeTheFutureCardTextView.setVisibility(View.INVISIBLE);
-        }, 3000); // 3000 milliseconds = 3 seconds
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                seeTheFutureCardTextView.setVisibility(View.INVISIBLE), 3000); // 3000 milliseconds = 3 seconds
     }
 
 
@@ -539,4 +578,28 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         return super.dispatchKeyEvent(event);
     }
 
+    // Animation method for yourTurnSign
+    public void yourSignAnimation(ImageView turnSign){
+
+        turnSign.setEnabled(true);
+        turnSign.setAlpha(1.0f);
+
+        AnimationSet animationSet = new AnimationSet(true);
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.5f);
+        alphaAnimation.setDuration(1000);
+        alphaAnimation.setRepeatCount(Animation.INFINITE);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(1000);
+        scaleAnimation.setRepeatCount(Animation.INFINITE);
+        scaleAnimation.setRepeatMode(Animation.REVERSE);
+
+        animationSet.addAnimation(alphaAnimation);
+        animationSet.addAnimation(scaleAnimation);
+
+        turnSign.startAnimation(animationSet);
+    }
 }

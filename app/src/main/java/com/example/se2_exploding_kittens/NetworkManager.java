@@ -99,14 +99,14 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
     }
 
     private void clearAllCallbacks(){
-        for(int i = 0; i < connectedCallbacks.size(); i++){
-            connectedCallbacks.remove(0);
+        if (connectedCallbacks.size() > 0) {
+            connectedCallbacks.subList(0, connectedCallbacks.size()).clear();
         }
-        for(int i = 0; i < disconnectedCallback.size(); i++){
-            disconnectedCallback.remove(0);
+        if (disconnectedCallback.size() > 0) {
+            disconnectedCallback.subList(0, disconnectedCallback.size()).clear();
         }
-        for(int i = 0; i < subscribedCallbacks.size(); i++){
-            subscribedCallbacks.remove(0);
+        if (subscribedCallbacks.size() > 0) {
+            subscribedCallbacks.subList(0, subscribedCallbacks.size()).clear();
         }
     }
 
@@ -134,11 +134,29 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             }
             server.terminateServer();
             connectionRole = TypeOfConnectionRole.IDLE;
+            int timeout = 250; // 250ms timeout
+            while (serverToClientConnections. size() > 0 && timeout > 0) {
+                try {
+                    Thread.sleep(20);
+                    timeout-=20;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             clearAllCallbacks();
         }
         if(connectionRole == TypeOfConnectionRole.CLIENT){
             connection.endConnection();
             connectionRole = TypeOfConnectionRole.IDLE;
+            int timeout = 250; // 250ms timeout
+            while (connection != null && timeout > 0) {
+                try {
+                    Thread.sleep(20);
+                    timeout-=20;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             clearAllCallbacks();
         }
     }

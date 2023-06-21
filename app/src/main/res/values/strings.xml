@@ -11,4 +11,7 @@
     <string name="discard_pile_frameLayout">Discard Pile FrameLayout</string>
     <string name="discard_pile_image">Discard Pile Image</string>
     <string name="drawing_pile_image">Drawing Pile Image</string>
+    <string name="you_have_been_chosen_and_a_random_card_got_stolen_from_your_hand">You have been chosen and a random card got stolen from your hand!</string>
+    <string name="get_random_non_bomb_card">Get random (non bomb) Card!</string>
+    <string name="choose_a_player_you_want_to_steal_a_card_from">Choose a player you want to steal a card from!</string>
 </resources>
