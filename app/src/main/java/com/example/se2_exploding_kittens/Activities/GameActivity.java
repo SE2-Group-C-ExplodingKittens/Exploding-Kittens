@@ -51,6 +51,7 @@ import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.OverlapDecoration;
 import com.example.se2_exploding_kittens.R;
+import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameClient;
@@ -88,6 +89,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private View discardPileView;
     private Button buttonTwoCats;
     private Button buttonThreeCats;
+    private Button cheatButton;
 
     private Vibrator vibrator;
     private ConstraintLayout hintLayout;
@@ -151,17 +153,18 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
                 signYourTurn.setVisibility(View.VISIBLE);
                 yourSignAnimation(signYourTurn);
+                cheatButton.setEnabled(false);
             }
         }
     });
 
     PropertyChangeListener notYourTurnListener = event -> runOnUiThread(() -> {
         if (event.getNewValue() instanceof Integer && ("notYourTurn".equals(event.getPropertyName()) && localPlayer.getPlayerId() == (int) event.getNewValue())) {
-                //check if the local player caused this event
+            //check if the local player caused this event
             // Stop the animation
             signYourTurn.clearAnimation();
             signYourTurn.setVisibility(View.INVISIBLE);
-
+            cheatButton.setEnabled(true);
         }
     });
 
@@ -242,11 +245,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             // Get the next card from the deck
             try {
                 if (GameLogic.canCardBePulled(currentPlayer) && CheatFunction.cheatEnabled) {
-                    deck.addDefuseCardFromCheating();
+                    localPlayer.addCardToHand("8");
+                    GameManager.updatePlayerHand(localPlayer.getPlayerId(), connection, localPlayer.handToString());
                     justCheated = true;
                 }
                 if (GameLogic.canCardBePulled(currentPlayer) && !CheatFunction.cheatEnabled && justCheated) {
-                    deck.removeCard(DEFUSE_CARD_ID);
+                    localPlayer.removeCardFromHand("8");
+                    GameManager.updatePlayerHand(localPlayer.getPlayerId(), connection, localPlayer.handToString());
                     justCheated = false;
                 }
                 if (GameLogic.canCardBePulled(currentPlayer)) {
@@ -264,8 +269,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
         });
     }
-
-
 
 
     @Override
@@ -304,6 +307,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         stealRandomCardTextView = findViewById(R.id.textViewStealRandomCard);
         buttonTwoCats = findViewById(R.id.buttonTwoCats);
         buttonThreeCats = findViewById(R.id.buttonThreeCats);
+        cheatButton = findViewById(R.id.cheatButton);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
@@ -380,10 +384,21 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         CheatFunction cheatFunction = new CheatFunction(sensorManager);
-
+        prepareCheat();
     }
 
-
+    private void prepareCheat() {
+        cheatButton.setOnClickListener(v -> {
+            if (!justCheated) {
+                playerManager.getLocalSelf().removeRandomCardFromHand();
+                Toast toast = Toast.makeText(this, "No cheat detected!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+            if (justCheated) {
+                playerManager.getPlayer(playerManager.getLocalSelf().getPlayerId() - 1).getPlayer().removeRandomCardFromHand();
+            }
+        });
+    }
 
     private void prepareGame(long seed) {
         deck = new Deck(seed);
@@ -579,7 +594,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     }
 
     // Animation method for yourTurnSign
-    public void yourSignAnimation(ImageView turnSign){
+    public void yourSignAnimation(ImageView turnSign) {
 
         turnSign.setEnabled(true);
         turnSign.setAlpha(1.0f);

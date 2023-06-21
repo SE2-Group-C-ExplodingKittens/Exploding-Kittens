@@ -35,6 +35,8 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         this.currentPlayerID = 0;
     }
 
+
+
     public void startGame() {
         if(NetworkManager.isServer(networkManager)){
             shuffleOrder();

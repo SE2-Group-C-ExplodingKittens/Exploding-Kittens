@@ -47,7 +47,7 @@ public class CheatFunction extends Activity {
             lightValueString = String.valueOf(event.values[0]);
             lightValue = Double.parseDouble(lightValueString);
 
-            if (GameActivity.counter == 5 && lightValue >= 3.4) {
+            if (GameActivity.counter == 5 && lightValue <= 200) {
                 System.out.println("Cheat detected");
                 System.out.println(lightValue);
                 cheatEnabled = true;
