@@ -37,16 +37,7 @@ public class ServerTCPSocket implements Runnable, TCP{
             in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.US_ASCII));
             connState = ConnectionState.CONNECTED;
         } catch (IOException e) {
-            try {
-                if(out != null){
-                    out.close();
-                }
-                if(in != null){
-                    in.close();
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            //couldn't initialize resources
         }
     }
 
@@ -73,15 +64,9 @@ public class ServerTCPSocket implements Runnable, TCP{
     public void endConnection() {
         connState = ConnectionState.DISCONNECTING;
         try {
-            if(out != null){
-                out.close();
-            }
-            if(in != null){
-                in.close();
-            }
-            if(connection != null){
-                connection.close();
-            }
+            out.close();
+            in.close();
+            connection.close();
         } catch (IOException e) {
             //could not close resources
         }

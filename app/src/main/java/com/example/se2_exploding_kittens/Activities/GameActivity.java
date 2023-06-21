@@ -378,7 +378,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
         deck.dealCards(players);
         gameManager = new GameManager(connection, deck, discardPile);
-        gameManager.distributeDeck(deck);
+        GameManager.distributeDeck(connection, deck);
         gameManager.distributePlayerHands();
     }
 
