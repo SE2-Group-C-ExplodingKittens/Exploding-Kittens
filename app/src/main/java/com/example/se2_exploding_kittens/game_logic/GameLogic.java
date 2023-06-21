@@ -29,7 +29,7 @@ public class GameLogic {
 
     public static boolean nopeEnabled = false;
     ArrayList<Player> playerList = new ArrayList<>();
-    private static ArrayList<String> playerIDList = new ArrayList<>();
+    private static final ArrayList<String> playerIDList = new ArrayList<>();
     int idOfLocalPlayer;
     Deck deck;
 
@@ -63,6 +63,10 @@ public class GameLogic {
 
     public static void setPlayerIDList(String text) throws IllegalArgumentException {
         String[] playerList = text.split(":");
+
+        if (playerList.length < 2 || playerList.length > 5 || text.matches(".*::.*") || text.matches(":.*") || text.matches(".*:")) {
+            throw new IllegalArgumentException();
+        }
 
         //this should prevent, that artifacts form previous games persist
         playerIDList.clear();
@@ -100,9 +104,7 @@ public class GameLogic {
                 return true;
             }
             //nope is only affected if nopeEnabled == true, the turns of the player don't affect it
-            if (nopeEnabled && card instanceof NopeCard) {
-                return true;
-            }
+            return nopeEnabled && card instanceof NopeCard;
         }
 
         return false;
