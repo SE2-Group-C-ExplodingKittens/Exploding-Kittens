@@ -56,11 +56,11 @@ class GameManagerTest {
     void testReset() {
         GameManager gameManager = new GameManager(networkManager,deck,discardPile);
         gameManager.reset();
-        verify(networkManager, times(5)).unsubscribeCallbackFromMessageID(anyObject(), anyInt());
+        verify(networkManager, times(10)).unsubscribeCallbackFromMessageID(anyObject(), anyInt());
         Assert.assertEquals(null, gameManager.getTurnManage());
 
         gameManager.reset();    // as networkManager is null unsubscribeCallbackFromMessageID gets no longer called
-        verify(networkManager, times(5)).unsubscribeCallbackFromMessageID(anyObject(), anyInt());
+        verify(networkManager, times(10)).unsubscribeCallbackFromMessageID(anyObject(), anyInt());
     }
 
     // the following is an integration test
