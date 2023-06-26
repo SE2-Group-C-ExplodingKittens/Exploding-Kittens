@@ -53,7 +53,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         // Set the card image and title
         holder.cardImage.setImageResource(card.getImageResource());
 
-//            TODO Trying to implement the drag and drop function
         holder.cardImage.setOnLongClickListener(v -> {
             String imageResource = String.valueOf(card.getImageResource());
             int myPosition = holder.getAdapterPosition();
@@ -86,21 +85,11 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("hand")) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    notifyDataSetChanged();
-                }
-            });
+            new Handler(Looper.getMainLooper()).post(this::notifyDataSetChanged);
         }
         if (evt.getPropertyName().equals("handCardRemoved")) {
             final int removedIndex = (int) evt.getNewValue();
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    notifyItemRemoved(removedIndex);
-                }
-            });
+            new Handler(Looper.getMainLooper()).post(() -> notifyItemRemoved(removedIndex));
         }
     }
 

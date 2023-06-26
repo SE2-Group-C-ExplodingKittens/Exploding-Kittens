@@ -65,7 +65,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
     private NetworkManager connection;
     private PlayerManager playerManager = PlayerManager.getInstance();
-    private TextView yourTurnTextView;
     private TextView seeTheFutureCardTextView;
 
     private TextView stealRandomCardTextView;
@@ -102,17 +101,12 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
     });
 
-    PropertyChangeListener catButtonsInvisibleListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            runOnUiThread(() -> {
+    PropertyChangeListener catButtonsInvisibleListener = evt -> runOnUiThread(() -> {
                 if ("setCatButtonsInvisible".equals(evt.getPropertyName())) {
                     buttonTwoCats.setVisibility(View.INVISIBLE);
                     buttonThreeCats.setVisibility(View.INVISIBLE);
                 }
             });
-        }
-    };
 
     PropertyChangeListener playerInitialized = event -> runOnUiThread(() -> {
         if ("playerInitialized".equals(event.getPropertyName())) {
@@ -148,12 +142,10 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     });
 
     PropertyChangeListener yourTurnListener = event -> runOnUiThread(() -> {
-        if (event.getNewValue() instanceof Integer && ("yourTurn".equals(event.getPropertyName()))) {
+        if (event.getNewValue() instanceof Integer && ("yourTurn".equals(event.getPropertyName())) && (localPlayer.getPlayerId() == (int) event.getNewValue())) {
             //check if the local player caused this event
-            if (localPlayer.getPlayerId() == (int) event.getNewValue()) {
-                signYourTurn.setVisibility(View.VISIBLE);
-                yourSignAnimation(signYourTurn);
-            }
+            signYourTurn.setVisibility(View.VISIBLE);
+            yourSignAnimation(signYourTurn);
         }
     });
 
@@ -326,8 +318,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             localPlayer.addPropertyChangeListener(notYourTurnListener);
             localPlayer.addPropertyChangeListener(cardStolenListener);
             localPlayer.addPropertyChangeListener(catButtonsInvisibleListener);
-            //playerManager.initializeAsClient(localClientPlayer,connection);
-            //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);
             gameClient.addPropertyChangeListener(playerInitialized);
 
@@ -335,36 +325,8 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             toast.setDuration(Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.BOTTOM, 0, 100);
             toast.show();
-            //gameClient.blockUntilReady(this);
-            //guiInit(localPlayer);
-
-
-        } else if (!NetworkManager.isNotIdle(connection)) {
-            //this case just for local testing presumably no connection has ever been established
-            //Add players to the player's list
-            ArrayList<Player> players = new ArrayList<>();
-            deck = new Deck(seed);
-            Player p1 = new Player(1);
-            Player p2 = new Player(2);
-            Player p3 = new Player(3);
-            Player p4 = new Player(4);
-            Player p5 = new Player(5);
-            Player p6 = new Player(6);
-            players.add(p1);
-            players.add(p2);
-            players.add(p3);
-            players.add(p4);
-            players.add(p5);
-            players.add(p6);
-
-            // Deal cards
-            deck.dealCards(players);
-
-            guiInit(p1);
         }
-
         hintLayout = findViewById(R.id.hint_wrapper);
-
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
     }
 

@@ -120,6 +120,27 @@ public class ServerTCPSocket implements Runnable, TCP{
         }).start();
     }
 
+    private void handleNetworkException(){
+        connState = ConnectionState.DISCONNECTED;
+        try {
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            in.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            connection.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if(disconnectedCallback != null)
+            disconnectedCallback.connectionDisconnected(this);
+    }
+
     @Override
     public void run() {
         if(connState == ConnectionState.CONNECTED){
@@ -143,24 +164,7 @@ public class ServerTCPSocket implements Runnable, TCP{
                         disconnectedCallback.connectionDisconnected(this);
                 }
             } catch (IOException e) {
-                connState = ConnectionState.DISCONNECTED;
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    connection.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                if(disconnectedCallback != null)
-                    disconnectedCallback.connectionDisconnected(this);
+                handleNetworkException();
             }
         }
     }
