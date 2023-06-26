@@ -128,6 +128,27 @@ public class ClientTCP implements Runnable, TCP{
         }).start();
     }
 
+    private void handleNetworkException(){
+        connState = ConnectionState.DISCONNECTED;
+        try {
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            in.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            clientSocket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if(disconnectedCallback != null)
+            disconnectedCallback.connectionDisconnected(this);
+    }
+
     @Override
     public void run() {
         if(connect()){
@@ -156,24 +177,7 @@ public class ClientTCP implements Runnable, TCP{
                 }
 
             } catch (IOException e) {
-                connState = ConnectionState.DISCONNECTED;
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    clientSocket.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                if(disconnectedCallback != null)
-                    disconnectedCallback.connectionDisconnected(this);
+                handleNetworkException();
             }
         }
     }

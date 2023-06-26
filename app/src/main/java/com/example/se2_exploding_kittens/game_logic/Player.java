@@ -50,13 +50,13 @@ public class Player implements MessageCallback {
     private boolean canNope = false;
     private boolean hasWon = false;
     private int playerTurns;
-    private static String DEBUG_TAG = "Player";
     public static final String PLAYER_CARD_HAND_REMOVED_PROPERTY = "handCardRemoved";
     private int catOneCounter;
     private int catTwoCounter;
     private int catThreeCounter;
     private int catFourCounter;
     private int catFiveCounter;
+    private Random random;
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -275,8 +275,9 @@ public class Player implements MessageCallback {
         if (getHand().size() == 0) {
             return null;
         }
-
-        Random random = new Random();
+        if (random == null){
+            random = new Random(System.currentTimeMillis());
+        }
         //get random index from hand
         int randomIndex = random.nextInt(getHand().size());
         Card card = getHand().get(randomIndex);
@@ -331,6 +332,7 @@ public class Player implements MessageCallback {
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
                 } else if (messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id) {
                     setHandFromString(parseDataFromPayload(payload));
+                    propertyChangeSupport.firePropertyChange("handInitialized", oldHand, hand);
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
                 }
             }

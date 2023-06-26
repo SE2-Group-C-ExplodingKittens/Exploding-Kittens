@@ -20,7 +20,12 @@ import static com.example.se2_exploding_kittens.TurnManager.LOCAL_TURN_MANAGER_T
 
 import android.app.Activity;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.example.se2_exploding_kittens.Activities.GameActivity;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -28,7 +33,12 @@ import com.example.se2_exploding_kittens.Network.MessageType;
 import com.example.se2_exploding_kittens.Network.PlayerManager;
 import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.NetworkManager;
+import com.example.se2_exploding_kittens.R;
 import com.example.se2_exploding_kittens.game_logic.cards.Card;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public class GameClient implements MessageCallback, DisconnectedCallback {
 
@@ -37,8 +47,17 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
     private DiscardPile discardPile;
     private NetworkManager networkManager;
 
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    private PropertyChangeListener handInitializedChangeListener = evt -> {
+        if ("handInitialized".equals(evt.getPropertyName())) {
+            checkIfGameInitialized();
+        }
+    };
+
     public GameClient(Player player, Deck deck, DiscardPile discardPile, NetworkManager networkManager) {
         this.player = player;
+        this.player.addPropertyChangeListener(handInitializedChangeListener);
         this.deck = deck;
         this.discardPile = discardPile;
         this.networkManager = networkManager;
@@ -58,8 +77,19 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
         this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_SEND_CARD_TO_PLAYER_ID);
     }
 
+
+
+
     public Player getPlayer() {
         return this.player;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     public Deck getDeck() {
@@ -75,6 +105,12 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
 
     public NetworkManager getNetworkManager() {
         return this.networkManager;
+    }
+
+    public void checkIfGameInitialized(){
+        if(player.getPlayerId() != -1 && deck != null && player.getHand().size() > 0){
+            propertyChangeSupport.firePropertyChange("playerInitialized",null,player);
+        }
     }
 
     public void blockUntilReady(Activity activity) {
@@ -288,6 +324,7 @@ public class GameClient implements MessageCallback, DisconnectedCallback {
                     playerID = Integer.parseInt(PlayerManager.parseDataFromPayload(Message.parseAndExtractPayload(text)));
                     if(playerID != -1){
                         player.setPlayerId(playerID);
+                        checkIfGameInitialized();
                     }
                     break;
                 case LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT:
