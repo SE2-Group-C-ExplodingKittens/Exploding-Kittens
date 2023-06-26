@@ -114,6 +114,15 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
     };
 
+    PropertyChangeListener playerInitialized = event -> runOnUiThread(() -> {
+        if ("playerInitialized".equals(event.getPropertyName())) {
+            guiInit((Player) event.getNewValue());
+            Toast toast = Toast.makeText(this, "You're Player" + localPlayer.getPlayerId(), Toast.LENGTH_SHORT);
+            toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
+            toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
+            toast.show();
+        }
+    });
 
     PropertyChangeListener playerWonChangeListener = event -> runOnUiThread(() -> {
         if ("playerWon".equals(event.getPropertyName())) {
@@ -320,20 +329,14 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             //playerManager.initializeAsClient(localClientPlayer,connection);
             //gameManager = new GameManager(connection, null,discardPile);
             gameClient = new GameClient(localPlayer, deck, discardPile, connection);
+            gameClient.addPropertyChangeListener(playerInitialized);
 
             Toast toast = Toast.makeText(this, "Waiting for host to start", Toast.LENGTH_SHORT);
             toast.setDuration(Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.BOTTOM, 0, 100);
             toast.show();
-
-            gameClient.blockUntilReady(this);
-
-
-            toast = Toast.makeText(this, "You're Player" + localPlayer.getPlayerId(), Toast.LENGTH_SHORT);
-            toast.setDuration(Toast.LENGTH_SHORT); // 3 seconds
-            toast.setGravity(Gravity.BOTTOM, 0, 100); // Display at the bottom with an offset
-            toast.show();
-            guiInit(localPlayer);
+            //gameClient.blockUntilReady(this);
+            //guiInit(localPlayer);
 
 
         } else if (!NetworkManager.isNotIdle(connection)) {
@@ -390,6 +393,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             deck = new Deck(Message.parseAndExtractPayload(text));
             if (NetworkManager.isClient(connection) && gameClient != null) {
                 gameClient.setDeck(deck);
+                gameClient.checkIfGameInitialized();
             }
 
         }

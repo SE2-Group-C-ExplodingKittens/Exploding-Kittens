@@ -331,6 +331,7 @@ public class Player implements MessageCallback {
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
                 } else if (messageID == PlayerMessageID.PLAYER_HAND_MESSAGE_ID.id) {
                     setHandFromString(parseDataFromPayload(payload));
+                    propertyChangeSupport.firePropertyChange("handInitialized", oldHand, hand);
                     propertyChangeSupport.firePropertyChange("hand", oldHand, hand);
                 }
             }
