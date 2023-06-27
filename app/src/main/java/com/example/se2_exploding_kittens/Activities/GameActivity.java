@@ -10,14 +10,17 @@ import static com.example.se2_exploding_kittens.game_logic.cards.ShuffleCard.SHU
 import static com.example.se2_exploding_kittens.game_logic.cards.SkipCard.SKIP_CARD_ID;
 
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,6 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se2_exploding_kittens.CardAdapter;
+import com.example.se2_exploding_kittens.CheatFunction;
 import com.example.se2_exploding_kittens.Network.GameManager;
 import com.example.se2_exploding_kittens.Network.Message;
 import com.example.se2_exploding_kittens.Network.MessageCallback;
@@ -47,6 +51,7 @@ import com.example.se2_exploding_kittens.Network.TCP.ClientTCP;
 import com.example.se2_exploding_kittens.NetworkManager;
 import com.example.se2_exploding_kittens.OverlapDecoration;
 import com.example.se2_exploding_kittens.R;
+import com.example.se2_exploding_kittens.TurnManager;
 import com.example.se2_exploding_kittens.game_logic.Deck;
 import com.example.se2_exploding_kittens.game_logic.DiscardPile;
 import com.example.se2_exploding_kittens.game_logic.GameClient;
@@ -83,9 +88,13 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
     private View discardPileView;
     private Button buttonTwoCats;
     private Button buttonThreeCats;
+    private Button cheatButton;
 
     private Vibrator vibrator;
     private ConstraintLayout hintLayout;
+    public static int counter;
+
+    private boolean justCheated = false;
 
     PropertyChangeListener cardPileChangeListener = event -> runOnUiThread(() -> {
         if ("discardPile".equals(event.getPropertyName())) {
@@ -151,11 +160,11 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
 
     PropertyChangeListener notYourTurnListener = event -> runOnUiThread(() -> {
         if (event.getNewValue() instanceof Integer && ("notYourTurn".equals(event.getPropertyName()) && localPlayer.getPlayerId() == (int) event.getNewValue())) {
-                //check if the local player caused this event
+            //check if the local player caused this event
             // Stop the animation
             signYourTurn.clearAnimation();
             signYourTurn.setVisibility(View.INVISIBLE);
-
+            cheatButton.setEnabled(true);
         }
     });
 
@@ -235,7 +244,16 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         deckImage.setOnClickListener(v -> {
             // Get the next card from the deck
             try {
-
+                if (GameLogic.canCardBePulled(currentPlayer) && CheatFunction.cheatEnabled) {
+                    localPlayer.addCardToHand("8");
+                    GameManager.updatePlayerHand(localPlayer.getPlayerId(), connection, localPlayer.handToString());
+                    justCheated = true;
+                }
+                if (GameLogic.canCardBePulled(currentPlayer) && !CheatFunction.cheatEnabled && justCheated) {
+                    localPlayer.removeCardFromHand("8");
+                    GameManager.updatePlayerHand(localPlayer.getPlayerId(), connection, localPlayer.handToString());
+                    justCheated = false;
+                }
                 if (GameLogic.canCardBePulled(currentPlayer)) {
                     Card nextCard = deck.getNextCard();
                     if (NetworkManager.isServer(connection)) {
@@ -251,8 +269,6 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
             }
         });
     }
-
-
 
 
     @Override
@@ -291,6 +307,7 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         stealRandomCardTextView = findViewById(R.id.textViewStealRandomCard);
         buttonTwoCats = findViewById(R.id.buttonTwoCats);
         buttonThreeCats = findViewById(R.id.buttonThreeCats);
+        cheatButton = findViewById(R.id.cheatButton);
         connection = NetworkManager.getInstance();
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
         connection.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
@@ -328,9 +345,24 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
         }
         hintLayout = findViewById(R.id.hint_wrapper);
         findViewById(R.id.close_hint).setOnClickListener(v -> hintLayout.setVisibility(View.GONE));
+
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        CheatFunction cheatFunction = new CheatFunction(sensorManager);
+        prepareCheat();
     }
 
-
+    private void prepareCheat() {
+        cheatButton.setOnClickListener(v -> {
+            if (!justCheated) {
+                playerManager.getLocalSelf().removeRandomCardFromHand();
+                Toast toast = Toast.makeText(this, "No cheat detected!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+            if (justCheated) {
+                playerManager.getPlayer(playerManager.getLocalSelf().getPlayerId() - 1).getPlayer().removeRandomCardFromHand();
+            }
+        });
+    }
 
     private void prepareGame(long seed) {
         deck = new Deck(seed);
@@ -501,8 +533,33 @@ public class GameActivity extends AppCompatActivity implements MessageCallback, 
                         "when you play a combo.\n";
         }
     }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP: {
+                if (KeyEvent.ACTION_UP == action) {
+                    System.out.println("UP");
+                    counter++;
+                }
+            }
+            break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN: {
+                if (KeyEvent.ACTION_DOWN == action) {
+                    System.out.println("DOWN");
+                    if (counter > 0) {
+                        counter--;
+                    }
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
     // Animation method for yourTurnSign
-    public void yourSignAnimation(ImageView turnSign){
+    public void yourSignAnimation(ImageView turnSign) {
 
         turnSign.setEnabled(true);
         turnSign.setAlpha(1.0f);

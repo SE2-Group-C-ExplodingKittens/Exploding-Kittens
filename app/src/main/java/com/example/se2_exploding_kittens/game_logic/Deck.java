@@ -269,4 +269,9 @@ public class Deck {
             return 0;
         }
     }
+
+    public int addDefuseCardFromCheating() {
+        cardDeck.add(0, new DefuseCard());
+        return 0;
+    }
 }
