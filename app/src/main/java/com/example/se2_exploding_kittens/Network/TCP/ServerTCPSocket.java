@@ -30,14 +30,14 @@ public class ServerTCPSocket implements Runnable, TCP{
     private ConnectionState connState = ConnectionState.IDLE;
     private CopyOnWriteArrayList<Message> messages = new CopyOnWriteArrayList<Message>();
 
-    public ServerTCPSocket(Socket connection){
+    public ServerTCPSocket(Socket connection) {
         this.connection = connection;
         try {
             out = new DataOutputStream (connection.getOutputStream());
             in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.US_ASCII));
             connState = ConnectionState.CONNECTED;
         } catch (IOException e) {
-            e.printStackTrace();
+            //couldn't initialize resources
         }
     }
 
@@ -68,7 +68,7 @@ public class ServerTCPSocket implements Runnable, TCP{
             in.close();
             connection.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            //could not close resources
         }
     }
 
@@ -120,6 +120,27 @@ public class ServerTCPSocket implements Runnable, TCP{
         }).start();
     }
 
+    private void handleNetworkException(){
+        connState = ConnectionState.DISCONNECTED;
+        try {
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            in.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            connection.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if(disconnectedCallback != null)
+            disconnectedCallback.connectionDisconnected(this);
+    }
+
     @Override
     public void run() {
         if(connState == ConnectionState.CONNECTED){
@@ -143,24 +164,7 @@ public class ServerTCPSocket implements Runnable, TCP{
                         disconnectedCallback.connectionDisconnected(this);
                 }
             } catch (IOException e) {
-                connState = ConnectionState.DISCONNECTED;
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    connection.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                if(disconnectedCallback != null)
-                    disconnectedCallback.connectionDisconnected(this);
+                handleNetworkException();
             }
         }
     }

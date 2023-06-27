@@ -41,7 +41,7 @@ public class DiscardPile {
     private CopyOnWriteArrayList<Card> cardPileOld = new CopyOnWriteArrayList <>();
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     public static final String DISCARD_PILE_PROPERTY = "discardPile";
-
+    private Random random;
     public DiscardPile() {
 
     }
@@ -193,7 +193,9 @@ public class DiscardPile {
             return -1;
         }
 
-        Random random = new Random();
+        if(random == null){
+            random = new Random(System.currentTimeMillis());
+        }
         return random.nextInt(cardPile.size());
     }
 

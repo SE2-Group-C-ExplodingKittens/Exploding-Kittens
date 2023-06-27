@@ -97,13 +97,20 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
             Message m = new Message(MessageType.MESSAGE, TURN_MANAGER_MESSAGE_ID, gameStateMessage);
             networkManager.sendMessageBroadcast(m);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
     private int getNextPlayerID(){
+        previousPlayerID = currentPlayerID;
         previousPlayerIDX = currentPlayerIDX;
-        currentPlayerIDX = (currentPlayerIDX + 1) % playerManager.getPlayerSize();
+        int tries = playerManager.getPlayerSize();
+        do {
+            currentPlayerIDX = (currentPlayerIDX + 1) % playerManager.getPlayerSize();
+            tries--;
+            //get next player if the player isn't alive
+        }while (!playerManager.getPlayerByIndex(currentPlayerIDX).getPlayer().isAlive() && tries > 0);
+
         return playerManager.getPlayerByIndex(currentPlayerIDX).getPlayerID();
     }
 
@@ -122,11 +129,6 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         currentPlayerTurns = turns;
         if(playerManager.getPlayerSize() > 1){
             currentPlayerID = getNextPlayerID();
-            int counter = playerManager.getPlayerSize();
-            while(!playerManager.getPlayer(currentPlayerID).getPlayer().isAlive() && counter > 0){
-                currentPlayerID = getNextPlayerID();
-                counter--;
-            }
         }
         int maxTries = 5;
         while (!sendNextSateToPlayers() && maxTries > 0){
@@ -136,9 +138,12 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
     }
 
     public void resumePreviousGameState() {
-        int tempPlayerIndex = currentPlayerID;
+        int tempPlayerIndex = currentPlayerIDX;
+        currentPlayerIDX = previousPlayerIDX;
+        previousPlayerIDX = tempPlayerIndex;
+        int tempPlayerId = currentPlayerID;
         currentPlayerID = previousPlayerID;
-        previousPlayerID = tempPlayerIndex;
+        previousPlayerID = tempPlayerId;
         int tempTurns = currentPlayerTurns;
         currentPlayerTurns = previousPlayerTurns;
         previousPlayerTurns = tempTurns;
@@ -211,6 +216,10 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         return currentPlayerID;
     }
 
+    private boolean isPlayerStillConnected(int playerID){
+        return playerManager.getPlayer(playerID) != null;
+    }
+
     private void playerDisconnected(ServerTCPSocket connection) {
         int playerID = playerManager.getPlayerIDByConnection(connection);
         if(playerID != -1){
@@ -220,18 +229,17 @@ public class TurnManager implements MessageCallback, DisconnectedCallback {
         //disable nope, since it can get confused when a player leaves
         GameManager.sendNopeDisabled(networkManager);
 
-        //go to the next player
-        if(playerID == -1 || playerID == currentPlayerID){
+        //go to the next player, either the disconnected doesn't exist anymore (-1) or has just disconnected
+        if(playerID == -1 && isPlayerStillConnected(currentPlayerID)){
+            previousPlayerTurns = currentPlayerTurns;
+
+        }
+        if(playerID == currentPlayerID){
             previousPlayerTurns = 1;
             currentPlayerTurns = 1;
             if(playerManager.getPlayerSize() > 1){
                 currentPlayerID = getNextPlayerID();
                 previousPlayerID = currentPlayerID;
-                int counter = playerManager.getPlayerSize();
-                while(!playerManager.getPlayer(currentPlayerID).getPlayer().isAlive() && counter > 0){
-                    currentPlayerID = getNextPlayerID();
-                    counter--;
-                }
             }
             int maxTries = 5;
             while (!sendNextSateToPlayers() && maxTries > 0){

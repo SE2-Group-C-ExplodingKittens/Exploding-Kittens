@@ -42,10 +42,12 @@ public class DefuseCard implements Card {
             player.setHasBomb(false);
             GameManager.sendCardPlayed(player.getPlayerId(), this, networkManager);
             player.removeCardFromHand(Integer.toString(DEFUSE_CARD_ID));
-            if(player.getPlayerTurns() == 0 && NetworkManager.isServer(networkManager)){
-                GameLogic.finishTurn(player,networkManager,1, turnManager);
+            if(NetworkManager.isServer(networkManager)){
                 int insertionIDX = deck.addBombAtRandomIndex();
                 GameManager.sendDeckInsetCard(networkManager,BOMB_CARD_ID,insertionIDX);
+            }
+            if(player.getPlayerTurns() == 0 && NetworkManager.isServer(networkManager)){
+                GameLogic.finishTurn(player,networkManager,1, turnManager);
             }
         }
         discardPile.putCard(this);

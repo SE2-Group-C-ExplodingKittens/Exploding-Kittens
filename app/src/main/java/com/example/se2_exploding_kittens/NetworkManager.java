@@ -112,6 +112,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
 
     public void runAsServer(int port){
         clearAllCallbacks();
+        connection = null;
         connectionRole = TypeOfConnectionRole.SERVER;
         server = new TCPServer(port,this);
         Thread thread = new Thread(server);
@@ -127,7 +128,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         thread.start();
     }
 
-    public void terminateConnection(){
+    private void terminateServerConnection(){
         if(connectionRole == TypeOfConnectionRole.SERVER){
             for ( ServerTCPSocket con: serverToClientConnections) {
                 con.endConnection();
@@ -145,6 +146,8 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             }
             clearAllCallbacks();
         }
+    }
+    private void terminateClientConnection(){
         if(connectionRole == TypeOfConnectionRole.CLIENT){
             connection.endConnection();
             connectionRole = TypeOfConnectionRole.IDLE;
@@ -159,6 +162,10 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
             }
             clearAllCallbacks();
         }
+    }
+    public void terminateConnection(){
+        terminateServerConnection();
+        terminateClientConnection();
     }
 
 
@@ -260,7 +267,7 @@ public class NetworkManager implements MessageCallback, ClientConnectedCallback,
         try {
             networkManager.sendMessageBroadcast(m);
         } catch (IllegalAccessException e) {
-            System.out.println(e.getLocalizedMessage());
+            //message couldn't sent
         }
     }
 }

@@ -33,7 +33,7 @@ public class IPUtil {
                 }
             }
         } catch (SocketException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
         return -1;
     }
@@ -59,7 +59,7 @@ public class IPUtil {
                 }
             }
         } catch (SocketException e) {
-            e.printStackTrace();
+            return null;
         }
         return null;
     }
@@ -85,7 +85,7 @@ public class IPUtil {
                 }
             }
         } catch (SocketException e) {
-            e.printStackTrace();
+            return null;
         }
         return null;
     }

@@ -28,6 +28,7 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
     private ArrayList<String> playerIDs;
     private NetworkManager networkManager;
     private int playerID;
+    private Random random;
 
     public abstract void handleActions(Player player, NetworkManager networkManager, DiscardPile discardPile, Context context);
 
@@ -93,9 +94,9 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
     protected String getRandomPlayer(ArrayList<String> playerIDs) {
         // remove null values
         ArrayList<String> nonNullPlayers = new ArrayList<>();
-        for (String playerID : playerIDs) {
-            if (playerID != null) {
-                nonNullPlayers.add(playerID);
+        for (String pID : playerIDs) {
+            if (pID != null) {
+                nonNullPlayers.add(pID);
             }
         }
 
@@ -104,7 +105,9 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
         }
 
         // get random index of non-null players
-        Random random = new Random();
+        if(random == null){
+            random = new Random(System.currentTimeMillis());
+        }
         int randomIndex = random.nextInt(nonNullPlayers.size());
 
         return nonNullPlayers.get(randomIndex);
@@ -126,7 +129,9 @@ public abstract class ChoosePlayerCard implements Card, ChoosePlayerViewHolder.O
             buttonTwoCats.setOnClickListener(v -> {
                 buttonTwoCats.setVisibility(View.INVISIBLE);
                 player.resetOneCatCounter(card); //reset this one counter
-                Random random = new Random();
+                if(random == null){
+                    random = new Random(System.currentTimeMillis());
+                }
                 int randomCardID = random.nextInt(13) + 1; // random number between 2 and 13 (one is bomb therefore we can't get it)
                 player.addCardToHand(Integer.toString(randomCardID));
                 player.updateHandVisually();

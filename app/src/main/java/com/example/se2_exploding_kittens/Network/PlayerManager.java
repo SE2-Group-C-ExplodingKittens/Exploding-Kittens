@@ -54,7 +54,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public void reset() {
-        if (networkManager != null && NetworkManager.isNotIdle(networkManager)) {
+        if (NetworkManager.isNotIdle(networkManager)) {
             this.networkManager.unsubscribeCallbackFromMessageID(this, PLAYER_MANAGER_MESSAGE_ID);
             this.networkManager.unsubscribeToDisconnectedCallback(this);
             if (NetworkManager.isClient(networkManager)) {
@@ -89,8 +89,8 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         return null;  // null means invalid
     }
 
-    private Message createMessage(int type, String data) {
-        return new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_ID, type + ":" + data);
+    private Message createMessage(String data) {
+        return new Message(MessageType.MESSAGE, PLAYER_MANAGER_MESSAGE_ID, PlayerManager.LOCAL_PLAYER_MANAGER_ID_ASSIGNED + ":" + data);
     }
 
     private void assignPlayerID(ServerTCPSocket connection) {
@@ -99,10 +99,10 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
         playerConnections.add(playerConnection);
         if (networkManager != null) {
             try {
-                networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_ASSIGNED, playerID + ""), connection);
+                networkManager.sendMessageFromTheSever(createMessage(playerID + ""), connection);
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                //this was called without proper network initialisation
             }
         }
     }
@@ -115,7 +115,7 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     }
 
     public PlayerConnection getPlayerByIndex(int playerIdx) {
-        if(playerIdx < playerConnections.size()){
+        if (playerIdx < playerConnections.size()) {
             return playerConnections.get(playerIdx);
         }
         return null; // player not found
@@ -137,17 +137,20 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
     private String getPlayerIDs() {
         StringBuilder playerIDs = new StringBuilder();
         for (PlayerConnection p : getPlayers()) {
-            playerIDs.append(p.getPlayerID()).append(":");
+            if (playerIDs.length() != 0) {
+                playerIDs.append(":");
+            }
+            playerIDs.append(p.getPlayerID());
         }
         return playerIDs.toString();
     }
 
-    public ArrayList<String> getPlayersIDs(){
+    public ArrayList<String> getPlayersIDs() {
         ArrayList<String> playerIDs = new ArrayList<>();
-        for(PlayerConnection p: getPlayers()){
+        for (PlayerConnection p : getPlayers()) {
             playerIDs.add(Integer.toString(p.getPlayerID()));
         }
-        while(playerIDs.size() < 5){
+        while (playerIDs.size() < 5) {
             playerIDs.add(null);
         }
         return playerIDs;
@@ -168,17 +171,6 @@ public class PlayerManager implements MessageCallback, ClientConnectedCallback, 
             }
         }
         return -1; // player not found
-    }
-
-    public void removePlayer(PlayerConnection player) {
-        if (playerConnections.contains(player) && networkManager != null && NetworkManager.isServer(networkManager)) {
-            try {
-                networkManager.sendMessageFromTheSever(createMessage(LOCAL_PLAYER_MANAGER_ID_PLAYER_DISCONNECT,player.getPlayerID()+""), player.getConnection());
-                networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID, getPlayerIDs()));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void playerDisconnected(ServerTCPSocket connection) {

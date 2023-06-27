@@ -1,5 +1,7 @@
 package com.example.se2_exploding_kittens.Network.TCP;
 
+import android.util.Log;
+
 import com.example.se2_exploding_kittens.Network.ConnectionState;
 import com.example.se2_exploding_kittens.Network.DisconnectedCallback;
 import com.example.se2_exploding_kittens.Network.Message;
@@ -61,7 +63,7 @@ public class ClientTCP implements Runnable, TCP{
             connState = ConnectionState.CONNECTED;
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            connState = ConnectionState.IDLE;
             return false;
         }
     }
@@ -78,6 +80,7 @@ public class ClientTCP implements Runnable, TCP{
     private void listenForMessages(BufferedReader in) throws IOException {
         String response = null;
         response = in.readLine();
+        Log.v("GameActivity", response);
         if(response == null){
             //EOF sent
             connState = ConnectionState.DISCONNECTING;
@@ -91,11 +94,11 @@ public class ClientTCP implements Runnable, TCP{
     public void endConnection(){
         connState = ConnectionState.DISCONNECTING;
         try {
-            out.close();
-            in.close();
-            clientSocket.close();
+                out.close();
+                in.close();
+                clientSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            //could not close resources
         }
     }
 
@@ -123,6 +126,27 @@ public class ClientTCP implements Runnable, TCP{
                 Thread.currentThread().interrupt();
             }
         }).start();
+    }
+
+    private void handleNetworkException(){
+        connState = ConnectionState.DISCONNECTED;
+        try {
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            in.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            clientSocket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if(disconnectedCallback != null)
+            disconnectedCallback.connectionDisconnected(this);
     }
 
     @Override
@@ -153,24 +177,7 @@ public class ClientTCP implements Runnable, TCP{
                 }
 
             } catch (IOException e) {
-                connState = ConnectionState.DISCONNECTED;
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    clientSocket.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                if(disconnectedCallback != null)
-                    disconnectedCallback.connectionDisconnected(this);
+                handleNetworkException();
             }
         }
     }

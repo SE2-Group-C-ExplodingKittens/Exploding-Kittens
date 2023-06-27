@@ -58,11 +58,11 @@ public class GameManager implements MessageCallback {
             this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID);
             this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID);
             this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_STEAL_CARD);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
-            this.networkManager.subscribeCallbackToMessageID(this, GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_ACTIVITY_STEAL_CARD);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_ACTIVITY_SHOW_THREE_CARDS_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_ACTIVITY_DECK_MESSAGE_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, LOCAL_PLAYER_MANAGER_MESSAGE_PLAYER_IDS_ID);
+            this.networkManager.unsubscribeCallbackFromMessageID(this, GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID);
             this.networkManager = null;
         }
         this.playerManager = null;
@@ -89,7 +89,7 @@ public class GameManager implements MessageCallback {
                 }
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -107,7 +107,7 @@ public class GameManager implements MessageCallback {
         try {
             networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_INSERTED_TO_DECK_ID, cardID + ":" + idx));
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -121,7 +121,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_ENABLED_ID, ""));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -135,7 +135,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_NOPE_DISABLED_ID, ""));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -148,7 +148,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PULLED_ID, card.getCardID() + ":" + playerID));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -161,7 +161,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_PLAYER_WON_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -174,7 +174,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_PLAYER_LOST_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -187,7 +187,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_BOMB_PULLED_ID, card.getCardID() + ":" + playerID));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -200,7 +200,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_CARD_PLAYED_ID, card.getCardID() + ":" + playerID));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -212,7 +212,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -224,7 +224,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_SHOW_THREE_CARDS_ID, Integer.toString(playerID)));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -236,7 +236,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_ACTIVITY_STEAL_CARD, fromPlayerIDToPlayerID));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -248,7 +248,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_SEND_CARD_TO_PLAYER_ID, playerID + ":" + card.getCardID()));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -260,7 +260,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageFromTheClient(new Message(MessageType.MESSAGE, GAME_MANAGER_MESSAGE_UPDATE_PLAYER_HAND_ID, playerID + ":" + playerHand));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 
@@ -334,12 +334,10 @@ public class GameManager implements MessageCallback {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
                 int playerID = Integer.parseInt(message[1]);
-                //Log.v("GameManager", "Bombpulled player "+message[1]);
                 if (playerID != playerManager.getLocalSelf().getPlayerId()) {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
                     if (NetworkManager.isServer(networkManager)) {
                         //broadcast to other clients
-                        //sendBombPulled(playerID, removedCard, networkManager);
                         GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(), removedCard, networkManager, discardPile, turnManager);
                         checkGameEnd();
                     }
@@ -352,13 +350,11 @@ public class GameManager implements MessageCallback {
         if (Message.parseAndExtractMessageID(text) == GAME_MANAGER_MESSAGE_CARD_PULLED_ID) {
             String[] message = Message.parseAndExtractPayload(text).split(":");
             if (message.length == 2) {
-                //Log.v("GameManager", "Cardpulled"+message[0]+" player "+message[1]);
                 int playerID = Integer.parseInt(message[1]);
                 if (playerID != playerManager.getLocalSelf().getPlayerId()) {
                     Card removedCard = deck.removeCard(Integer.parseInt(message[0]));
                     if (NetworkManager.isServer(networkManager)) {
                         //broadcast to other clients
-                        //sendCardPulled(playerID, removedCard, networkManager);
                         GameLogic.cardHasBeenPulled(playerManager.getPlayer(playerID).getPlayer(), removedCard, networkManager, discardPile, turnManager);
                     }
                 }
@@ -413,7 +409,7 @@ public class GameManager implements MessageCallback {
                 networkManager.sendMessageBroadcast(new Message(MessageType.MESSAGE, GAME_ACTIVITY_DECK_MESSAGE_ID, deck.deckToString()));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //this was called without proper network initialisation
         }
     }
 }
